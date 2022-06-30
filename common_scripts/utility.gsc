@@ -2482,3 +2482,22 @@ isClientPluto(dvar, pluto_state)
 		return false;
 	}
 }
+
+scoresButtonPressed()
+{
+	default_bind_mk = "tab";
+	default_bind_gp = "BUTTON_BACK";	// Need to verify it it doesn't have to be lower case
+
+	// [{+scores}] returns TAB and doesn't work with toLower(), and either way it's not perfect as some poeple play m&k with controller enabled
+	// getKeyBinding() is an existing function, but it doesn't seem to work, probably it's not supported in released game
+	// current_bind = toLower("[{+scores}]");
+	// current_bind = getKeyBinding("+scores");
+
+	if (self buttonPressed(default_bind_mk) || self buttonPressed(default_bind_gp))
+		tab = true;
+	else
+		tab = false;
+	
+	iPrintLn(tab);
+	return tab;
+}
