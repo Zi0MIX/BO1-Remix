@@ -336,6 +336,15 @@ display_time_summary()
 	wait wait_time;
 	hud_fade( summary, 0, fade_time );
 
+	// if (level.round_number != level.last_special_round)
+	// {
+	// 	hud_fade( summary, 0, fade_time );
+	// 	wait fade_time;
+	// 	summary setText("Predicted round: " + level.predicted_round_text);
+	// 	hud_fade( summary, 1, fade_time );
+	// 	wait wait_time;
+	// }
+
 	wait fade_time + 0.1;
 	summary destroy_hud();
 
