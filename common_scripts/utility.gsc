@@ -2483,6 +2483,7 @@ isClientPluto(dvar, pluto_state)
 	}
 }
 
+
 scoresButtonPressed()
 {
 	default_bind_mk = "tab";
@@ -2497,7 +2498,7 @@ scoresButtonPressed()
 		tab = true;
 	else
 		tab = false;
-	
-	iPrintLn(tab);
+
+	// iPrintLn(tab);
 	return tab;
-}
+} 

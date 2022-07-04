@@ -2,7 +2,7 @@
 
 ## Download
 
-[Download](https://www.mediafire.com/file/5u4g0dxdnf7rsjw/BO1-Remix.zip/file)
+[Download](https://github.com/5and5/BO1-Remix/releases/download/v1.7.0/BO1-Remix.zip)
 
 ## How to Install
 
@@ -32,6 +32,7 @@
 
 ## HUD
 
+- Yellow points added stack on top of each other
 - In game timer
 - Round timer (shows at the end of a round - can be toggled to show mid round)
 - Seconds per horde (shows at the end of a round)
@@ -87,7 +88,7 @@
 #### General
 
 - Zombies lose collision as soon as they are killed
-- Increased explosive scaling
+- Increased explosive scaling (raygun buff)
 
 #### Grenades
 
@@ -228,7 +229,7 @@
 
 #### Double Tap
 
-- Increases all bullet based weapons damage by 1.5
+- Double Tap 2.0
 
 #### Mule kick
 
@@ -379,7 +380,9 @@
 - Thundergun, Wonder Waffe and Blundergat are in the box
 - Blundergat is not limited
 - Mulekick increases weapon swap speed
-- Buyable raygun for 5000
+- Buyable raygun for 5000 in Power Room
+- Three teddybear song easter egg
+- HD textures [download](https://drive.google.com/drive/folders/1-_YSiwqejYjwiJa1VZa4W8M-Iws2wN3K?usp=sharing)
 
 ## Console
 
@@ -423,20 +426,18 @@ seta hud_zone_name_on "1"
 
 ## TODO
 
-- points like reimagined
 - adopted reset sound
-- perk_weapRateEnhanced 1 for double tap 2.0
-- total time bugs on five
 - character select option
 - add new hud menu options page
 - add state color change to .menu
 - automate Pluto detection
+- move traders to .menu
 
 
 #### Would like to do
 
 - Add chalk to mp5k on Verruckt
-- fix teleporter bug on five (teleports 3 times)
+- fix tree material on winter wunderland
 
 ## Shout out to:
 

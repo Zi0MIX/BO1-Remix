@@ -265,11 +265,14 @@ post_all_players_connected()
 		level.music_override = false;
 	}
 
+	if(getDvarInt("hud_pluto"))
+		level.pluto_offset = 12;
+	else
+		level.pluto_offset = 0;
+
 	level thread timer_hud();
 	level thread round_timer_hud();
-	level thread game_stat_hud();
-	level thread remaining_hud();
-	level thread drop_tracker_hud();
+	level thread time_summary_hud();
 	level thread hud_trade_header();
 
 	// level thread display_sph();
@@ -825,7 +828,11 @@ init_dvars()
 
 	SetDvar( "scr_deleteexplosivesonspawn", "0" );
 
-	SetDvar( "hud_pluto", "0" );
+	// Pluto HUD
+	if(getDvarInt("hud_pluto") == 1)
+		SetDvar("hud_pluto", 1);
+	else
+		SetDvar("hud_pluto", 0);
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
 	//setDvar( "ik_enable", "0" );
@@ -1607,12 +1614,6 @@ onPlayerConnect_clientDvars()
 
 	////// HUD DVARS //////
 
-	// Pluto HUD
-	// if(getDvarInt("hud_pluto") == 1)
-	// 	self setClientDvar("hud_pluto", 1);
-	// else
-	// 	self setClientDvar("hud_pluto", 0);
-
 	// Health Bar	
 	if(getDvarInt("hud_health_bar") == 1)
 		self setClientDvar("hud_health_bar", 1);
@@ -1690,6 +1691,9 @@ onPlayerConnect_clientDvars()
 
 	// make sure zombies are spawning
 	self SetClientDvar( "ai_disableSpawn", "0");
+
+	// double tap 2.0
+	self SetClientDvar( "perk_weapRateEnhanced", 1 );
 }
 
 checkForAllDead()
@@ -1806,7 +1810,9 @@ onPlayerSpawned()
 				self thread player_grenade_watcher();
 
 				// custom HUD
-				// self thread drop_tracker_hud();
+				self thread time_summary_hud();
+				self thread remaining_hud();
+				self thread drop_tracker_hud();
 				self thread health_bar_hud();
 				self thread zone_hud();
 				if(level.script == "zombie_coast")
@@ -5508,17 +5514,13 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		}
 	}
 
-	if(attacker HasPerk("specialty_rof") && (meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET"))
-	{
-		final_damage = int(final_damage * 1.5);
-	}
 
 	if(attacker HasPerk("specialty_deadshot") && (meansofdeath == "MOD_PISTOL_BULLET" || meansofdeath == "MOD_RIFLE_BULLET") && WeaponClass(weapon) != "spread" && (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck"))
 	{
 		final_damage = int(final_damage * 2);
 	}
 
-	if((is_placeable_mine(weapon) && (meansofdeath == "MOD_GRENADE" || meansofdeath == "MOD_GRENADE_SPLASH")) && (self.animname != "thief_zombie" || self.animname != "director_zombie"))
+	if((is_placeable_mine(weapon) && (meansofdeath == "MOD_GRENADE" || meansofdeath == "MOD_GRENADE_SPLASH")) && self.animname != "thief_zombie" && self.animname != "director_zombie")
 	{
 		// fix for grenades doing 1/2 zombies health when holding mines
 		if(flags == 5)
@@ -5537,8 +5539,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		final_damage = int(self.maxhealth) + 666;
 	}
 
-
-	if((weapon == "tesla_gun_zm" || weapon == "tesla_gun_upgraded_zm") && (self.animname == "thief_zombie" || self.animname == "director_zombie"))
+	if((weapon == "tesla_gun_zm" || weapon == "tesla_gun_upgraded_zm") && self.animname == "thief_zombie" && self.animname == "director_zombie")
 	{
 		final_damage = 1500;
 	}
@@ -5573,14 +5574,15 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	}
 
 	// Absolute multiplier based on max HP of the zombie
-	if (IsDefined(self.animname) && (self.animname == "zombie" || self.animname == "quad_zombie"))
-	{
+	// if (IsDefined(self.animname) && (self.animname == "zombie" || self.animname == "quad_zombie"))
+	// {
 		// absolute_multiplier = 0.0033;
 		// if (attacker HasPerk("specialty_rof"))
 		// 	absolute_multiplier = 0.0066;
 
 		// final_damage += int(self.maxhealth * absolute_multiplier);
-	}
+	// }
+	// iPrintLn("final damage: " + final_damage);
 
 	return int( final_damage );
 
@@ -5775,8 +5777,8 @@ end_game()
 		{
 			if( !isdefined(level.left_nomans_land) )
 			{
-				player_survival_time_in_mins = maps\_zombiemode::to_mins(int(level.nml_best_time / 1000));
-				survived_hud SetText(&"MOD_NML_END_KILLS", level.total_nml_kills, &"MOD_NML_END_TIME", player_survival_time_in_mins);
+				player_survival_time_in_mins = to_mins_short(int(level.nml_best_time / 1000));
+				survived_hud SetText(level.total_nml_kills, " kills in ", player_survival_time_in_mins);
 			}
 			else if( level.left_nomans_land == 2 )
 			{

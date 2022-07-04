@@ -12,8 +12,10 @@ rawfile,maps/_zombiemode_ai_faller.gsc
 rawfile,maps/_zombiemode_spawner.gsc
 rawfile,maps/_zombiemode_utility.gsc
 rawfile,maps/_zombiemode_audio.gsc
+rawfile,maps/_zombiemode_score.gsc
 
 //CUSTOM
+rawfile,maps/_custom_hud_stats.gsc
 rawfile,maps/_custom_hud.gsc
 rawfile,maps/_custom_hud_menu.gsc
 
@@ -176,11 +178,11 @@ localize,mod
 localize,hud
 
 //MENU
+menufile,ui/objective_info.menu
 menufile,ui/options_game_pc.menu
 menufile,ui/options_shoot_pc.menu
 menufile,ui/hud_zombie.menu
 menufile,ui/hud_remix.menu
-menufile,ui/hud_color_state.menu
 menufile,ui/hud_zombie.txt
 
 //SOUNDS

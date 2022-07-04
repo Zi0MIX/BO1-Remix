@@ -74,8 +74,6 @@ setup_diggers()
 	
 	//controls the digger random activations
 	level thread digger_round_logic();
-
-	level thread maps\_custom_hud_menu::excavator_hud();
 	
 	//sets up their movement
 	diggers = GetEntArray("digger_body","targetname");
@@ -83,6 +81,12 @@ setup_diggers()
 	level thread waitfor_smash();
 	wait(.5);
 	flag_clear("init_diggers");
+	
+	players = get_players();
+	for(i = 0; i < players.size; i++)
+	{
+		players[i] thread maps\_custom_hud_menu::excavator_hud();
+	}
 }
 
 /*------------------------------------
@@ -1707,9 +1711,6 @@ digger_follow_path(body,reverse,arm)
 		//self.digger_speed;
 
 		self.origin = self.origin + velocity * 0.05;
-		
-		//digger_time_in_mins = maps\_zombiemode::to_mins( GetTime()-self.start_time );
-		//iprintlnbold("DIGGER> Time: " + digger_time_in_mins );
 
 		look_ahead = current_node.lookahead + ( next_node.lookahead - current_node.lookahead ) * fraction;
 

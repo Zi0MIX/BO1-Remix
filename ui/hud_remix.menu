@@ -1,5 +1,4 @@
 #include "ui/menudef.h"
-#include "ui/hud_color_state.menu"
 
 /*
 	Items are grouped together using a menuDef. A menudef typically has a name, a rect, a fullscreen option and a visible option
@@ -59,6 +58,7 @@
 #define NEXT_LINE_OFFSET				15
 #define UNI_Y_POS						2
 
+// Need to check if client is pluto here because gsc sets this dvar too late
 #ifdef dvarInt(hud_pluto)
 	#define PLUTO_OFFSET				12
 #else
@@ -73,10 +73,10 @@
 		fadeAmount						.1
 	}
 
-	#define HEALTH_BAR_W	110
+	#define HEALTH_BAR_W	111
 	#define HEALTH_BAR_H	5
 	#define HEALTH_VALUE_X	(HEALTH_BAR_W + 5.5)
-	#define HEALTH_VALUE_Y	(HEALTH_Y + 10.6)
+	#define HEALTH_VALUE_Y	(HEALTH_Y + 10.2)
 	#define HEALTH_Y		-107
 	#define HEALTH_X		1.5
 	#define HEALTH_BOARDER	(HEALTH_X * 2)
@@ -116,7 +116,7 @@
 			rect				0 HEALTH_Y (HEALTH_BAR_W + HEALTH_BOARDER) (HEALTH_BAR_H + HEALTH_BOARDER)
 			foreColor			0 0 0 0.35
 			background			"black"
-			visible				1
+			visible				when(dvarBool("hud_health_bar"))
 			decoration
 
 			state
@@ -140,7 +140,7 @@
 			exp					rect W(dvarInt("health_bar_width_hud"))
 			foreColor			1 1 1 0.85
 			background			"white"
-			visible				1
+			visible				when(dvarBool("hud_health_bar"))
 			decoration
 
 			state
@@ -166,7 +166,7 @@
 			textFont			UI_FONT_NORMAL
 			textalign			ITEM_ALIGN_LEFT
 			exp					text(dvarInt("health_bar_value_hud"))
-			visible				1
+			visible				when(dvarBool("hud_health_bar"))
 			decoration
 
 			FADE_STATES
@@ -239,24 +239,6 @@
 		rect				0 PLUTO_OFFSET 0 0 HORIZONTAL_ALIGN_USER_RIGHT VERTICAL_ALIGN_USER_TOP //x-pos y-pos width height horizontal_alignment vertical_alignmnet
 		fullscreen			0
 		visible				when( dvarBool( #"ammoCounterHide" ) == 0 && dvarBool( #"hud_missionFailed" ) == 0 && !ui_active() && (dvarint( #"zombiemode" ) == 1 && dvarint( #"zombietron" ) == 0) && !dvarInt( #"splitscreen" ) );
-
-		itemDef
-		{
-			name				"time_summary"
-			type				ITEM_TYPE_TEXT
-			rect 				-4 (UNI_Y_POS + NEXT_LINE_OFFSET) 0 0	
-			exp rect Y			(UNI_Y_POS + NEXT_LINE_OFFSET + (dvarInt("rt_displayed") * NEXT_LINE_OFFSET))
-			forecolor			1 1 1 0
-			textscale			TEXTSIZE_DEFAULT
-			textstyle			ITEM_TEXTSTYLE_SHADOWED
-			textfont			UI_FONT_NORMAL
-			textalign			ITEM_ALIGN_TOP_RIGHT
-			exp text			(locString(dvarString("time_summary_text")) + dvarString("time_summary_value"))	
-			visible				when(dvarInt(show_time_summary) == 1)
-			decoration
-
-			FADE_STATES
-		}
 	}
 
 	menuDef
@@ -309,41 +291,6 @@
 		rect				0 0 0 0 HORIZONTAL_ALIGN_USER_CENTER VERTICAL_ALIGN_USER_CENTER //x-pos y-pos width height horizontal_alignment vertical_alignmnet
 		fullscreen			0
 		visible				1;
-
-		itemDef
-		{
-			name				"kino_box_indicator"
-			type				ITEM_TYPE_TEXT
-			rect 				0 -100 0 0	
-			forecolor			1 1 1 1
-			textscale			TEXTSIZE_TITLE
-			textstyle			ITEM_TEXTSTYLE_SHADOWED
-			textfont			UI_FONT_NORMAL
-			textalign			ITEM_ALIGN_CENTER
-			exp text			(locString("@HUD_HUD_ZOMBIES_KINO_BOX") + dvarString("kino_boxset"))	
-			visible				when(dvarString(kino_boxset) != "^0UNDEFINED")
-			decoration
-
-			FADE_STATES
-		}
-
-		// Triggered in zombie_moon_teleporter
-		itemDef
-		{
-			name				"nml_summary"
-			type				ITEM_TYPE_TEXT
-			rect 				0 -100 0 0
-			forecolor			1 1 1 1
-			textscale			TEXTSIZE_DEFAULT
-			textstyle			ITEM_TEXTSTYLE_SHADOWED
-			textfont			UI_FONT_NORMAL
-			textalign			ITEM_ALIGN_CENTER
-			exp text			(locString("@MOD_NML_END_KILLS") + dvarString("nml_end_kills") + locString("@MOD_NML_END_TIME") + dvarString("nml_end_time"))
-			visible				when(dvarInt(custom_nml_end) == 1)
-			decoration
-
-			FADE_STATES
-		}
 	}
 
 	menuDef
@@ -360,8 +307,8 @@
 		{
 			name				"george_health"
 			type				ITEM_TYPE_TEXT
-			rect 				0 -12 0 0 HORIZONTAL_ALIGN_USER_CENTER VERTICAL_ALIGN_USER_BOTTOM		
-			forecolor			1 1 1 1
+			rect 				0 -10 0 0 HORIZONTAL_ALIGN_USER_CENTER VERTICAL_ALIGN_USER_BOTTOM		
+			forecolor			1 1 1 0
 			textscale			TEXTSIZE_DEFAULT
 			textstyle			ITEM_TEXTSTYLE_SHADOWED
 			textfont			UI_FONT_NORMAL
@@ -379,7 +326,7 @@
 			type				ITEM_TYPE_IMAGE
 			style				WINDOW_STYLE_SHADER
 			rect				(-(GEORGE_BAR_W / 2) - 2) -11 (GEORGE_BAR_W + 4) (GEORGE_BAR_H + 2) HORIZONTAL_ALIGN_USER_CENTER VERTICAL_ALIGN_USER_BOTTOM
-			foreColor			0 0 0 0.55
+			foreColor			0 0 0 0
 			background			"black"
 			visible				when(dvarString("mapname") == "zombie_coast")
 			decoration
@@ -403,7 +350,7 @@
 			style				WINDOW_STYLE_SHADER
 			rect				(-GEORGE_BAR_W / 2) -10 GEORGE_BAR_W GEORGE_BAR_H HORIZONTAL_ALIGN_USER_CENTER VERTICAL_ALIGN_USER_BOTTOM
 			exp					rect W(dvarInt("george_bar_ratio"))
-			foreColor			1 1 1 0.85
+			foreColor			1 1 1 0
 			background			"white"
 			visible				when(dvarString("mapname") == "zombie_coast")
 			decoration
