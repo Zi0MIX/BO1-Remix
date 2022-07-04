@@ -194,6 +194,8 @@ remaining_hud()
 		wait 0.05;
 		// Level var for round timer
 		level.tracked_zombies = level.zombie_total + get_enemy_count();
+		if (level.tracked_zombies < 0)
+			level.tracked_zombies = 0;
 
 		self setClientDvar("hud_remaining_number", level.tracked_zombies);
 
