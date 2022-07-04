@@ -54,12 +54,12 @@ tab_hud()
 	self endon("disconnect");
 	level endon("end_game");
 	
-	if(getDvar( "hud_button" ) == "")
-		self setClientDvar( "hud_button", "tab" );
+	// if(getDvar( "hud_button" ) == "")
+	// 	self setClientDvar( "hud_button", "tab" );
 
-	while(1)
+	while (true)
 	{	
-		if(self buttonPressed( getDvar( "hud_button" ) ))
+		if(self scoresButtonPressed() )
 		{	
 			flag_set( "hud_pressed" );
 			self setClientDvar( "hud_tab", 1 );
