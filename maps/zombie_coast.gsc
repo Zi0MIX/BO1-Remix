@@ -7,8 +7,10 @@
 main()
 {
 	level thread maps\zombie_coast_ffotd::main_start();
+	level thread maps\_remix_coast::remix_main();
 
 	// for weight functions
+	// TODO Zi0 - Change into array
 	level.pulls_since_last_ray_gun = 0;
 	level.pulls_since_last_wonder_weapon = 0;
 	level.pulls_since_last_sniper_explosive = 0;
@@ -115,14 +117,12 @@ main()
 
 	level.door_dialog_function = maps\_zombiemode::play_door_dialog;
 
-	include_weapons();
-	include_powerups();
+	maps\_remix_coast::include_weapons();
+	maps\_remix_coast::include_powerups();
 	level.use_zombie_heroes = true;
 	level.zombiemode_using_marathon_perk = true;
 	level.zombiemode_using_divetonuke_perk = true;
 	level.zombiemode_using_deadshot_perk = true;
-	// Change to disable or enable knifing while having waffe
-	level.fix_wunderwaffe = true;
 
 	// used for the water hazard
 	level.use_freezegun_features = true;
@@ -204,6 +204,7 @@ main()
 	// TODO: Get it working then hand off to Laufer so he can transfer it to csc
 	level thread coast_power_on_lighthouse_react();
 
+	// Disable the initial spawn delay
 	//level thread coast_spawn_init_delay();
 
 	level thread maps\zombie_coast_fx:: manage_blizzard();
@@ -217,7 +218,7 @@ main()
 	}
 
 	level thread maps\zombie_coast_ffotd::main_end();
-	level thread check_to_set_play_outro_movie();
+	level thread maps\_remix_coast::check_to_set_play_outro_movie();
 }
 
 check_to_set_play_outro_movie()
@@ -226,7 +227,7 @@ check_to_set_play_outro_movie()
 
 	if ( !level.onlineGame && !level.systemlink )
 	{
-		SetDvar("ui_playCoastOutroMovie", 0);
+		SetDvar("ui_playCoastOutroMovie", 1);
 	}
 }
 
@@ -265,7 +266,30 @@ custom_add_weapons()
 	maps\_zombiemode_weapons::add_zombie_weapon( "sniper_explosive_zm",		"sniper_explosive_upgraded_zm",			&"ZOMBIE_WEAPON_SNIPER_EXPLOSIVE",		2500,	"ubersniper",	"",		undefined );
 }
 
+coast_spawn_init_delay(director)
+{
+	flag_wait( "begin_spawning" );
+	flag_clear( "spawn_zombies");
+	director_zomb = undefined;
 
+	while(!IsDefined(director_zomb))
+	{
+		zombs = GetAIArray ("axis");
+		for ( i = 0; i < zombs.size; i++ )
+		{
+			if(IsDefined(zombs[i].animname) && zombs[i].animname == "director_zombie")
+			{
+				director_zomb = zombs[i];
+			}
+		}
+		wait_network_frame();	
+	}
+	
+	director_zomb waittill_notify_or_timeout( "director_spawn_zombies", 30 );
+	//wait(30.0);
+	
+	flag_set( "spawn_zombies");
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -385,7 +409,7 @@ include_weapons()
 	//	Weapons - Pistols
 	include_weapon( "m1911_zm", false );						// colt
 	include_weapon( "m1911_upgraded_zm", false );
-	include_weapon( "python_zm", false );						// 357
+	include_weapon( "python_zm" );						// 357
 	include_weapon( "python_upgraded_zm", false );
   	include_weapon( "cz75_zm" );
   	include_weapon( "cz75_upgraded_zm", false );
@@ -395,7 +419,7 @@ include_weapons()
 	include_weapon( "m14_upgraded_zm", false );
 
 	//	Weapons - Burst Rifles
-	include_weapon( "m16_zm", false, true );
+	include_weapon( "m16_zm", false, true );						
 	include_weapon( "m16_gl_upgraded_zm", false );
 	include_weapon( "g11_lps_zm" );
 	include_weapon( "g11_lps_upgraded_zm", false );
@@ -414,20 +438,20 @@ include_weapons()
 	include_weapon( "spectre_zm" );
 	include_weapon( "spectre_upgraded_zm", false );
 	include_weapon( "mp40_zm", false );
-	include_weapon( "mp40_upgraded_zm", false );
+	include_weapon( "mp40_upgraded_zm", false );	
 
 	//	Weapons - Dual Wield
   	include_weapon( "cz75dw_zm" );
   	include_weapon( "cz75dw_upgraded_zm", false );
 
 	//	Weapons - Shotguns
-	include_weapon( "ithaca_zm", false );						// shotgun
+	include_weapon( "ithaca_zm", false, true );						// shotgun
 	include_weapon( "ithaca_upgraded_zm", false );
-	include_weapon( "rottweil72_zm", false);
+	include_weapon( "rottweil72_zm", false, true );
 	include_weapon( "rottweil72_upgraded_zm", false );
-	include_weapon( "spas_zm", false );						//
+	include_weapon( "spas_zm" );						// 
 	include_weapon( "spas_upgraded_zm", false );
-	include_weapon( "hs10_zm", false );
+	include_weapon( "hs10_zm" );
 	include_weapon( "hs10_upgraded_zm", false );
 
 	//	Weapons - Assault Rifles
@@ -437,13 +461,13 @@ include_weapons()
 	include_weapon( "galil_upgraded_zm", false );
 	include_weapon( "commando_zm" );
 	include_weapon( "commando_upgraded_zm", false );
-	include_weapon( "fnfal_zm", false );
+	include_weapon( "fnfal_zm" );
 	include_weapon( "fnfal_upgraded_zm", false );
 
 	//	Weapons - Sniper Rifles
-	include_weapon( "dragunov_zm", false );					// ptrs41
+	include_weapon( "dragunov_zm" );					// ptrs41
 	include_weapon( "dragunov_upgraded_zm", false );
-	include_weapon( "l96a1_zm", false );
+	include_weapon( "l96a1_zm" );
 	include_weapon( "l96a1_upgraded_zm", false );
 
 	//	Weapons - Machineguns
@@ -455,37 +479,29 @@ include_weapons()
 	//	Weapons - Misc
 	include_weapon( "m72_law_zm" );
 	include_weapon( "m72_law_upgraded_zm", false );
-	include_weapon( "china_lake_zm", false );
+	include_weapon( "china_lake_zm" );
 	include_weapon( "china_lake_upgraded_zm", false );
 
 	//	Weapons - Special
-	include_weapon( "ray_gun_zm", true, false, maps\_zombiemode_weapons::default_ray_gun_weighting_func );
+	include_weapon( "ray_gun_zm" );
 	include_weapon( "ray_gun_upgraded_zm", false );
 	include_weapon( "crossbow_explosive_zm" );
 	include_weapon( "crossbow_explosive_upgraded_zm", false );
 
 	// these are not available yet until their functionality is more complete
-	include_weapon( "humangun_zm", true, false, maps\_zombiemode_weapons::default_wonder_weapon_weighting_func );
+	include_weapon( "humangun_zm", true, false );
 	include_weapon( "humangun_upgraded_zm", false );
-	include_weapon( "sniper_explosive_zm", true, false, maps\_zombiemode_weapons::default_wonder_weapon_weighting_func );
+	include_weapon( "sniper_explosive_zm", true );
 	include_weapon( "sniper_explosive_upgraded_zm", false );
-	//include_weapon( "tesla_gun_zm", false );
-	//include_weapon( "tesla_gun_upgraded_zm", false );
-	include_weapon( "zombie_nesting_dolls", true, false, maps\_zombiemode_weapons::default_cymbal_monkey_weighting_func );
+//	include_weapon( "tesla_gun_zm" );
+//	include_weapon( "tesla_gun_upgraded_zm", false );
+	include_weapon( "zombie_nesting_dolls", true, false );
 
 	include_weapon( "knife_ballistic_zm", true );
 	include_weapon( "knife_ballistic_upgraded_zm", false );
 	include_weapon( "knife_ballistic_sickle_zm", false );
 	include_weapon( "knife_ballistic_sickle_upgraded_zm", false );
 	level._uses_retrievable_ballisitic_knives = true;
-
-	// Custom weapons
-	include_weapon( "ppsh_zm" );
-	include_weapon( "ppsh_upgraded_zm", false );
-	include_weapon( "stoner63_zm" );
-	include_weapon( "stoner63_upgraded_zm", false );
-	include_weapon( "ak47_zm" );
- 	include_weapon( "ak47_ft_upgraded_zm", false);
 
 
 	// limited weapons
@@ -495,13 +511,13 @@ include_weapons()
 	maps\_zombiemode_weapons::add_limited_weapon( "sniper_explosive_zm", 1 );
 	maps\_zombiemode_weapons::add_limited_weapon( "crossbow_explosive_zm", 1 );
 	maps\_zombiemode_weapons::add_limited_weapon( "knife_ballistic_zm", 1 );
-//	maps\_zombiemode_weapons::add_limited_weapon( "zombie_nesting_dolls", 1 );
+	maps\_zombiemode_weapons::add_limited_weapon( "zombie_nesting_dolls", 1 );
 
 	precacheItem( "explosive_bolt_zm" );
 	precacheItem( "explosive_bolt_upgraded_zm" );
 	precacheItem( "sniper_explosive_bolt_zm" );
 	precacheItem( "sniper_explosive_bolt_upgraded_zm" );
-
+	
 	// get the sickle into the collector achievement list
 	level.collector_achievement_weapons = array_add( level.collector_achievement_weapons, "sickle_knife_zm" );
 }
@@ -588,7 +604,7 @@ include_powerups()
 	include_powerup( "insta_kill" );
 	include_powerup( "double_points" );
 	include_powerup( "full_ammo" );
-//	include_powerup( "carpenter" );
+	include_powerup( "carpenter" );
 	include_powerup( "fire_sale" );
 
 	// WW (02-04-11): Added minigun

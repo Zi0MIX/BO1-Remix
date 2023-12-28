@@ -11,7 +11,7 @@ init()
 	pack_a_punch_init();
 
 	// wait for power
-	level thread lighthouse_wait_for_power();
+	level thread maps\_remix_coast_lighthouse::lighthouse_wait_for_power();
 
 	level thread hide_packapunch_at_beginning();
 
@@ -34,7 +34,7 @@ lighthouse_wait_for_power()
 	while(1)
 	{
 		pack_a_punch_hide();
-		wait(randomintrange(20,30));	//pap is searching for between 1:40 and 2:00
+		wait(randomintrange(100,120));	//pap is searching for between 1:40 and 2:00  
 
 		clientnotify("lhfo"); // the lighthouse freaks out for a bit
 		exploder(310);
