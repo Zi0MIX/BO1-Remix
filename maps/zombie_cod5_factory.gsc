@@ -10,6 +10,7 @@ main()
 {
 	// This has to be first for CreateFX -- Dale
 	maps\zombie_cod5_factory_fx::main();
+	level thread maps\_remix_factory::remix_main();
 
 	// viewmodel arms for the level
 	PreCacheModel( "viewmodel_usa_pow_arms" ); // Dempsey
@@ -18,8 +19,11 @@ main()
 	PreCacheModel( "viewmodel_usa_hazmat_arms" );// Richtofen
 
 	// for weight functions
+	// TODO Zi0 - Change into array
 	level.pulls_since_last_ray_gun = 0;
 	level.pulls_since_last_wonder_weapon = 0;
+	// Used for default weighting functions, not needed in Remix
+	// level.player_drops_tesla_gun = false;
 
 	level.mixed_rounds_enabled = true;	// MM added support for mixed crawlers and dogs
 	level.burning_zombies = [];		//JV max number of zombies that can be on fire
@@ -63,18 +67,14 @@ main()
 	precacheModel("lights_berlin_subway_hat_50" );
 	precacheModel("lights_berlin_subway_hat_100" );
 
-	// curb fixs
-	PreCacheModel("collision_geo_512x512x512");
-	PreCacheModel("collision_geo_128x128x128");
-
 	// DCS: not mature settings models without blood or gore.
 	PreCacheModel( "zombie_power_lever_handle" );
 
 	precachestring(&"WAW_ZOMBIE_BETTY_ALREADY_PURCHASED");
 	precachestring(&"WAW_ZOMBIE_BETTY_HOWTO");
 
-	include_weapons();
-	include_powerups();
+	maps\_remix_factory::include_weapons();
+	maps\_remix_factory::include_powerups();
 
 	level._effect["zombie_grain"]			= LoadFx( "misc/fx_zombie_grain_cloud" );
 
@@ -95,8 +95,6 @@ main()
 
 	maps\_zombiemode::main();
 
-	level thread special_round_watcher();
-
 	init_sounds();
 	init_achievement();
 	level thread power_electric_switch();
@@ -109,7 +107,7 @@ main()
 	//ESM - time for electrocuting
 	thread init_elec_trap_trigs();
 
-	level.zone_manager_init_func = ::factory_zone_init;
+	level.zone_manager_init_func = maps\_remix_factory::factory_zone_init;
 	init_zones[0] = "receiver_zone";
 	level thread maps\_zombiemode_zone_manager::manage_zones( init_zones );
 
@@ -117,10 +115,10 @@ main()
 
 	level thread intro_screen();
 
-	level thread jump_from_bridge();
+	level thread maps\_remix_factory::jump_from_bridge();
 	level lock_additional_player_spawner();
 
-	level thread bridge_init();
+	level thread maps\_remix_factory::bridge_init();
 
 	//AUDIO EASTER EGGS
 	level thread phono_egg_init( "phono_one", "phono_one_origin" );
@@ -154,7 +152,6 @@ main()
 	level thread factory_german_safe();
 	level thread mature_settings_changes();
 
-	level thread curbs_fix();
 
 	// Special level specific settings
 	set_zombie_var( "zombie_powerup_drop_max_per_round", 3 );	// lower this to make drop happen more often
@@ -187,7 +184,6 @@ main()
 
 	//DCS: get betties working.
 	maps\_zombiemode_betty::init();
-
 
 }
 
@@ -289,42 +285,32 @@ factory_zone_init()
 	add_adjacent_zone( "receiver_zone",		"outside_west_zone",	"enter_outside_west" );
 
 	// Wnuen building ground floor
-	add_adjacent_zone( "wnuen_zone",
-	//problem
-			"outside_east_zone",	"enter_wnuen_building" );
+	add_adjacent_zone( "wnuen_zone",		"outside_east_zone",	"enter_wnuen_building" );
 
 	// Wnuen stairway
 	add_adjacent_zone( "wnuen_zone",		"wnuen_bridge_zone",	"enter_wnuen_loading_dock" );
 
-	// Warehouse bottom
+	// Warehouse bottom 
 	add_adjacent_zone( "warehouse_bottom_zone", "outside_west_zone",	"enter_warehouse_building" );
 
 	// Warehosue top
 	add_adjacent_zone( "warehouse_bottom_zone", "warehouse_top_zone",	"enter_warehouse_second_floor" );
-	add_adjacent_zone( "bridge_zone",	"warehouse_bottom_zone",			"enter_warehouse_second_floor" );
 	add_adjacent_zone( "warehouse_top_zone",	"bridge_zone",			"enter_warehouse_second_floor" );
-	//add_adjacent_zone( "warehouse_top_zone",	"bridge_zone",			"enter_south_zone", true );
-	//add_adjacent_zone( "warehouse_top_zone",	"wnuen_bridge_zone",			"enter_south_zone" );
 
 	// TP East
 	add_adjacent_zone( "tp_east_zone",			"wnuen_zone",			"enter_tp_east" );
-
-	//add_adjacent_zone( "tp_east_zone",			"outside_east_zone",	"enter_tp_east",			true );
+	
+	add_adjacent_zone( "tp_east_zone",			"outside_east_zone",	"enter_tp_east",			true );
 	add_zone_flags(	"enter_tp_east",										"enter_wnuen_building" );
 
 	// TP South
 	add_adjacent_zone( "tp_south_zone",			"outside_south_zone",	"enter_tp_south" );
-	//add_adjacent_zone( "outside_south_zone",			"tp_south_zone",	"enter_tp_south" );
 
 	// TP West
 	add_adjacent_zone( "tp_west_zone",			"warehouse_top_zone",	"enter_tp_west" );
-
+	
 	//add_adjacent_zone( "tp_west_zone",			"warehouse_bottom_zone", "enter_tp_west",		true );
 	//add_zone_flags(	"enter_tp_west",										"enter_warehouse_second_floor" );
-
-
-	//add_zone_flags(	"enter_warehouse_second_floor", "enter_south_zone" );
-	//add_adjacent_zone( "tp_south_zone", "bridge_zone", "enter_tp_south", true );
 }
 
 
@@ -388,8 +374,6 @@ intro_screen()
 	{
 		level.intro_hud[i] destroy();
 	}
-	//self waittill("all_players_connected", player);
-	//player GiveWeapon( "bowie_knife_zm" );
 }
 
 
@@ -504,8 +488,7 @@ bridge_init()
 	warehouse_bridge_clip delete();
 
 	maps\_zombiemode_zone_manager::connect_zones( "wnuen_bridge_zone", "bridge_zone" );
-	//maps\_zombiemode_zone_manager::connect_zones( "warehouse_top_zone", "bridge_zone" );
-	maps\_zombiemode_zone_manager::connect_zones( "bridge_zone", "warehouse_top_zone" );
+	maps\_zombiemode_zone_manager::connect_zones( "warehouse_top_zone", "bridge_zone" );
 }
 
 
@@ -517,7 +500,7 @@ jump_from_bridge()
 	trig waittill( "trigger" );
 
 	maps\_zombiemode_zone_manager::connect_zones( "outside_south_zone", "bridge_zone", true );
-	//maps\_zombiemode_zone_manager::connect_zones( "outside_south_zone", "wnuen_bridge_zone", true );
+	maps\_zombiemode_zone_manager::connect_zones( "outside_south_zone", "wnuen_bridge_zone", true );
 }
 
 
@@ -537,24 +520,25 @@ init_sounds()
 include_weapons()
 {
 	include_weapon("m1911_zm", false);
-	include_weapon("python_zm", false);
+	include_weapon("python_zm");
 	include_weapon("cz75_zm");
 	include_weapon("g11_lps_zm");
 	include_weapon("famas_zm");
 	include_weapon("spectre_zm");
 	include_weapon("cz75dw_zm");
-	include_weapon("spas_zm", false);
-	include_weapon("hs10_zm", false);
+	include_weapon("spas_zm");
+	include_weapon("hs10_zm");
 	include_weapon("aug_acog_zm");
 	include_weapon("galil_zm");
 	include_weapon("commando_zm");
-	include_weapon("fnfal_zm", false);
-	include_weapon("dragunov_zm", false);
-	include_weapon("l96a1_zm", false);
+	include_weapon("fnfal_zm");
+	include_weapon("dragunov_zm");
+	include_weapon("l96a1_zm");
 	include_weapon("rpk_zm");
 	include_weapon("hk21_zm");
 	include_weapon("m72_law_zm");
-	include_weapon("china_lake_zm", false);
+	include_weapon("china_lake_zm");
+	include_weapon("zombie_cymbal_monkey");
 	include_weapon("crossbow_explosive_zm");
 	include_weapon("knife_ballistic_zm");
 	include_weapon("knife_ballistic_bowie_zm", false);
@@ -618,17 +602,9 @@ include_weapons()
 	// Special
 	include_weapon( "ray_gun_zm", true, false, ::factory_ray_gun_weighting_func );
 	include_weapon( "ray_gun_upgraded_zm", false );
-	include_weapon( "tesla_gun_zm", true, false, maps\_zombiemode_weapons::default_wonder_weapon_weighting_func );
+	include_weapon( "tesla_gun_zm", true );
 	include_weapon( "tesla_gun_upgraded_zm", false );
-	include_weapon( "zombie_cymbal_monkey", true, false, maps\_zombiemode_weapons::default_cymbal_monkey_weighting_func );
-
-	// Custom weapons
-	include_weapon( "ppsh_zm" );
-	include_weapon( "ppsh_upgraded_zm", false );
-	include_weapon( "stoner63_zm" );
-	include_weapon( "stoner63_upgraded_zm",false );
-	include_weapon( "ak47_zm" );
- 	include_weapon( "ak47_upgraded_zm", false);
+	include_weapon( "zombie_cymbal_monkey", true, false, ::factory_cymbal_monkey_weighting_func );
 
 	//bouncing betties
 	include_weapon("mine_bouncing_betty", false, true);
@@ -642,7 +618,7 @@ include_weapons()
 	level._uses_retrievable_ballisitic_knives = true;
 
 	precacheItem( "explosive_bolt_zm" );
-	precacheItem( "explosive_bolt_upgraded_zm" );
+	precacheItem( "explosive_bolt_upgraded_zm" );	
 
 	// get the bowie into the collector achievement list
 	level.collector_achievement_weapons = array_add( level.collector_achievement_weapons, "bowie_knife_zm" );
@@ -652,33 +628,33 @@ include_weapons()
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_kar98k", "zombie_kar98k_upgraded", 						&"WAW_ZOMBIE_WEAPON_KAR98K_200", 				200,	"rifle");
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_type99_rifle", "",					&"WAW_ZOMBIE_WEAPON_TYPE99_200", 			    200,	"rifle" );
 
-	// Semi Auto
+	// Semi Auto                                        		
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_gewehr43", "zombie_gewehr43_upgraded",						&"WAW_ZOMBIE_WEAPON_GEWEHR43_600", 				600,	"rifle" );
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_m1carbine","zombie_m1carbine_upgraded",						&"WAW_ZOMBIE_WEAPON_M1CARBINE_600",				600,	"rifle" );
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_m1garand", "zombie_m1garand_upgraded" ,						&"WAW_ZOMBIE_WEAPON_M1GARAND_600", 				600,	"rifle" );
 
 	maps\_zombiemode_weapons::add_zombie_weapon( "stielhandgranate", "", 						&"WAW_ZOMBIE_WEAPON_STIELHANDGRANATE_250", 		250,	"grenade", "", 250 );
-	maps\_zombiemode_weapons::add_zombie_weapon( "mine_bouncing_betty", "", &"WAW_ZOMBIE_WEAPON_SATCHEL_2000", 2000 );
+	maps\_zombiemode_weapons::add_zombie_weapon( "mine_bouncing_betty", "", &"WAW_ZOMBIE_WEAPON_SATCHEL_2000", 2000 );		
 	// Scoped
 	maps\_zombiemode_weapons::add_zombie_weapon( "kar98k_scoped_zombie", "", 					&"WAW_ZOMBIE_WEAPON_KAR98K_S_750", 				750,	"sniper");
 
-	// Full Auto
+	// Full Auto                                                                                	
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_stg44", "zombie_stg44_upgraded", 							    &"WAW_ZOMBIE_WEAPON_STG44_1200", 				1200, "mg" );
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_thompson", "zombie_thompson_upgraded", 							&"WAW_ZOMBIE_WEAPON_THOMPSON_1200", 			1200, "mg" );
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_type100_smg", "zombie_type100_smg_upgraded", 						&"WAW_ZOMBIE_WEAPON_TYPE100_1000", 				1000, "mg" );
 
-	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_fg42", "zombie_fg42_upgraded", 							&"WAW_ZOMBIE_WEAPON_FG42_1500", 				1500,	"mg" );
+	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_fg42", "zombie_fg42_upgraded", 							&"WAW_ZOMBIE_WEAPON_FG42_1500", 				1500,	"mg" ); 
 
 
-	// Shotguns
+	// Shotguns                                         	
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_doublebarrel", "zombie_doublebarrel_upgraded", 						&"WAW_ZOMBIE_WEAPON_DOUBLEBARREL_1200", 		1200, "shotgun");
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_doublebarrel_sawed", "", 			    &"WAW_ZOMBIE_WEAPON_DOUBLEBARREL_SAWED_1200", 	1200, "shotgun");
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_shotgun", "zombie_shotgun_upgraded",							&"WAW_ZOMBIE_WEAPON_SHOTGUN_1500", 				1500, "shotgun");
 
 	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_bar", "zombie_bar_upgraded", 						&"WAW_ZOMBIE_WEAPON_BAR_1800", 					1800,	"mg" );
 
-	// Bipods
-	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_bar_bipod", 	"",					&"WAW_ZOMBIE_WEAPON_BAR_BIPOD_2500", 			2500,	"mg" );
+	// Bipods                               				
+	maps\_zombiemode_weapons::add_zombie_weapon( "zombie_bar_bipod", 	"",					&"WAW_ZOMBIE_WEAPON_BAR_BIPOD_2500", 			2500,	"mg" ); 
 }
 
 
@@ -747,6 +723,7 @@ include_powerups()
 	include_powerup( "insta_kill" );
 	include_powerup( "double_points" );
 	include_powerup( "full_ammo" );
+	include_powerup( "carpenter" );
 }
 
 
@@ -899,6 +876,7 @@ power_electric_switch()
 	{
 		trig waittill("trigger",user);
 	}
+
 	// MM - turning on the power powers the entire map
 // 	if ( IsDefined(user) )	// only send a notify if we weren't originally triggered through script
 // 	{
@@ -910,13 +888,6 @@ power_electric_switch()
 // 	}
 
 	master_switch rotateroll(-90,.3);
-
-	// give players bowie knife
-	players = get_players();
-	for(i=0; i < players.size; i++)
-	{
-		players[i] giveweapon("bowie_knife_zm");
-	}
 
 	//TO DO (TUEY) - kick off a 'switch' on client script here that operates similiarly to Berlin2 subway.
 	master_switch playsound("zmb_switch_flip");
@@ -951,20 +922,8 @@ power_electric_switch()
 	playfx(level._effect["switch_sparks"] ,getstruct("power_switch_fx","targetname").origin);
 
 	// Don't want east or west to spawn when in south zone, but vice versa is okay
-	maps\_zombiemode_zone_manager::connect_zones( "outside_east_zone", "outside_south_zone", true );
+	maps\_zombiemode_zone_manager::connect_zones( "outside_east_zone", "outside_south_zone" );
 	maps\_zombiemode_zone_manager::connect_zones( "outside_west_zone", "outside_south_zone", true );
-}
-
-give_bowie_knife()
-{
-	players = get_players();
-	for(i=0; i < players.size; i++)
-	{
-		gun = players[i] maps\_zombiemode_bowie::do_bowie_flourish_begin();
-		players[i] maps\_zombiemode_audio::create_and_play_dialog( "weapon_pickup", "bowie" );
-		players[i] waittill_any( "fake_death", "death", "player_downed", "weapon_change_complete" );
-		players[i] maps\_zombiemode_bowie::do_bowie_flourish_end( gun );
-	}
 }
 
 
@@ -1088,14 +1047,14 @@ electric_trap_think( enable_flag )
 	{
 		self trigger_off();
 
-		zapper_light_red( light_name );
+		maps\_remix_factory::zapper_light_red( light_name );
 		flag_wait( enable_flag );
 
 		self trigger_on();
 	}
 
 	// Open for business!
-	zapper_light_green( light_name );
+	maps\_remix_factory::zapper_light_green( light_name );
 
 	while(1)
 	{
@@ -1202,7 +1161,7 @@ electric_trap_move_switch(parent)
 	}
 
 	//turn the light above the door red
-	zapper_light_red( light_name );
+	maps\_remix_factory::zapper_light_red( light_name );
 	tswitch rotatepitch(180,.5);
 	tswitch playsound("amb_sparks_l_b");
 	tswitch waittill("rotatedone");
@@ -1212,7 +1171,7 @@ electric_trap_move_switch(parent)
 	tswitch rotatepitch(-180,.5);
 
 	//turn the light back green once the trap is available again
-	zapper_light_green( light_name );
+	maps\_remix_factory::zapper_light_green( light_name );
 }
 
 activate_electric_trap()
@@ -1288,14 +1247,14 @@ elec_barrier_damage()
 		//player is standing electricity, dumbass
 		if(isplayer(ent) )
 		{
-			ent thread player_elec_damage();
+			ent thread maps\_remix_factory::player_elec_damage();
 		}
 		else
 		{
 			if(!isDefined(ent.marked_for_death))
 			{
 				ent.marked_for_death = true;
-				ent thread zombie_elec_death( randomint(100) );
+				ent thread maps\_remix_factory::zombie_elec_death( randomint(100) );
 			}
 		}
 	}
@@ -1325,7 +1284,7 @@ player_elec_damage()
 	{
 		self.is_burning = 1;
 		self setelectrified(1.25);
-		shocktime = 1.5;
+		shocktime = 2.5;			
 		//Changed Shellshock to Electrocution so we can have different bus volumes.
 		self shellshock("electrocution", shocktime);
 
@@ -1368,7 +1327,7 @@ zombie_elec_death(flame_chance)
 		self thread zombie_flame_watch();
 		self playsound("ignite");
 		self thread animscripts\zombie_death::flame_death_fx();
-		wait(randomfloat(0.75));
+		wait(randomfloat(1.25));		
 	}
 	else
 	{
@@ -1392,8 +1351,6 @@ zombie_elec_death(flame_chance)
 		self playsound("zmb_zombie_arc");
 	}
 
-	self.trap_death = true;
-	self.no_powerups = true;
 	self dodamage(self.health + 666, self.origin);
 	//iprintlnbold("should be damaged");
 }
@@ -1408,7 +1365,7 @@ zombie_flame_watch()
 
 //
 //	Swaps a cage light model to the red one.
-/*zapper_light_red( lightname )
+zapper_light_red( lightname )
 {
 	zapper_lights = getentarray( lightname, "targetname");
 	for(i=0;i<zapper_lights.size;i++)
@@ -1448,50 +1405,7 @@ zapper_light_green( lightname )
 		playfxontag(level._effect["zapper_light_ready"],zapper_lights[i].fx,"tag_origin");
 	}
 }
-*/
-//	Swaps a cage light model to the red one.
-zapper_light_red( lightname )
-{
-	zapper_lights = getentarray( lightname, "targetname");
-	for(i=0;i<zapper_lights.size;i++)
-	{
-		zapper_lights[i] setmodel("zombie_zapper_cagelight_red");
 
-		if(isDefined(zapper_lights[i].fx))
-		{
-			zapper_lights[i].fx delete();
-		}
-
-		//zapper_lights[i].fx = maps\_zombiemode_net::network_safe_spawn( "trap_light_red", 2, "script_model", zapper_lights[i].origin );
-		zapper_lights[i].fx = Spawn("script_model", zapper_lights[i].origin);
-		zapper_lights[i].fx setmodel("tag_origin");
-		zapper_lights[i].fx.angles = zapper_lights[i].angles+(-90,0,0);
-		playfxontag(level._effect["zapper_light_notready"],zapper_lights[i].fx,"tag_origin");
-	}
-}
-
-
-//
-//	Swaps a cage light model to the green one.
-zapper_light_green( lightname )
-{
-	zapper_lights = getentarray( lightname, "targetname");
-	for(i=0;i<zapper_lights.size;i++)
-	{
-		zapper_lights[i] setmodel("zombie_zapper_cagelight_green");
-
-		if(isDefined(zapper_lights[i].fx))
-		{
-			zapper_lights[i].fx delete();
-		}
-
-		//zapper_lights[i].fx = maps\_zombiemode_net::network_safe_spawn( "trap_light_green", 2, "script_model", zapper_lights[i].origin );
-		zapper_lights[i].fx = Spawn("script_model", zapper_lights[i].origin);
-		zapper_lights[i].fx setmodel("tag_origin");
-		zapper_lights[i].fx.angles = zapper_lights[i].angles+(-90,0,0);
-		playfxontag(level._effect["zapper_light_ready"],zapper_lights[i].fx,"tag_origin");
-	}
-}
 
 //
 //
@@ -2044,51 +1958,4 @@ factory_german_safe()
 		dead_guy = GetEnt("hanging_dead_guy","targetname");
 		dead_guy Hide();
 	}
-}
-
-curbs_fix()
-{
-	collision = spawn("script_model", (-65.359, -1215.74, -192.5));
-	collision setmodel("collision_geo_512x512x512");
-	collision.angles = (0, 0, 0);
-	collision Hide();
-
-	collision2 = spawn("script_model", (393.273, -2099.36, -192.5));
-	collision2 setmodel("collision_geo_512x512x512");
-	collision2.angles = (0, 0, 0);
-	collision2 Hide();
-
-	collision3 = spawn("script_model", (-120, -1129.359, -192.5));
-	collision3 setmodel("collision_geo_512x512x512");
-	collision3.angles = (0, 0, 0);
-	collision3 Hide();
-
-	collision4 = spawn("script_model", (117.604, -1588.69, -1.5));
-	collision4 setmodel("collision_geo_128x128x128");
-	collision4.angles = (0, 46.5, 0);
-	collision4 Hide();
-
-	collision5 = spawn("script_model", (435.5, -1502.5, -0.25));
-	collision5 setmodel("collision_geo_128x128x128");
-	collision5.angles = (0, 0, 0);
-	collision5 Hide();
-
-	collision6 = spawn("script_model", (627.5, -1184.359, -192.5));
-	collision6 setmodel("collision_geo_512x512x512");
-	collision6.angles = (0, 0, 0);
-	collision6 Hide();
-
-	disable_doors();
-}
-
-disable_doors()
-{
-	zombie_doors = GetEntArray( "zombie_door", "targetname" );
-	for( i = 0; i < zombie_doors.size; i++ )
-    {
-    	if(zombie_doors[i].target == "south_courtyard_door")
-    	{
-    		zombie_doors[i] trigger_off();
-    	}
-    }
 }

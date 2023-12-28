@@ -46,7 +46,7 @@ teleporter_init()
 	thread teleport_core_think();
 
 	thread start_black_room_fx();
-	thread init_pack_door();
+	thread maps\_remix_factory_teleporter::init_pack_door();
 	
 	SetDvar( "factoryAftereffectOverride", "-1" );
 	SetSavedDvar( "zombiemode_path_minz_bias", 13 );
@@ -98,22 +98,22 @@ init_pack_door()
 
 	// Open slightly the first two times
 	flag_wait( "teleporter_pad_link_1" );
-	door movez( -55, 1.5, 1 );
+	door movez( -35, 1.5, 1 );
 	door playsound( "packa_door_2" );
 	door thread packa_door_reminder();
 	wait(2);
 
 	// Second link
 	flag_wait( "teleporter_pad_link_2" );
-	door movez( -60, 1.5, 1 );
+	door movez( -25, 1.5, 1 );
 	door playsound( "packa_door_2" );
 	wait(2);
 
 	// Final Link
-	//flag_wait( "teleporter_pad_link_3" );
+	flag_wait( "teleporter_pad_link_3" );
 
-	//door movez( -25, 1.5, 1 );
-	//door playsound( "packa_door_2" );
+	door movez( -60, 1.5, 1 );
+	door playsound( "packa_door_2" );
 
 	//door rotateyaw( -90, 1.5, 1 );
 
