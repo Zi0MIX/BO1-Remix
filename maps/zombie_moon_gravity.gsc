@@ -31,7 +31,7 @@ init()
 
 	level._ZOMBIE_ACTOR_FLAG_LOW_GRAVITY = 0;
 
-	level thread check_player_gravity();
+	level thread maps\_remix_moon_gravity::check_player_gravity();
 
 	level thread update_zombie_locomotion();
 	level thread update_low_gravity_fx();
@@ -644,7 +644,6 @@ check_player_gravity()
 	for ( i = 0; i < players.size; i++ )
 	{
 		players[i] thread low_gravity_watch();
-		players[i] thread maps\_custom_hud_menu::oxygen_hud();
 	}
 }
 
@@ -658,8 +657,8 @@ low_gravity_watch()
  	
  	self.airless_vox_in_progess = false;
 	
-	self.time_in_low_gravity = 0;
-	self.time_to_death = 0;
+	time_in_low_gravity = 0;
+	time_to_death = 0;
 	time_to_death_default = 15000;
 	time_to_death_jug = 17000;
 	time_til_damage = 0;
@@ -702,7 +701,7 @@ low_gravity_watch()
 
 	if ( is_true( level.debug_low_gravity ) )
 	{
-		self.time_to_death = 3000;
+		time_to_death = 3000;
 	}
 
 	startTime = GetTime();
@@ -711,11 +710,11 @@ low_gravity_watch()
 	while ( 1 )
 	{
 		diff = nextTime - startTime;
-		//iprintln( "time in low gravity = " + self.time_in_low_gravity );
+		//iprintln( "time in low gravity = " + time_in_low_gravity );
 
 		if ( IsGodMode( self ) )
 		{
-			self.time_in_low_gravity = 0;
+			time_in_low_gravity = 0;
 			blur_level = 0;
 			wait( 1 );
 			continue;
@@ -723,7 +722,7 @@ low_gravity_watch()
 
 		if ( !is_player_valid( self ) || !is_true( level.on_the_moon ) )
 		{
-			self.time_in_low_gravity = 0;
+			time_in_low_gravity = 0;
 			blur_level = 0;
 			wait_network_frame();
 			continue;
@@ -734,18 +733,18 @@ low_gravity_watch()
 			self thread airless_vox_without_repeat();
 			
 			time_til_damage += diff;
-			self.time_in_low_gravity += diff;
+			time_in_low_gravity += diff;
 
 			if ( self HasPerk( "specialty_armorvest" ) )
 			{
-				self.time_to_death = time_to_death_jug;
+				time_to_death = time_to_death_jug;
 			}
 			else
 			{
-				self.time_to_death = time_to_death_default;
+				time_to_death = time_to_death_default;
 			}
 
-			if ( self.time_in_low_gravity > self.time_to_death )
+			if ( time_in_low_gravity > time_to_death )
 			{
 				self playsoundtoplayer( "evt_suffocate_whump", self );
 				self DoDamage( self.health * 10, self.origin );
@@ -771,9 +770,9 @@ low_gravity_watch()
 		}
 		else
 		{
-			if ( self.time_in_low_gravity > 0 )
+			if ( time_in_low_gravity > 0 )
 			{
-				self.time_in_low_gravity = 0;
+				time_in_low_gravity = 0;
 				time_til_damage = 0;
 				blur_level = 0;
 			}

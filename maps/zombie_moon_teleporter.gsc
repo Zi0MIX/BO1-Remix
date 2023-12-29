@@ -447,7 +447,7 @@ display_time_survived()
 		
 		nomanslandtime = level.nml_best_time; 
 		player_survival_time = int( nomanslandtime/1000 ); 
-		player_survival_time_in_mins = to_mins_short( player_survival_time );		
+		player_survival_time_in_mins = maps\_zombiemode::to_mins( player_survival_time );		
 		survived[i] SetText( &"ZOMBIE_SURVIVED_NOMANS", player_survival_time_in_mins );
 		survived[i] FadeOverTime( 1 );
 		survived[i].alpha = 1;
@@ -462,13 +462,9 @@ display_time_survived()
 	}
 	
 	level.left_nomans_land = 2;
-
-	wait 1;
-	for( i = 0; i < players.size; i++ )
-	{
-		survived[i] destroy();
-	}
 }
+	
+
 	
 teleporter_ending( teleporter_ent, was_aborted )
 {
@@ -518,7 +514,7 @@ teleporter_ending( teleporter_ent, was_aborted )
 				// No pickups in No Mans Land
  				flag_clear( "zombie_drop_powerups" );
 
-				level thread perk_machine_arrival_update();
+				level thread maps\_remix_moon_wasteland::perk_machine_arrival_update();
 				
 				nml_setup_round_spawner();
 				
@@ -536,7 +532,7 @@ teleporter_ending( teleporter_ent, was_aborted )
 				if( isdefined(level.ever_been_on_the_moon) && !level.ever_been_on_the_moon )
 				{
 					level notify( "track_nml_time" );
-					level thread display_time_survived();
+					level thread maps\_remix_moon_teleporter::display_time_survived();
 					level.ever_been_on_the_moon = true;
 				}
 				

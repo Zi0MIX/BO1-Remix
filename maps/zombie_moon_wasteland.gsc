@@ -2,7 +2,6 @@
 #include common_scripts\utility;
 #include maps\_utility;
 #include maps\_zombiemode_utility;
-#include maps\_custom_hud_menu;
 
 #include maps\zombie_moon_teleporter;
 
@@ -85,12 +84,6 @@ zombie_moon_start_init()
 {
 	flag_wait( "begin_spawning" );
 
-	players = get_players();
-	for(i = 0; i < players.size; i++)
-	{
-		players[i] thread kill_hud();
-	}
-
 	level thread nml_dogs_init();
 
 	teleporter = getent( "generator_teleporter", "targetname" );
@@ -125,7 +118,7 @@ nml_setup_round_spawner()
 		level.nml_last_round = 1; // start of level.
 	}
 
-	level.round_spawn_func = ::nml_round_manager;
+	level.round_spawn_func = maps\_remix_moon_wasteland::nml_round_manager;
 				
 	// Kill current round and prepare a NML Style round spawngin system
 	Init_Moon_NML_Round( level.nml_last_round );
@@ -380,11 +373,11 @@ nml_round_manager()
 	dog_difficulty_max_time = 9500;
 	
 	// Attack Waves setup
-	wave_1st_attack_time = (1000 * 25);
+	wave_1st_attack_time = (1000 * 25);//(1000 * 40);
 	prepare_attack_time = (1000 * 2.1);
-	wave_attack_time = (1000 * 35);		// 35
-	cooldown_time = (1000 * 1);//(1000 * 16);
-	next_attack_time = (1000 * 25);		// 25
+	wave_attack_time = (1000 * 35);		// 40
+	cooldown_time = (1000 * 16);		// 25
+	next_attack_time = (1000 * 26);		// 32
 
 	max_zombies = 20;
 	
@@ -427,7 +420,7 @@ nml_round_manager()
 				
 				if(level.initial_spawn == true)
 				{
-					spawn_a_zombie( 15, "nml_zone_spawners", 0.01 );
+					spawn_a_zombie( 10, "nml_zone_spawners", 0.01 );
 				}
 				else
 				{	
@@ -523,14 +516,14 @@ nml_round_manager()
 					
 					if( area == 1 )
 					{
-						// area = 2;
+						area = 2;
 						level thread nml_wave_attack( max_zombies, "nml_area2_spawners" );
 					}
-					// else
-					// {
-					// 	area = 1;
-					// 	level thread nml_wave_attack( max_zombies, "nml_area1_spawners" );
-					// }
+					else
+					{
+						area = 1;
+					level thread nml_wave_attack( max_zombies, "nml_area1_spawners" );
+					}
 									
 					next_round_time = current_time + wave_attack_time;
 				}
@@ -1012,13 +1005,13 @@ perk_machine_arrival_update()
 	fall_time = 4;
 	num_model_swaps = 20;
 
-	perk_index = 1; // always jug
+	perk_index = randomintrange( 0, 2 );
 
 	// Flash an effect to the perk machines destination
 	ent = level.speed_cola_ents[0];
 	level thread perk_arrive_fx( ent.origin );
 
-	// while( 1 )
+	//while( 1 )
 	{
 		// Move the perk machines high in the sky
 		move_perk( top_height, 0.01, 0.001 );

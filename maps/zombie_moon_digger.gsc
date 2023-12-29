@@ -9,8 +9,6 @@ any flags used to toggle the digger states
 digger_init_flags()
 {
 	level.diggers_global_time = 240.0;
-
-	level.digger_time_left = 0;
 	
 	flag_init("teleporter_digger_hacked");
 	flag_init("teleporter_digger_hacked_before_breached");
@@ -56,7 +54,7 @@ digger_init_flags()
 digger_init()
 {
 	//digger_init_flags();
-	level thread setup_diggers();
+	level thread maps\_remix_moon_diggers::setup_diggers();
 }
 
 //the diggers in each area	
@@ -81,13 +79,7 @@ setup_diggers()
 	level thread waitfor_smash();
 	wait(.5);
 	flag_clear("init_diggers");
-	
-	players = get_players();
-	for(i = 0; i < players.size; i++)
-	{
-		players[i] thread maps\_custom_hud_menu::excavator_hud();
 	}
-}
 
 /*------------------------------------
 digger stuff
@@ -191,7 +183,6 @@ digger_activate(force_digger)
 	{
 		flag_set("start_" + force_digger + "_digger");
 	
-		level thread digger_time(getTime() / 1000);
 		level thread send_clientnotify( force_digger, false );
 		level thread play_digger_start_vox( force_digger );
 		wait(1);
@@ -213,16 +204,15 @@ digger_activate(force_digger)
 	
 	if(non_active.size > 0)
 	{
-		level.digger_to_activate = random(non_active);
+		digger_to_activate = random(non_active);
 	
-		flag_set("start_" + level.digger_to_activate + "_digger");
+		flag_set("start_" + digger_to_activate + "_digger");
 
-		level thread digger_time(getTime() / 1000);
-		level thread send_clientnotify( level.digger_to_activate, false );
-		level thread play_digger_start_vox( level.digger_to_activate );
+		level thread send_clientnotify( digger_to_activate, false );
+		level thread play_digger_start_vox( digger_to_activate );
 		wait(1);
 		
-		level thread play_timer_vox( level.digger_to_activate );
+		level thread play_timer_vox( digger_to_activate );
 	}
 }
 
@@ -350,6 +340,9 @@ digger_think_move()
 	
 	arm Unlink(self);
 	arm.og_angles = arm.angles;
+
+	if( !isDefined( self.raised_pitch ) )
+		self.raised_pitch = arm.angles[0];
 		
 	self thread wait_for_digger_hack_digging(arm,blade_center,tracks);
 	self thread wait_for_digger_hack_moving(arm,blade_center,tracks);
@@ -370,7 +363,7 @@ wait_for_digger_hack_digging(arm,blade_center,tracks)
 	tracks digger_follow_path(self,true,arm);
 	flag_clear(self.hacked_flag);
 	flag_clear(self.start_flag);
-	self thread digger_think_move();
+	self thread maps\_remix_moon_digger::digger_think_move();
 	
 }
 
@@ -657,7 +650,7 @@ digger_arm_logic(arm,blade_center,tracks)
 		blade_center LinkTo(arm);
 		
 		arm playsound( "evt_dig_arm_move" );
-		arm RotatePitch(self.up_angle, level.arm_move_speed, level.arm_move_speed/4, level.arm_move_speed/4 );
+		arm RotatePitch((self.raised_pitch - arm.angles[0]), level.arm_move_speed, level.arm_move_speed/4, level.arm_move_speed/4 );
 		wait(2);
 		level notify("digger_arm_lift",self.digger_name);
 		
@@ -775,7 +768,7 @@ set_hint_on_digger_trig(start_flag,hacked_flag,struct)
 		
 		if(flag(start_flag) && !flag(hacked_flag))
 		{
-			maps\_zombiemode_equip_hacker::register_pooled_hackable_struct(struct, ::digger_hack_func, ::digger_hack_qualifer);
+			maps\_zombiemode_equip_hacker::register_pooled_hackable_struct(struct, maps\_remix_moon_digger::digger_hack_func, ::digger_hack_qualifer);
 			self sethintstring(&"ZOMBIE_MOON_SYSTEM_ONLINE");
 			//turn on the lights
 			switch(struct.digger_name)
@@ -820,7 +813,6 @@ digger_hack_func(hacker)
 	flag_set(self.hacked_flag);
 	if ( !flag( self.breached_flag ) )
 	{
-		level.digger_time_left = 0;
 		flag_set( self.hacked_before_breached_flag );
 	}
 
@@ -1712,6 +1704,9 @@ digger_follow_path(body,reverse,arm)
 
 		self.origin = self.origin + velocity * 0.05;
 
+		//digger_time_in_mins = maps\_zombiemode::to_mins( GetTime()-self.start_time );
+		//iprintlnbold("DIGGER> Time: " + digger_time_in_mins );
+
 		look_ahead = current_node.lookahead + ( next_node.lookahead - current_node.lookahead ) * fraction;
 
 		self.angles = current_node.angles + (next_node.angles - current_node.angles ) * fraction;
@@ -1779,16 +1774,4 @@ quantum_bomb_remove_digger_result( position )
 	}
 }
 
-digger_time(timestamp)
-{
-	level endon ("end_game");
 
-	excavator_breach = timestamp + level.diggers_global_time;
-	level.digger_time_left = level.diggers_global_time;
-	while(level.digger_time_left > 0)
-	{
-		level.digger_time_left = excavator_breach - (getTime() / 1000);
-		wait 0.05;
-	}
-	level.digger_to_activate = "null";
-}

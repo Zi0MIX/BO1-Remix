@@ -35,6 +35,7 @@ init_zombie_airlocks()
 	level thread init_door_sounds();
 	level thread zombie_moon_receiving_hatch_init();
 	//level thread hacker_location_random_init();
+	// Fully remove glass breaking feature
 	//level thread moon_glass_breach_init();
 }
 

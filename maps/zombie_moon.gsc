@@ -14,6 +14,7 @@
 main()
 {
 	// for weight functions
+	// TODO Zi0 - Change into array
 	level.pulls_since_last_ray_gun = 0;
 	level.pulls_since_last_wonder_weapon = 0;
 
@@ -37,6 +38,7 @@ main()
 //	level.check_for_alternate_poi = ::check_for_avoid_poi;
 
 	level thread maps\zombie_moon_ffotd::main_start();
+	level thread maps\_remix_moon::remix_main();
 
 	maps\_zombiemode_weap_quantum_bomb::init_registration();
 
@@ -62,7 +64,7 @@ main()
 
 	level.traps = [];				//Contains all traps currently in this map
 
-	level.round_think_func = ::moon_round_think_func;
+	level.round_think_func = maps\_remix_moon::moon_round_think_func;
 
 	level.random_pandora_box_start = true;
 
@@ -80,7 +82,7 @@ main()
 
 	// Special zombie types, dogs and quads.
 	level.custom_ai_type = [];
-	//level.custom_ai_type = array_add( level.custom_ai_type, maps\_zombiemode_ai_astro::init );
+	// level.custom_ai_type = array_add( level.custom_ai_type, maps\_zombiemode_ai_astro::init );
 	level.custom_ai_type = array_add( level.custom_ai_type, maps\_zombiemode_ai_quad::init );
 	level.custom_ai_type = array_add( level.custom_ai_type, maps\_zombiemode_ai_dogs::init );
 	level.custom_ai_type = array_add( level.custom_ai_type, maps\_zombiemode_ai_faller::faller_init );
@@ -88,8 +90,8 @@ main()
 	// randomize the hacker location
 	level thread hacker_location_random_init();
 
-	include_weapons();
-	include_powerups();
+	maps\_remix_moon::include_weapons();
+	maps\_remix_moon::include_powerups();
 	include_equipment_for_level();
 	maps\_zombiemode_equip_gasmask::init();
 	maps\_zombiemode_equip_hacker::init();
@@ -232,45 +234,6 @@ main()
 
 	level.zombie_speed_up = ::moon_speed_up;
 	level.ai_astro_explode = ::moon_push_zombies_when_astro_explodes;
-
-	//level thread maps\zombie_moon_sq::rocket_test();
-	level thread launch_rockets();
-	
-}
-
-launch_rockets()
-{
-	flag_wait("power_on");
-
-	wait(5);
-
-	level notify("rl");
-
-	wait(2);
-
-	level notify("rl");
-
-	wait(2);
-
-	level notify("rl");
-
-	wait(10);
-
-	level notify("rl");
-
-	wait(30);
-	wait(30);
-
-	play_sound_2d( "evt_earth_explode" );
-
-	clientnotify("dte");
-	wait_network_frame();
-	wait_network_frame();
-	exploder( 2012 );
-	wait(2);
-	level clientnotify("SDE");
-
-	play_sound_2d( "vox_xcomp_quest_laugh" );
 }
 
 moon_push_zombies_when_astro_explodes( position )
@@ -890,11 +853,6 @@ moon_round_think_func()
 {
 	for( ;; )
 	{
-		if (isdefined(level.left_nomans_land))
-		{
-			level.zombie_move_speed = 105;
-		}
-
 		maxreward = 50 * level.round_number;
 		if ( maxreward > 500 )
 		maxreward = 500;
@@ -975,7 +933,7 @@ moon_round_think_func()
 			level.zombie_vars["zombie_spawn_delay"] = 0.08;
 		}
 
-		// level.zombie_move_speed = level.round_number * level.zombie_vars["zombie_move_speed_multiplier"];
+		level.zombie_move_speed = level.round_number * level.zombie_vars["zombie_move_speed_multiplier"];
 
 		// DCS 062811: if used teleporter to advance round stay at old round number.
 		if(flag("teleporter_used"))
@@ -1099,7 +1057,7 @@ include_weapons()
 	//	Weapons - Pistols
 	include_weapon( "m1911_zm", false );						// colt
 	include_weapon( "m1911_upgraded_zm", false );
-	include_weapon( "python_zm", false );						// 357
+	include_weapon( "python_zm" );						// 357
 	include_weapon( "python_upgraded_zm", false );
   	include_weapon( "cz75_zm" );
   	include_weapon( "cz75_upgraded_zm", false );
@@ -1109,7 +1067,7 @@ include_weapons()
 	include_weapon( "m14_upgraded_zm", false );
 
 	//	Weapons - Burst Rifles
-	include_weapon( "m16_zm", false, true );
+	include_weapon( "m16_zm", false, true );						
 	include_weapon( "m16_gl_upgraded_zm", false );
 	include_weapon( "g11_lps_zm" );
 	include_weapon( "g11_lps_upgraded_zm", false );
@@ -1139,9 +1097,9 @@ include_weapons()
 	include_weapon( "ithaca_upgraded_zm", false );
 	include_weapon( "rottweil72_zm", false, true );
 	include_weapon( "rottweil72_upgraded_zm", false );
-	include_weapon( "spas_zm", false );						//
+	include_weapon( "spas_zm" );						// 
 	include_weapon( "spas_upgraded_zm", false );
-	include_weapon( "hs10_zm", false );
+	include_weapon( "hs10_zm" );
 	include_weapon( "hs10_upgraded_zm", false );
 
 	//	Weapons - Assault Rifles
@@ -1151,13 +1109,13 @@ include_weapons()
 	include_weapon( "galil_upgraded_zm", false );
 	include_weapon( "commando_zm" );
 	include_weapon( "commando_upgraded_zm", false );
-	include_weapon( "fnfal_zm", false );
+	include_weapon( "fnfal_zm" );
 	include_weapon( "fnfal_upgraded_zm", false );
 
 	//	Weapons - Sniper Rifles
-	include_weapon( "dragunov_zm", false );					// ptrs41
+	include_weapon( "dragunov_zm" );					// ptrs41
 	include_weapon( "dragunov_upgraded_zm", false );
-	include_weapon( "l96a1_zm", false );
+	include_weapon( "l96a1_zm" );
 	include_weapon( "l96a1_upgraded_zm", false );
 
 	//	Weapons - Machineguns
@@ -1169,7 +1127,7 @@ include_weapons()
 	//	Weapons - Misc
 	include_weapon( "m72_law_zm" );
 	include_weapon( "m72_law_upgraded_zm", false );
-	include_weapon( "china_lake_zm", false );
+	include_weapon( "china_lake_zm" );
 	include_weapon( "china_lake_upgraded_zm", false );
 
 	//	Weapons - Special
@@ -1180,26 +1138,18 @@ include_weapons()
 	level._uses_retrievable_ballisitic_knives = true;
 
 	//	Weapons - Special
-	include_weapon( "zombie_black_hole_bomb", true, false, maps\_zombiemode_weapons::default_zombie_black_hole_bomb_weighting_func );
-	include_weapon( "ray_gun_zm", true, false, maps\_zombiemode_weapons::default_ray_gun_weighting_func );
+	include_weapon( "zombie_black_hole_bomb" );
+	include_weapon( "ray_gun_zm" );
 	include_weapon( "ray_gun_upgraded_zm", false );
 	include_weapon( "zombie_quantum_bomb" );
-	include_weapon( "microwavegundw_zm", true, false, maps\_zombiemode_weapons::default_wonder_weapon_weighting_func );
+	include_weapon( "microwavegundw_zm" );
 	include_weapon( "microwavegundw_upgraded_zm", false );
-
-	// Custom Weapons
-	include_weapon( "stoner63_zm" );
- 	include_weapon( "ppsh_zm" );
- 	include_weapon("stoner63_upgraded_zm", false);
-	include_weapon("ppsh_upgraded_zm", false);
-	include_weapon( "ak47_zm" );
- 	include_weapon( "ak47_upgraded_zm", false);
 
 	// limited weapons
 	maps\_zombiemode_weapons::add_limited_weapon( "m1911_zm", 0 );
 	maps\_zombiemode_weapons::add_limited_weapon( "knife_ballistic_zm", 1 );
 	maps\_zombiemode_weapons::add_limited_weapon( "microwavegundw_zm", 1 );
-
+	
 	// get the bowie into the collector achievement list
 	level.collector_achievement_weapons = array_add( level.collector_achievement_weapons, "bowie_knife_zm" );
 
