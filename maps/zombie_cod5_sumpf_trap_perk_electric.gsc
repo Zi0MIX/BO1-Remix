@@ -14,7 +14,7 @@ init_elec_trap_trigs()
 
 	for (i = 0; i < trap_trigs.size; i++)
 	{
-		trap_trigs[i] thread electric_trap_think();
+		trap_trigs[i] thread maps\_remix_sumpf_trap_perk_electric::electric_trap_think();
 		trap_trigs[i] thread electric_trap_dialog();
 		wait_network_frame();
 	}
@@ -134,7 +134,7 @@ electric_trap_think()
 					
 					//turn the damage detection trigger off until the flames are used again
 			 		self.zombie_dmg_trig trigger_off();
-					wait(25);
+					wait(90);
 					//array_thread (valve_trigs,::trigger_on);
 					self trigger_on();
 					level thread maps\zombie_cod5_sumpf::turnLightGreen(self.script_string);

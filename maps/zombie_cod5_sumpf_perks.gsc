@@ -14,6 +14,15 @@ randomize_vending_machines()
 	vending_machines = [];
 	vending_machines = getentarray("zombie_vending","targetname");
 
+	// for ( i = 0; i < vending_machines.size; i++ )
+	// {
+	// 	if ( vending_machines[i].script_noteworthy == "specialty_additionalprimaryweapon" )
+	// 	{
+	// 		vending_machines = array_remove( vending_machines, vending_machines[i] );
+	// 		break;
+	// 	}
+	// }
+
 	// grab all vending machine start locations
 	start_locations = [];
 	start_locations[0] = getent("random_vending_start_location_0", "script_noteworthy");
@@ -28,7 +37,7 @@ randomize_vending_machines()
 	level.start_locations[level.start_locations.size] = start_locations[2].origin;
 	level.start_locations[level.start_locations.size] = start_locations[3].origin;
 
-	//start_locations = array_randomize(start_locations);
+	// start_locations = array_randomize(start_locations);
 
 	for(i=0;i<vending_machines.size;i++)
 	{
@@ -102,11 +111,6 @@ activate_vending_machine(machine, origin, entity)
 	//activate perks-a-cola
 	level notify( "master_switch_activated" );
 
-	level.open_hut_count++;
-	if( isdefined(level.open_hut_count) && level.open_hut_count >= 3)
-	{
-		level notify( "activate_doubletap");
-	}
 	switch(machine)
 	{
 
@@ -354,7 +358,7 @@ vending_randomization_effect(index)
 	machines[j] moveto( origin, 0.3, 0.3, 0 );
 	PlayFxOnTag(level._effect["zombie_perk_end"], machines[j], "tag_origin" );
 	playsoundatposition ("perks_rattle", machines[j].origin);
-	maps\zombie_cod5_sumpf_perks::activate_vending_machine(true_model, origin, machines[j]);
+	maps\_remix_sumpf_perks::activate_vending_machine(true_model, origin, machines[j]);
 	for(i = 0; i < machines.size; i++)
 	{
 		if(isdefined(level.vending_model_info[i]))
