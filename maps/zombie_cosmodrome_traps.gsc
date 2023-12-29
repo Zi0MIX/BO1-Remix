@@ -584,7 +584,7 @@ centrifuge_init()
 	// warning lights off
 	centrifuge_trap ClearClientFlag( level._SCRIPTMOVER_COSMODROME_CLIENT_FLAG_CENTRIFUGE_LIGHTS );
 
-	level thread centrifuge_random();
+	level thread maps\_remix_cosmodrome_traps::centrifuge_random();
 
 }
 
@@ -702,13 +702,13 @@ centrifuge_random()
 		{
 			level waittill( "between_round_over" ); // this will wait for the next time a round starts
 		}
-		// else if( malfunction_for_round == 1 )
-		// {
-		// 	level waittill( "between_round_over" ); // this will wait for the next time a round starts
-		// 	level waittill( "between_round_over" ); // this will wait for the next time a round starts
-		// }
+		else if( malfunction_for_round == 1 )
+		{
+			level waittill( "between_round_over" ); // this will wait for the next time a round starts
+		level waittill( "between_round_over" ); // this will wait for the next time a round starts
+		}
 		
-		wait( RandomIntRange( 24, 48 ) );	// (24, 90)
+		wait( RandomIntRange( 24, 90 ) );
 		
 		// figure out the roatation amount
 		rotation_amount = RandomIntRange( 3, 7 ) * 360;

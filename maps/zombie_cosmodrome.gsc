@@ -8,10 +8,12 @@
 main()
 {
 	// for weight functions
+	// TODO Zi0 - Change into array
 	level.pulls_since_last_ray_gun = 0;
 	level.pulls_since_last_wonder_weapon = 0;
 
 	level thread maps\zombie_cosmodrome_ffotd::main_start();
+	level thread maps\_remix_cosmodrome::remix_main();
 
 	// viewmodel arms for the level
 	PreCacheModel( "viewmodel_usa_pow_arms" ); // Dempsey
@@ -75,8 +77,8 @@ main()
 
 	level.door_dialog_function = maps\_zombiemode::play_door_dialog;
 
-	include_weapons();
-	include_powerups();
+	maps\_remix_cosmodrome::include_weapons();
+	maps\_remix_cosmodrome::include_powerups();
 
 	level.use_zombie_heroes = true;
 	level.zombiemode_using_marathon_perk = true;
@@ -103,8 +105,6 @@ main()
 	// DO ACTUAL ZOMBIEMODE INIT
 	maps\_zombiemode::main();
 
-	level thread special_round_watcher();
-
 	maps\_zombiemode_weap_sickle::init();
 	maps\_zombiemode_weap_black_hole_bomb::init();
 	maps\_zombiemode_weap_nesting_dolls::init();
@@ -121,7 +121,7 @@ main()
 
 	// Setup the levels Zombie Zone Volumes
 
-	level.zone_manager_init_func = ::cosmodrome_zone_init;
+	level.zone_manager_init_func = maps\_remix_cosmodrome::cosmodrome_zone_init;
 	init_zones[0] = "centrifuge_zone";
 	init_zones[1] = "centrifuge_zone2";
 
@@ -310,7 +310,7 @@ include_weapons()
 	//	Weapons - Pistols
 	include_weapon( "m1911_zm", false );						// colt
 	include_weapon( "m1911_upgraded_zm", false );
-	include_weapon( "python_zm", false );						// 357
+	include_weapon( "python_zm" );						// 357
 	include_weapon( "python_upgraded_zm", false );
   	include_weapon( "cz75_zm" );
   	include_weapon( "cz75_upgraded_zm", false );
@@ -320,7 +320,7 @@ include_weapons()
 	include_weapon( "m14_upgraded_zm", false );
 
 	//	Weapons - Burst Rifles
-	include_weapon( "m16_zm", false, true );
+	include_weapon( "m16_zm", false, true );						
 	include_weapon( "m16_gl_upgraded_zm", false );
 	include_weapon( "g11_lps_zm" );
 	include_weapon( "g11_lps_upgraded_zm", false );
@@ -348,9 +348,9 @@ include_weapons()
 	include_weapon( "ithaca_upgraded_zm", false );
 	include_weapon( "rottweil72_zm", false, true );
 	include_weapon( "rottweil72_upgraded_zm", false );
-	include_weapon( "spas_zm", false );						//
+	include_weapon( "spas_zm" );						// 
 	include_weapon( "spas_upgraded_zm", false );
-	include_weapon( "hs10_zm", false );
+	include_weapon( "hs10_zm" );
 	include_weapon( "hs10_upgraded_zm", false );
 
 	//	Weapons - Assault Rifles
@@ -360,13 +360,13 @@ include_weapons()
 	include_weapon( "galil_upgraded_zm", false );
 	include_weapon( "commando_zm" );
 	include_weapon( "commando_upgraded_zm", false );
-	include_weapon( "fnfal_zm", false );
+	include_weapon( "fnfal_zm" );
 	include_weapon( "fnfal_upgraded_zm", false );
 
 	//	Weapons - Sniper Rifles
-	include_weapon( "dragunov_zm", false );					// ptrs41
+	include_weapon( "dragunov_zm" );					// ptrs41
 	include_weapon( "dragunov_upgraded_zm", false );
-	include_weapon( "l96a1_zm", false );
+	include_weapon( "l96a1_zm" );
 	include_weapon( "l96a1_upgraded_zm", false );
 
 	//	Weapons - Machineguns
@@ -378,26 +378,18 @@ include_weapons()
 	//	Weapons - Misc
 	include_weapon( "m72_law_zm" );
 	include_weapon( "m72_law_upgraded_zm", false );
-	include_weapon( "china_lake_zm", false );
+	include_weapon( "china_lake_zm" );
 	include_weapon( "china_lake_upgraded_zm", false );
 
 	//	Weapons - Special
-	include_weapon( "zombie_black_hole_bomb", true, false, maps\_zombiemode_weapons::default_zombie_black_hole_bomb_weighting_func );
+	include_weapon( "zombie_black_hole_bomb", true, false );
 	include_weapon( "zombie_nesting_dolls", true, false );
-	include_weapon( "ray_gun_zm", true, false, maps\_zombiemode_weapons::default_ray_gun_weighting_func );
+	include_weapon( "ray_gun_zm" );
 	include_weapon( "ray_gun_upgraded_zm", false );
-	include_weapon( "thundergun_zm", true, false, maps\_zombiemode_weapons::default_wonder_weapon_weighting_func );
+	include_weapon( "thundergun_zm" );
 	include_weapon( "thundergun_upgraded_zm", false );
 	include_weapon( "crossbow_explosive_zm" );
 	include_weapon( "crossbow_explosive_upgraded_zm", false );
-
-	// Custom Weapons
-	include_weapon( "ppsh_zm" );
-	include_weapon( "ppsh_upgraded_zm", false );
-	include_weapon( "stoner63_zm" );
-	include_weapon( "stoner63_upgraded_zm",false );
-	include_weapon( "ak47_zm" );
- 	include_weapon( "ak47_upgraded_zm", false);
 
 	include_weapon( "knife_ballistic_zm", true );
 	include_weapon( "knife_ballistic_upgraded_zm", false );
@@ -414,7 +406,7 @@ include_weapons()
 
 	precacheItem( "explosive_bolt_zm" );
 	precacheItem( "explosive_bolt_upgraded_zm" );
-
+	
 	// get the sickle into the collector achievement list
 	level.collector_achievement_weapons = array_add( level.collector_achievement_weapons, "sickle_knife_zm" );
 }
@@ -429,12 +421,12 @@ include_powerups()
 	include_powerup( "insta_kill" );
 	include_powerup( "double_points" );
 	include_powerup( "full_ammo" );
-	//include_powerup( "carpenter" );
+	include_powerup( "carpenter" );
 	include_powerup( "fire_sale" );
-
+	
 	// minigun
 	PreCacheItem( "minigun_zm" );
-
+	
 	include_powerup( "minigun" );
 	include_powerup( "free_perk" );
 }
@@ -482,7 +474,7 @@ magic_box_override()
 cosmodrome_zone_init()
 {
 	// Set flags here for your starting zone if there are any zones that need to be connected from the beginning.
-	// For instance, if your
+	// For instance, if your 
 	flag_init( "centrifuge" );
 	flag_set( "centrifuge" );
 
@@ -500,27 +492,27 @@ cosmodrome_zone_init()
 	add_adjacent_zone( "access_tunnel_zone",	"base_entry_zone",			"base_entry_group" );
 
 	// Storage area
-	add_adjacent_zone( "storage_zone2",			"storage_zone",			"storage_group", true );
+	add_adjacent_zone( "storage_zone",			"storage_zone2",			"storage_group" );
 
 	// Power Building
 	add_adjacent_zone( "power_building",		"base_entry_zone2",			"power_group" );
 
 	// Drop-off connection - top of stairs in north path (one way drop)
-	add_adjacent_zone( "roof_connector_zone",		"north_path_zone",  	"roof_connector_dropoff", true );
-
-	// open blast doors.
+	add_adjacent_zone( "north_path_zone",  "roof_connector_zone",			"roof_connector_dropoff" );
+	
+	// open blast doors. 
 	add_adjacent_zone( "north_path_zone",		"under_rocket_zone",		"rocket_group" );
 	add_adjacent_zone( "control_room_zone",		"under_rocket_zone",		"rocket_group" );
-
+	
 	//############################################
 	//	Now set the connections that need to be made based on doors being open
 	//	Use add_zone_flags to connect any zones defined above.
 	//############################################
-	add_adjacent_zone( "centrifuge_zone",	"centrifuge_zone2",		"centrifuge");
+	add_adjacent_zone( "centrifuge_zone",	"centrifuge_zone2",		"centrifuge" );
 
 	// Centrifuge door 1st floor towards power
 	add_adjacent_zone( "centrifuge_zone",	"centrifuge2power_zone",		"centrifuge2power" );
-	add_adjacent_zone( "centrifuge_zone2",	"centrifuge2power_zone",		"centrifuge2power" );
+	//add_adjacent_zone( "centrifuge_zone2",	"centrifuge2power_zone",		"centrifuge2power" );
 
 
 	// Door at 1st floor of power building
@@ -541,22 +533,22 @@ cosmodrome_zone_init()
 	add_zone_flags(	"power_interior_2_roof",								"power_group" );
 
 	// Door from catwalks to connector zone
-	add_adjacent_zone( "north_catwalk_zone3",	"north_catwalk_zone3",		"catwalks_2_shed" );//"roof_connector_zone"
+	add_adjacent_zone( "north_catwalk_zone3",	"roof_connector_zone",		"catwalks_2_shed" );
 	add_zone_flags(	"catwalks_2_shed",										"roof_connector_dropoff" );
 
 	// Tunnel to Storage
 	add_adjacent_zone( "access_tunnel_zone",	"storage_zone",				"base_entry_2_storage" );
-	//add_adjacent_zone( "access_tunnel_zone",	"storage_zone2",			"base_entry_2_storage" );
+	add_adjacent_zone( "access_tunnel_zone",	"storage_zone2",			"base_entry_2_storage" );
 	add_zone_flags(	"base_entry_2_storage",									"storage_group" );
 	add_zone_flags(	"base_entry_2_storage",									"base_entry_group" );
 
 	// Storage Lander
-	//add_adjacent_zone( "storage_lander_zone",	"storage_zone",				"storage_lander_area" );
-	add_adjacent_zone( "storage_lander_zone",	"storage_zone2",	"storage_lander_area"	, true );
+	add_adjacent_zone( "storage_lander_zone",	"storage_zone",				"storage_lander_area" );
+	add_adjacent_zone( "storage_lander_zone",	"storage_zone2",			"storage_lander_area" );
 	//add_adjacent_zone( "storage_lander_zone",	"access_tunnel_zone",		"storage_lander_area" );
 
 	// Northern passageway to rocket
-	add_adjacent_zone( "north_path_zone",		"base_entry_zone2",			"base_entry_2_north_path");
+	add_adjacent_zone( "north_path_zone",		"base_entry_zone2",			"base_entry_2_north_path" );
 	add_zone_flags(	"base_entry_2_north_path",								"power_group" );
 	add_zone_flags(	"base_entry_2_north_path",								"roof_connector_dropoff" );
 	//add_zone_flags(	"base_entry_2_north_path",								"control_room" );
