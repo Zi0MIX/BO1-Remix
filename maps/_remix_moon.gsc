@@ -3,6 +3,7 @@ remix_main()
     while (!isDefined(level.ai_astro_explode))
         wait 0.05;
 	level thread launch_rockets();
+	level thread override_custom_playvox();
 }
 
 launch_rockets()
@@ -38,6 +39,53 @@ launch_rockets()
 	level clientnotify("SDE");
 
 	play_sound_2d( "vox_xcomp_quest_laugh" );
+}
+
+override_custom_playvox()
+{
+	while (!isDefined(level._audio_custom_player_playvox))
+		wait 0.05;
+	level._audio_custom_player_playvox = ::do_player_playvox_custom;
+}
+
+do_player_playvox_custom()
+{
+    if (getDvar("player_quotes") == "0")
+        return;
+
+	players = getplayers();
+	if( !IsDefined( level.player_is_speaking ) )
+	{
+		level.player_is_speaking = 0;	
+	}
+	
+	if( is_true(level.skit_vox_override) && !override )
+	    return;
+		
+	if ( is_true( self.in_low_gravity ) && !self maps\_zombiemode_equip_gasmask::gasmask_active() )
+	{
+		return;
+	}
+	
+	if( level.player_is_speaking != 1 )
+	{
+		level.player_is_speaking = 1;
+		self play_futz_or_not_moonvox( prefix, sound_to_play );
+		wait( waittime );		
+		level.player_is_speaking = 0;
+		
+		if( !flag( "solo_game" ) && ( isdefined (level.plr_vox[category][type + "_response"] )))
+		{
+			if ( isDefined( level._audio_custom_response_line ) )
+	        {
+		        level thread [[ level._audio_custom_response_line ]]( self, index, category, type );
+	        }
+			else
+			{
+			    level thread maps\_zombiemode_audio::setup_response_line( self, index, category, type ); 
+			}
+		}
+	}
 }
 
 moon_round_think_func()

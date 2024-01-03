@@ -2960,8 +2960,9 @@ float_print3d( msg, time )
 }
 do_player_vo(snd, variation_count)
 {
-
-	
+	// Redirect cause it's used many times
+	maps\_remix_zombiemode_utility::do_player_vo(snd, variation_count);
+	/*
 	index = maps\_zombiemode_weapons::get_player_index(self);
 	
 	// updated to new alias format - Steve G
@@ -2984,6 +2985,7 @@ do_player_vo(snd, variation_count)
 		wait(2);
 		level.player_is_speaking = 0;
 	}	
+	*/
 }
 
 is_magic_bullet_shield_enabled( ent )

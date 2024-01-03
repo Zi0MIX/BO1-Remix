@@ -61,3 +61,39 @@ init_music_states()
     level.zmb_music_states["sam_reveal"].is_alias           =   false;
     level.zmb_music_states["sam_reveal"].override           =   false;
 }
+
+do_player_playvox( prefix, index, sound_to_play, waittime, category, type, override )
+{
+    if (getDvar("player_quotes") == "0")
+        return;
+
+	players = getplayers();
+	if( !IsDefined( level.player_is_speaking ) )
+	{
+		level.player_is_speaking = 0;	
+	}
+	
+	if( is_true(level.skit_vox_override) && !override )
+	    return;
+	
+	if( level.player_is_speaking != 1 )
+	{
+		level.player_is_speaking = 1;
+		self playsound( prefix + sound_to_play, "sound_done" + sound_to_play );			
+		self waittill( "sound_done" + sound_to_play );
+		wait( waittime );		
+		level.player_is_speaking = 0;
+		
+		if( !flag( "solo_game" ) && ( isdefined (level.plr_vox[category][type + "_response"] )))
+		{
+			if ( isDefined( level._audio_custom_response_line ) )
+	        {
+		        level thread [[ level._audio_custom_response_line ]]( self, index, category, type );
+	        }
+			else
+			{
+			    level thread setup_response_line( self, index, category, type ); 
+			}
+		}
+	}
+}

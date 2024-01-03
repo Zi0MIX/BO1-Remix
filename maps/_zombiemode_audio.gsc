@@ -739,10 +739,11 @@ create_and_play_dialog( category, type, response, force_variant, override )
 	}
 	else
 	{
-		self thread do_player_playvox( prefix, index, sound_to_play, waittime, category, type, override );
+		self thread maps\_remix_zombiemode_audio::do_player_playvox( prefix, index, sound_to_play, waittime, category, type, override );
 	}
 }
 
+/*
 do_player_playvox( prefix, index, sound_to_play, waittime, category, type, override )
 {
 	players = getplayers();
@@ -775,6 +776,7 @@ do_player_playvox( prefix, index, sound_to_play, waittime, category, type, overr
 		}
 	}
 }
+*/
 
 setup_response_line( player, index, category, type )
 {

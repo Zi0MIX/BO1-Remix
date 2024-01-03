@@ -109,3 +109,32 @@ used_max_zombie_func( max_num, round )
 
 	return max;
 }
+
+do_player_vo(snd, variation_count)
+{
+    if (getDvar("player_quotes") == "0")
+        return;
+
+	index = maps\_zombiemode_weapons::get_player_index(self);
+	
+	// updated to new alias format - Steve G
+	sound = "zmb_vox_plr_" + index + "_" + snd; 
+	if(IsDefined (variation_count))
+	{
+		sound = sound + "_" + randomintrange(0, variation_count);
+	}
+	if(!isDefined(level.player_is_speaking))
+	{
+		level.player_is_speaking = 0;
+	}
+	
+	if (level.player_is_speaking == 0)
+	{	
+		level.player_is_speaking = 1;
+		self playsound(sound, "sound_done");			
+		self waittill("sound_done");
+		//This ensures that there is at least 3 seconds waittime before playing another VO.
+		wait(2);
+		level.player_is_speaking = 0;
+	}	
+}

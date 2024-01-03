@@ -205,8 +205,6 @@ main()
 	#/
 
 	level thread maps\_zombiemode_ffotd::main_end();
-
-	thread disable_player_quotes();
 }
 
 post_all_players_connected()
@@ -7279,25 +7277,6 @@ get_position()
 		iprintln(players.origin);
 		//iprintln(players.angles);
 		wait .5;
-	}
-}
-
-disable_player_quotes()
-{	
-	level endon("disconnect");
-	level endon("end_game");
-
-	if(getDvar("player_quotes") == "")
-		setDvar("player_quotes", 1);
-
-	while(1)
-	{	
-		if(getDvarInt("player_quotes") == 1)
-		{
-			level.player_is_speaking = 1;
-		}
-			
-		wait 0.1;
 	}
 }
 
