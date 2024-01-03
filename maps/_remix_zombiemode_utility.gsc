@@ -3,6 +3,12 @@ post_init()
 	registerClientSys("client_systems");
 }
 
+init_dvar(dvar, base_value)
+{
+	if (getDvar(dvar) == "")
+		setDvar(base_value);
+}
+
 special_round_watcher()
 {
 	while(true)
