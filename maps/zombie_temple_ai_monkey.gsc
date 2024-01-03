@@ -48,7 +48,7 @@ init()
 
 	// make all barriers with the zone they are in
 	level thread _setup_zone_info();
-	level thread _watch_for_powerups();
+	level thread maps\_remix_temple_ai_monkey::_watch_for_powerups();
 
 	//setup
 	monkey_ambient_init();
@@ -575,7 +575,7 @@ _sort_by_num_boards(barriers)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/*_watch_for_powerups()
+_watch_for_powerups()
 {
 	if ( !IsDefined(level.monkey_zombie_spawners) || level.monkey_zombie_spawners.size == 0 )
 	{
@@ -603,33 +603,6 @@ _sort_by_num_boards(barriers)
 			_grab_powerup(powerup);
 		}
 	}
-}*/
-
-_watch_for_powerups()
-{
-	if ( !IsDefined(level.monkey_zombie_spawners) || level.monkey_zombie_spawners.size == 0 )
-	{
-		return;
-	}
-	level waittill("powerup_dropped", powerup);
-	level thread _watch_for_powerups();
-
-	if(!isDefined(powerup))
-	{
-		return;
-	}
-
-	if ( level.round_number < level.nextMonkeyStealRound )
-	{
-		return;
-	}
-
-	wait .5;
-
-	if ( _canGrabPowerup(powerup) )
-	{
-		_grab_powerup(powerup);
-	}
 }
 
 _canGrabPowerup(powerup)
@@ -643,14 +616,9 @@ _grab_powerup(powerup)
 	spawner = level.monkey_zombie_spawners[0];
 
 	monkey = spawner StalingradSpawn();
-	/*if ( spawn_failed(monkey) )
+	if ( spawn_failed(monkey) )
 	{
 		return;
-	}*/
-	while ( spawn_failed(monkey) )
-	{
-		wait_network_frame();
-		monkey = spawner StalingradSpawn();
 	}
 
 	//Try always stealing
@@ -814,7 +782,7 @@ _monkey_GrabPowerup()
 		//Set up red fx so players know they can not grab the power up
 		self.powerup thread powerup_red(self);
 
-		self.powerup thread _powerup_Randomize(self);
+		self.powerup thread maps\_remix_temple_ai_monkey::_powerup_randomize(self);
 
 		// stop all the normal powerup threads
 		self thread _monkey_play_stolen_loop();
@@ -1237,21 +1205,21 @@ _powerup_Randomize(monkey)
 	self endon("stop_randomize");
 	monkey endon("remove");
 
-	//powerup_cycle = array("carpenter","fire_sale","nuke","double_points","insta_kill");
-	powerup_cycle = array("fire_sale","nuke","double_points","insta_kill");
+	//powerup_cycle = array_randomize_knuth(level.zombie_powerup_array);
+	powerup_cycle = array("carpenter","fire_sale","nuke","double_points","insta_kill");
 	powerup_cycle = array_randomize_knuth(powerup_cycle);
 	powerup_cycle[powerup_cycle.size] = "full_ammo"; //Ammo is always last
 
 	//Remove fire sale so the players can not get firesale too early.
-	if(level.chest_moves >= 1 || level.round_number <= 5)
+	if(level.chest_moves < 1)
 	{
 		powerup_cycle = array_remove_nokeys(powerup_cycle, "fire_sale");
 	}
 
-	// if(level.round_number<=1)
-	// {
-	// 	powerup_cycle = array_remove_nokeys(powerup_cycle, "nuke");
-	// }
+	if(level.round_number<=1)
+	{
+		powerup_cycle = array_remove_nokeys(powerup_cycle, "nuke");
+	}
 
 	//Find current power up name
 	currentPowerUp = undefined;
@@ -1448,7 +1416,7 @@ monkey_ambient_init()
 
 	level thread monkey_crowd_noise();
 	level thread monkey_ambient_drops_add_array();
-	level thread monkey_ambient_drops_remove_array();
+	level thread maps\_remix_temple_ai_monkey::monkey_ambient_drops_remove_array();
 
 	level thread manage_ambient_monkeys(4);
 }
@@ -1655,21 +1623,6 @@ monkey_ambient_drops_add_array()
 	}
 }
 
-/*monkey_ambient_drops_remove_array()
-{
-	while(1)
-	{
-		previousSize = level.monkey_drops.size;
-		level.monkey_drops = remove_undefined_from_array(level.monkey_drops);
-
-		if(level.monkey_drops.size == 0 && previousSize!=0)
-		{
-			flag_clear("monkey_ambient_excited");
-		}
-		wait .1;
-	}
-}*/
-
 monkey_ambient_drops_remove_array()
 {
 	while(1)
@@ -1677,13 +1630,7 @@ monkey_ambient_drops_remove_array()
 		previousSize = level.monkey_drops.size;
 		level.monkey_drops = remove_undefined_from_array(level.monkey_drops);
 
-		for(i=0;i<level.monkey_drops.size;i++)
-		{
-			if(IsDefined(level.monkey_drops[i].stolen) && level.monkey_drops[i].stolen)
-				level.monkey_drops = array_remove(level.monkey_drops, level.monkey_drops[i]);
-		}
-
-		if(level.monkey_drops.size == 0 && previousSize != 0)
+		if(level.monkey_drops.size == 0 && previousSize!=0)
 		{
 			flag_clear("monkey_ambient_excited");
 		}

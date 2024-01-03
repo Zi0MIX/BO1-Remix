@@ -39,7 +39,6 @@ init_pack_a_punch()
 	_setup_pap_timer();
 	_setup_pap_path();
 	_setup_pap_fx();
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -266,7 +265,7 @@ _setup_simultaneous_pap_triggers()
 		triggers[i] = GetEnt("pap_blocker_trigger" + (i+1), "targetname");
 	}
 
-	_randomize_pressure_plates(triggers);
+	maps\_remix_temple_pack_a_punch::_randomize_pressure_plates(triggers);
 
 	array_thread( triggers, ::_pap_pressure_plate_move );
 
@@ -321,7 +320,7 @@ _setup_simultaneous_pap_triggers()
 			}
 
 			_pap_think();
-			_randomize_pressure_plates(triggers);
+			maps\_remix_temple_pack_a_punch::_randomize_pressure_plates(triggers);
 			array_thread( triggers, ::_pap_pressure_plate_move );
 			_set_num_plates_active(4, 15);
 			wait(1.0);
@@ -335,12 +334,11 @@ _randomize_pressure_plates(triggers)
 {
 	//Randomize what plates required for the players to activate the pap
 	rand_nums = array(1,2,3,4);
-	//rand_nums = array_randomize(rand_nums);
+	rand_nums = array_randomize(rand_nums);
 	for(i=0;i<triggers.size;i++)
 	{
 		triggers[i].requiredPlayers = rand_nums[i];
 	}
-
 }
 
 _update_stairs(triggers)

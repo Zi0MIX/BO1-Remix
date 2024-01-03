@@ -13,6 +13,7 @@
 main()
 {
 	// for weight functions
+	// TODO Zi0 - Change into array
 	level.pulls_since_last_ray_gun = 0;
 	level.pulls_since_last_wonder_weapon = 0;
 
@@ -22,6 +23,7 @@ main()
 	level._use_choke_blockers = 1;
 
 	level thread maps\zombie_temple_ffotd::main_start();
+	level thread maps\_remix_temple::remix_main();
 
 	// set excludes on chests so we can have a random start
 	level.random_pandora_box_start = true;
@@ -47,8 +49,8 @@ main()
 
 	level thread maps\_callbacksetup::SetupCallbacks();
 
-	include_weapons();
-	include_powerups();
+	maps\_remix_temple::include_weapons();
+	maps\_remix_temple::include_powerups();
 
 	level.zombiemode_using_marathon_perk = true;
 	level.zombiemode_using_divetonuke_perk = true;
@@ -131,7 +133,7 @@ main()
 
 	level thread maps\zombie_temple_achievement::init();
 
- 	level thread add_powerups_after_round_1();
+ 	level thread maps\_remix_temple::add_powerups_after_round_1();
 	level thread maps\zombie_temple_elevators::init_elevator();
 	level thread maps\zombie_temple_minecart::minecart_main();
 	level thread maps\zombie_temple_waterslide::waterslide_main();
@@ -163,9 +165,6 @@ main()
 
 	level thread maps\zombie_temple_sq::start_temple_sidequest();
 
-
-	level thread night_mode_watcher();
-	//level thread activate_night();
 }
 
 init_client_flags()
@@ -316,7 +315,7 @@ include_weapons()
 	//	Weapons - Pistols
 	include_weapon( "m1911_zm", false );						// colt
 	include_weapon( "m1911_upgraded_zm", false );
-	include_weapon( "python_zm", false );								// 357
+	include_weapon( "python_zm" );								// 357
 	include_weapon( "python_upgraded_zm", false );
 	include_weapon( "cz75_zm" );
     include_weapon( "cz75_upgraded_zm", false );
@@ -354,9 +353,9 @@ include_weapons()
 	include_weapon( "ithaca_upgraded_zm", false );
 	include_weapon( "rottweil72_zm", false, true );
 	include_weapon( "rottweil72_upgraded_zm", false );
-	include_weapon( "spas_zm", false );
+	include_weapon( "spas_zm" );
 	include_weapon( "spas_upgraded_zm", false );
-	include_weapon( "hs10_zm", false );
+	include_weapon( "hs10_zm" );
 	include_weapon( "hs10_upgraded_zm", false );
 
 	//	Weapons - Assault Rifles
@@ -366,13 +365,13 @@ include_weapons()
 	include_weapon( "galil_upgraded_zm", false );
 	include_weapon( "commando_zm" );
 	include_weapon( "commando_upgraded_zm", false );
-	include_weapon( "fnfal_zm", false );
+	include_weapon( "fnfal_zm" );
 	include_weapon( "fnfal_upgraded_zm", false );
 
 	//	Weapons - Sniper Rifles
-	include_weapon( "dragunov_zm", false );							// ptrs41
+	include_weapon( "dragunov_zm" );							// ptrs41
 	include_weapon( "dragunov_upgraded_zm", false );
-	include_weapon( "l96a1_zm", false );
+	include_weapon( "l96a1_zm" );
 	include_weapon( "l96a1_upgraded_zm", false );
 
 	//	Weapons - Machineguns
@@ -384,14 +383,14 @@ include_weapons()
 	//	Weapons - Misc
 	include_weapon( "m72_law_zm" );
 	include_weapon( "m72_law_upgraded_zm", false );
-	include_weapon( "china_lake_zm", false );
+	include_weapon( "china_lake_zm" );
 	include_weapon( "china_lake_upgraded_zm", false );
 
 	//	Weapons - Special
-	include_weapon( "zombie_cymbal_monkey", true, false, maps\_zombiemode_weapons::default_cymbal_monkey_weighting_func );
-	include_weapon( "ray_gun_zm", true, false, maps\_zombiemode_weapons::default_ray_gun_weighting_func );
+	include_weapon( "zombie_cymbal_monkey" );
+	include_weapon( "ray_gun_zm" );
 	include_weapon( "ray_gun_upgraded_zm", false );
-	include_weapon( "shrink_ray_zm", true, false, maps\_zombiemode_weapons::default_wonder_weapon_weighting_func );
+	include_weapon( "shrink_ray_zm" );
 	include_weapon( "shrink_ray_upgraded_zm", false );
 
 	include_weapon( "crossbow_explosive_zm" );
@@ -400,15 +399,6 @@ include_weapons()
 	include_weapon( "knife_ballistic_upgraded_zm", false );
 	include_weapon( "knife_ballistic_bowie_zm", false );
 	include_weapon( "knife_ballistic_bowie_upgraded_zm", false );
-
-	// Custom weapons
-	include_weapon( "ppsh_zm" );
-	include_weapon( "ppsh_upgraded_zm", false );
-	include_weapon( "stoner63_zm" );
-	include_weapon( "stoner63_upgraded_zm",false );
-	include_weapon( "ak47_zm" );
- 	include_weapon( "ak47_upgraded_zm", false);
-
 	level._uses_retrievable_ballisitic_knives = true;
 
 	// limited weapons
@@ -453,18 +443,14 @@ add_powerups_after_round_1()
 	//want to precache all the stuff for these powerups, but we don't want them to be available in the first round
 	level.zombie_powerup_array = array_remove (level.zombie_powerup_array, "nuke");
 	level.zombie_powerup_array = array_remove (level.zombie_powerup_array, "fire_sale");
-	level.zombie_powerup_array = array_remove (level.zombie_powerup_array, "insta_kill");
-	level.zombie_powerup_array = array_remove (level.zombie_powerup_array, "double_points");
-
+	
 	while (1)
 	{
 		if (level.round_number > 1)
 		{
 			level.zombie_powerup_array = array_add(level.zombie_powerup_array, "nuke");
 			level.zombie_powerup_array = array_add(level.zombie_powerup_array, "fire_sale");
-			level.zombie_powerup_array = array_add(level.zombie_powerup_array, "insta_kill");
-			level.zombie_powerup_array = array_add(level.zombie_powerup_array, "double_points");
-			break;
+						break;
 		}
 		wait (1);
 	}
@@ -1173,57 +1159,3 @@ temple_revive_solo_fx()
 		}
 	}
 }
-
-
-activate_night()
-{
-	flag_wait("all_players_spawned");
-	SetDvar( "night_mode", 1);
-
-    wait 1.8;
-
-    while(1)
-    {
-	    if( getDvarInt( "night_mode" ) == 1)
-		{
-			if(getDvarInt( "r_skyTransition") != 1)
-			{
-				SetSunlight( 0.5426, 0.6538, 0.7657);
-				SetSavedDvar("r_lightTweakSunLight", 11);
-				SetSavedDvar("r_skyTransition", 1);
-			}
-		}
-		else
-		{
-			if(getDvarInt( "r_skyTransition") != 0)
-			{
-				ResetSunlight();
-				SetSavedDvar("r_lightTweakSunLight", 13);
-				SetSavedDvar("r_skyTransition", 0);
-			}
-		}
-		wait 0.1;
-    }
-}
-
-night_mode_watcher()
-{
-	flag_wait("all_players_spawned");
-    wait 1.8;
-
-	while(1)
-	{
-		while(0 == GetDvarInt("night_mode"))
-		{
-			wait(0.1);
-		}
-		clientnotify("eclipse");		// Eclipse.
-
-		while(1 == GetDvarInt("night_mode"))
-		{
-			wait(0.1);
-		}
-		clientnotify("daybreak");		// Daybreak.
-	}
-}
-
