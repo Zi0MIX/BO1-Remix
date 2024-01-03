@@ -348,7 +348,7 @@ player_teleporting()
 		// DCS 081810: also allow when in last stand
 		else if ( is_player_valid( user ) || user maps\_laststand::player_is_in_laststand())
 		{
-			self thread Teleport_Player(user);
+			self thread maps\_remix_pentagon_teleporter::teleport_player(user);
 		}
 
 	}
@@ -384,8 +384,8 @@ teleport_player(user)
 
 	user.teleporting = true;
 	user FreezeControls( true );
-	//user disableOffhandWeapons();
-	//user disableweapons();
+	user disableOffhandWeapons();
+	user disableweapons();
 
 	// random portal to exit check, or at defcon 5 go to pack room, pack room still goes random.
 	if(flag("defcon_active") && self.script_noteworthy != "conference_level2")
@@ -402,14 +402,14 @@ teleport_player(user)
 	}
 	else
 	{
-		dest_trig = find_portal_destination(self);
+		dest_trig = maps\_remix_pentagon_teleporter::find_portal_destination(self);
 
 		// rediculous failsafe.
 		if(!IsDefined(dest_trig))
 		{
 			while(!IsDefined(dest_trig))
 			{
-				dest_trig = find_portal_destination(self);
+				dest_trig = maps\_remix_pentagon_teleporter::find_portal_destination(self);
 				break;
 				wait_network_frame();
 			}
@@ -488,8 +488,8 @@ teleport_player(user)
 	PlayFX(level._effect["transporter_beam"], user.origin);
 	playsoundatposition( "evt_teleporter_go", user.origin );
 	wait(0.5);
-	//user enableweapons();
-	//user enableoffhandweapons();
+	user enableweapons();
+	user enableoffhandweapons();
 	user FreezeControls( false );
 	user.teleporting = false;
 
@@ -542,11 +542,11 @@ find_portal_destination(orig_trig)
 
 		for (i = 0; i < level.portal_trig.size; i++)
 		{
-			/*if(level.portal_trig[i].script_noteworthy == "war_room_zone_north")
+			if(level.portal_trig[i].script_noteworthy == "war_room_zone_north")
 			{
 				loc[0] = i;
-			}*/
-			if(level.portal_trig[i].script_noteworthy == "conference_level1")
+			}
+			else if(level.portal_trig[i].script_noteworthy == "conference_level1")
 			{
 				loc[1] = i;
 			}

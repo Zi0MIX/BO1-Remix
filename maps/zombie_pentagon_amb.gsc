@@ -13,7 +13,7 @@
 
 main()
 {
-	level thread setup_phone_audio();
+	level thread maps\_remix_pentagon_amb::setup_phone_audio();
 }
 //-------------------------------------------------------------------------------
 // base function for easter egg phones in zombie pentagon.
@@ -46,27 +46,13 @@ phone_egg()
 
 	level.phone_counter = level.phone_counter + 1;
 
-	/*if(level.phone_counter == 1)
-		{
-			if(player HasWeapon("tesla_gun_zm"))
-				{
-					player TakeWeapon( "tesla_gun_zm" );
-					player GiveWeapon( "tesla_gun_upgraded_zm" );
-					player GiveStartAmmo( "tesla_gun_upgraded_zm" );
-					player SwitchToWeapon( "tesla_gun_upgraded_zm" );
-					player PlaySound( "mus_wonder_weapon_stinger" );
-				}
-			level thread setup_phone_audio();
-		}*/
-
-	if( level.phone_counter == 2 )
+	if( level.phone_counter == 3 )
 	{
 			level pentagon_unlock_doa();
 	    playsoundatposition( "evt_doa_unlock", (0,0,0) );
 	    wait(5);
 	    level thread play_music_easter_egg();
-	    level.phone_counter = 0;
-	}
+	    	}
 }
 play_music_easter_egg()
 {
@@ -87,13 +73,14 @@ play_music_easter_egg()
 	wait(265);
 	level.music_override = false;
 	level thread maps\_zombiemode_audio::change_zombie_music( "wave_loop" );
-
-	level thread setup_phone_audio();
 }
 //-------------------------------------------------------------------------------
 
 play_pentagon_announcer_vox( alias, defcon_level )
 {
+	// Replace here because it's called in multiple files
+	maps\_remix_pentagon_amb::play_pentagon_announcer_vox(alias, defcon_level);
+	/*
 	if( !IsDefined( alias ) )
 		return;
 
@@ -109,9 +96,10 @@ play_pentagon_announcer_vox( alias, defcon_level )
 	{
 		level.pentann_is_speaking = 1;
 		level play_initial_alarm();
-		//level play_sound_2D( alias );
+		level play_sound_2D( alias );
 		level.pentann_is_speaking =0;
 	}
+	*/
 }
 
 play_initial_alarm()
@@ -120,7 +108,7 @@ play_initial_alarm()
 
     for(i=0;i<structs.size;i++)
     {
-        //playsoundatposition( "evt_thief_alarm_single", structs[i].origin );
+        playsoundatposition( "evt_thief_alarm_single", structs[i].origin );
     }
 
     wait(.5);
