@@ -84,7 +84,7 @@ main()
 	level._ZOMBIE_GIB_PIECE_INDEX_HEAD = 5;
 	level._ZOMBIE_GIB_PIECE_INDEX_GUTS = 6;
 
-	init_dvars();
+	maps\_remix_zombiemode::init_dvars();
 	init_mutators();
 	init_strings();
 	init_levelvars();
@@ -828,12 +828,6 @@ init_dvars()
 	SetDvar( "player_lastStandBleedoutTime", "45" );
 
 	SetDvar( "scr_deleteexplosivesonspawn", "0" );
-
-	// Pluto HUD
-	if(getDvarInt("hud_pluto") == 1)
-		SetDvar("hud_pluto", 1);
-	else
-		SetDvar("hud_pluto", 0);
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
 	//setDvar( "ik_enable", "0" );
