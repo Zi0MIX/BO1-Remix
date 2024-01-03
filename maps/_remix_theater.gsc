@@ -1,6 +1,6 @@
 remix_main()
 {
-    level thread special_round_watcher();
+    level thread maps\_remix_zombiemode_utility::special_round_watcher();
 	level thread maps\_custom_hud::box_notifier();
 
 	level.shrink_zones = ::shrink_zone;
@@ -203,7 +203,7 @@ include_weapons()
 	include_weapon( "zombie_cymbal_monkey", true, false, maps\_zombiemode_weapons::default_cymbal_monkey_weighting_func );
 	include_weapon( "ray_gun_zm", true, false, maps\_zombiemode_weapons::default_ray_gun_weighting_func );
 	include_weapon( "ray_gun_upgraded_zm", false );
-	include_weapon( "thundergun_zm", true, false, maps\_zombiemode_weapons::default_wonder_weapon_weighting_func );
+	include_weapon( "thundergun_zm", true, false, maps\_remix_zombiemode_weapons::default_wonder_weapon_weighting_func );
 	include_weapon( "thundergun_upgraded_zm", false );
 	include_weapon( "crossbow_explosive_zm" );
 	include_weapon( "crossbow_explosive_upgraded_zm", false );

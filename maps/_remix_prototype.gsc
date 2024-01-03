@@ -98,7 +98,7 @@ include_weapons()
 
 	include_weapon( "ray_gun_zm", true, false, maps\_zombiemode_weapons::default_ray_gun_weighting_func );
 	include_weapon( "ray_gun_upgraded_zm", false);
-	include_weapon( "thundergun_zm", true, false, maps\_zombiemode_weapons::default_wonder_weapon_weighting_func );
+	include_weapon( "thundergun_zm", true, false, maps\_remix_zombiemode_weapons::default_wonder_weapon_weighting_func );
 	include_weapon( "thundergun_upgraded_zm", false );
 	include_weapon( "m1911_upgraded_zm", false );
 

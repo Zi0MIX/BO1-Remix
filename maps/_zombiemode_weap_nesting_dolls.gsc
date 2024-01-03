@@ -107,6 +107,9 @@ nesting_dolls_exists()
 
 player_give_nesting_dolls()
 {
+	// Redirect cause it's called around a lot
+	maps\_remix_zombiemode_weap_nesting_dolls::player_give_nesting_dolls();
+	/*
 	// create our randomized index arrays here so we can pass the appropriate first cammo
 	self nesting_dolls_create_randomized_indices( 0 );
 
@@ -114,34 +117,33 @@ player_give_nesting_dolls()
 
 	self giveweapon( "zombie_nesting_dolls", 0, self CalcWeaponOptions( start_cammo ) );
 	self set_player_tactical_grenade( "zombie_nesting_dolls" );
-
-	// fix for grenade ammo
-	if(is_tactical_grenade("zombie_nesting_dolls") && self GetWeaponAmmoClip("zombie_nesting_dolls") > 3)
-	{
-		self SetWeaponAmmoClip("zombie_nesting_dolls", 3);
-	}
-
 	self thread player_handle_nesting_dolls();
+	*/
 }
 
+/*
 #using_animtree( "zombie_cymbal_monkey" ); // WW: A new animtree or should we just use generic human's throw?
 player_handle_nesting_dolls()
 {
-	//self notify( "starting_nesting_dolls" );
+	self notify( "starting_nesting_dolls" );
 	self endon( "disconnect" );
-	//self endon( "starting_nesting_dolls" );
+	self endon( "starting_nesting_dolls" );
 
-	grenade = get_thrown_nesting_dolls();
-	self thread player_handle_nesting_dolls();
-	if( IsDefined( grenade ) )
+	while( true )
 	{
-		if( self maps\_laststand::player_is_in_laststand() )
+		grenade = get_thrown_nesting_dolls();
+		if( IsDefined( grenade ) )
 		{
-			grenade delete();
-			return;
+			if( self maps\_laststand::player_is_in_laststand() )
+			{
+				grenade delete();
+				continue;
+			}
+
+			self thread doll_spawner_cluster( grenade );
 		}
 
-		self thread doll_spawner_cluster( grenade );
+		wait( 0.05 );
 	}
 }
 
@@ -173,10 +175,10 @@ doll_spawner( start_grenade )
 		start_grenade thread doll_behavior_explode_when_stopped( self, self.doll_id, 0 );
 	}
 
-	start_grenade waittill( "spawn_doll", origin, angles );
-
 	while( num_dolls < max_dolls )
 	{
+		self waittill( "spawn_doll", origin, angles );
+
 		grenade_vel = self get_launch_velocity( origin, 2000 );
 		if ( grenade_vel == ( 0, 0, 0 ) )
 		{
@@ -190,8 +192,6 @@ doll_spawner( start_grenade )
 		//self thread nesting_dolls_tesla_nearby_zombies( grenade );
 
 		num_dolls++;
-
-		grenade waittill( "spawn_doll", origin, angles );
 	}
 }
 
@@ -219,23 +219,19 @@ doll_spawner_cluster( start_grenade )
 	// so the compiler doesn't puke
 	if ( IsDefined( start_grenade ) )
 	{
-		start_grenade.angles = (0, start_grenade.angles[1], 0);
-
-		start_grenade spawn_doll_model( self.doll_id, 0, self );
+				start_grenade spawn_doll_model( self.doll_id, 0, self );
 		start_grenade thread doll_behavior_explode_when_stopped( self, self.doll_id, 0 );
 	}
 
-	start_grenade waittill( "spawn_doll", origin, angles );
+	self waittill( "spawn_doll", origin, angles );
 
 	while( num_dolls < max_dolls )
 	{
-
 		// get a velocity
 		grenade_vel = self get_cluster_launch_velocity( angles, num_dolls );
 
 		// spawn a magic grenade
 		grenade = self MagicGrenadeType( "zombie_nesting_doll_single", origin, grenade_vel );
-		grenade.angles = (0, grenade.angles[1], 0);
 		grenade spawn_doll_model( self.doll_id, num_dolls, self );
 
 		grenade PlaySound( "wpn_nesting_pop_npc" );
@@ -279,8 +275,9 @@ doll_do_damage( origin, owner, id, index )
 		}
 	}
 
-	RadiusDamage( origin, level.nesting_dolls_damage_radius, level.zombie_health + 666, level.zombie_health + 666, owner, "MOD_GRENADE_SPLASH", "zombie_nesting_doll_single" );
+	RadiusDamage( origin, level.nesting_dolls_damage_radius, 95000, 95000, owner, "MOD_GRENADE_SPLASH", "zombie_nesting_doll_single" );
 }
+*/
 
 randomize_angles( angles )
 {
@@ -383,6 +380,7 @@ get_target_leading_pos( )
 	return position;
 }
 
+/*
 spawn_doll_model( id, index, parent )
 {
 	// hide the grenade model
@@ -390,8 +388,7 @@ spawn_doll_model( id, index, parent )
 
 	// spawn the doll model
 	self.doll_model = spawn( "script_model", self.origin );
-	self.doll_model.angles = self.angles + (0, 180, 0);
-
+	
 	// fix out the index
 	data_index = parent.nesting_dolls_randomized_indices[ id ][ index ];
 
@@ -406,6 +403,7 @@ spawn_doll_model( id, index, parent )
 	self.doll_model SetModel( model_name );
 	self.doll_model UseAnimTree( #animtree );
 	self.doll_model LinkTo( self );
+	self.doll_model.angles = self.angles;
 
 	// attach the effect
 	PlayFxOnTag( level.nesting_dolls_data[ data_index ].trailFx, self.doll_model, "tag_origin" );
@@ -418,8 +416,6 @@ doll_behavior_explode_when_stopped( parent, doll_id, index )
 {
 	velocitySq = 10000*10000;
 	oldPos = self.origin;
-
-	wait .05;
 
 	while( velocitySq != 0 )
 	{
@@ -436,8 +432,12 @@ doll_behavior_explode_when_stopped( parent, doll_id, index )
 
 	if( isDefined( self ) )
 	{
+		self.doll_model unlink();
+		self.doll_model.origin = self.origin;
+		self.doll_model.angles = self.angles;
+
 		// spawn a new doll
-		self notify( "spawn_doll", self.origin, self.angles );
+		parent notify( "spawn_doll", self.origin, self.angles );
 
 		// spin the damage thread
 		self thread doll_do_damage( self.origin, parent, doll_id, index );
@@ -452,6 +452,7 @@ doll_behavior_explode_when_stopped( parent, doll_id, index )
 		}
 	}
 }
+*/
 
 nesting_dolls_end_achievement_tracking( doll_id )
 {
@@ -817,3 +818,6 @@ nesting_dolls_setup_next_doll_throw()
 //	}
 //}
 //
+
+
+

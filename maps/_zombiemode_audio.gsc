@@ -7,7 +7,7 @@
 audio_init()
 {
 	level init_audio_aliases();
-	level init_music_states();
+	level maps\_remix_zombiemode_audio::init_music_states();
 	level thread init_audio_functions();
 }
 
@@ -1244,6 +1244,7 @@ dialog_debugger( category, type )
 }
 
 //MUSIC STATES
+/*
 init_music_states()
 {
     level.music_override = false;
@@ -1272,12 +1273,7 @@ init_music_states()
     level.zmb_music_states["game_over"].is_alias            =   true;
     level.zmb_music_states["game_over"].override            =   false;
     level.zmb_music_states["game_over"].musicstate          =   "SILENCE";
-	level.zmb_music_states["reset"]                    		 =   spawnStruct();
-    level.zmb_music_states["reset"].music           	 =   "mus_zombie_reset";
-    level.zmb_music_states["reset"].is_alias            =   true;
-    level.zmb_music_states["reset"].override            =   false;
-    level.zmb_music_states["reset"].musicstate          =   "SILENCE";
-    level.zmb_music_states["dog_start"]                     =   spawnStruct();
+	level.zmb_music_states["dog_start"]                     =   spawnStruct();
     level.zmb_music_states["dog_start"].music               =   "mus_zombie_dog_start";
     level.zmb_music_states["dog_start"].is_alias            =   true;
     level.zmb_music_states["dog_start"].override            =   true;
@@ -1286,17 +1282,12 @@ init_music_states()
     level.zmb_music_states["dog_end"].is_alias              =   true;
     level.zmb_music_states["dog_end"].override              =   true;
     level.zmb_music_states["egg"]                           =   spawnStruct();
-    level.zmb_music_states["egg"].music                     =   "mus_egg";
+    level.zmb_music_states["egg"].music                     =   "EGG";
     level.zmb_music_states["egg"].is_alias                  =   false;
     level.zmb_music_states["egg"].override                  =   false;
-	level.zmb_music_states["egg1"]                           =   spawnStruct();
-    level.zmb_music_states["egg1"].music                     =   "mus_egg1";
-    level.zmb_music_states["egg1"].is_alias                  =   true;
-    level.zmb_music_states["egg1"].override                  =   false;
-	// level.zmb_music_states["egg1"].musicstate         		 =   "SILENCE";
-    level.zmb_music_states["egg_safe"]                      =   spawnStruct();
+	level.zmb_music_states["egg_safe"]                      =   spawnStruct();
     level.zmb_music_states["egg_safe"].music                =   "EGG_SAFE";
-    level.zmb_music_states["egg_safe"].is_alias             =   true;
+    level.zmb_music_states["egg_safe"].is_alias             =   false;
     level.zmb_music_states["egg_safe"].override             =   false;  
 	level.zmb_music_states["egg_a7x"]                    	=   spawnStruct();
     level.zmb_music_states["egg_a7x"].music					=   "EGG_A7X";
@@ -1307,6 +1298,7 @@ init_music_states()
     level.zmb_music_states["sam_reveal"].is_alias           =   false;
     level.zmb_music_states["sam_reveal"].override           =   false;
 }
+*/
 
 change_zombie_music( state )
 {

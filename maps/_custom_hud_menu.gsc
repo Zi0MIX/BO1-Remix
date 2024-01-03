@@ -288,7 +288,7 @@ oxygen_hud()
 		if (isDefined(self.time_in_low_gravity) && isDefined(self.time_to_death))
 		{
 			oxygen_time = (self.time_to_death - self.time_in_low_gravity) / 1000;
-			oxygen_left = to_mins_short(oxygen_time);
+			oxygen_left = maps\_remix_zombiemode_utility::to_mins_short(oxygen_time);
 			self setClientDvar("oxygen_time_value", oxygen_left);
 
 			if (getDvarInt("hud_oxygen_timer") || (!getDvarInt("hud_oxygen_timer") && getDvarInt("hud_tab")))
@@ -379,7 +379,7 @@ excavator_hud()
 				else
 					self setClientDvar("excavator_time_show", 0);
 
-				self setClientDvar("excavator_time_value", to_mins_short(int(level.digger_time_left)));
+				self setClientDvar("excavator_time_value", maps\_remix_zombiemode_utility::to_mins_short(int(level.digger_time_left)));
 			}
 			else
 			{

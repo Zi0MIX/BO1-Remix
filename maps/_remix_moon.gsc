@@ -246,7 +246,7 @@ include_weapons()
 	include_weapon( "ray_gun_zm", true, false, maps\_zombiemode_weapons::default_ray_gun_weighting_func );
 	include_weapon( "ray_gun_upgraded_zm", false );
 	include_weapon( "zombie_quantum_bomb" );
-	include_weapon( "microwavegundw_zm", true, false, maps\_zombiemode_weapons::default_wonder_weapon_weighting_func );
+	include_weapon( "microwavegundw_zm", true, false, maps\_remix_zombiemode_weapons::default_wonder_weapon_weighting_func );
 	include_weapon( "microwavegundw_upgraded_zm", false );
 
 	// Custom Weapons

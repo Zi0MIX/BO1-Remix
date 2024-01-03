@@ -167,7 +167,7 @@ init()
 	flag_clear( "last_ape_down" );
 
 	level thread ape_adjust_max_ammo();
-	level thread ape_round_tracker();
+	level thread maps\_remix_zombiemode_ai_ape::ape_round_tracker();
 }
 
 #using_animtree( "generic_human" );
@@ -668,17 +668,18 @@ ape_stop_fog()
   
 }
 
+/*
 ape_round_tracker()
 {
 	level.ape_save_spawn_func = level.round_spawn_func;
 	level.ape_save_wait_func = level.round_wait_func;
 
-	level.next_ape_round = 6;//randomintrange( 7, 9 );
+	level.next_ape_round = randomintrange( 7, 9 );
 	level.prev_ape_round = level.next_ape_round;
 
 	while ( 1 )
 	{
-		//level waittill( "between_round_over" );
+		level waittill( "between_round_over" );
 
 		if ( level.round_number == level.next_ape_round )
 		{
@@ -691,18 +692,19 @@ ape_round_tracker()
 			level.round_wait_func = ::ape_round_wait;
 
 			level.prev_ape_round = level.next_ape_round;
-			level.next_ape_round = level.round_number + 4;//randomintrange( 5, 8 );
+			level.next_ape_round = level.round_number + randomintrange( 5, 8 );
 		}
-		/*else if ( level.prev_ape_round == level.round_number )
+		else if ( level.prev_ape_round == level.round_number )
 		{
 			ape_round_start();
 		}
 		else if ( flag( "ape_round" ) )
 		{
 			ape_round_stop();
-		}*/
+		}
 	}
 }
+*/
 
 ape_round_start()
 {

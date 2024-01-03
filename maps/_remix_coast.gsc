@@ -2,8 +2,49 @@ remix_main()
 {
     level endon("end_game");
 
+	level thread override_radius();
+	level thread override_max_damage_taken();
+
+	level thread possible_director_watcher();
+
     // Change to disable or enable knifing while having waffe
     level.fix_wunderwaffe = true;
+	// For tracking director rounds
+	level.last_director_round = 0;
+	flag_init("director_alive");
+	flag_init("potential_director");
+}
+
+override_radius()
+{
+	while (!isDefined(level.director_zombie_scream_a_radius_sq))
+		wait 0.05;
+	level.director_zombie_scream_a_radius_sq = 512*512; //1024*1024 old
+}
+
+override_max_damage_taken()
+{
+	while (!isDefined(level.director_max_damage_taken_easy))
+		wait 0.05;
+	level.director_max_damage_taken_easy = 2500;	// 1000 old
+}
+
+possible_director_watcher()
+{
+	while (true)
+	{
+		level waittill("end_of_round");
+
+		if (isDefined(level.last_director_round) && level.last_director_round > 0)
+		{
+			if (level.round_number > (level.last_director_round + 1))
+				flag_set("potential_director");
+
+			wait 15;
+			flag_clear("potential_director");
+		}
+		wait 0.1;
+	}
 }
 
 check_to_set_play_outro_movie()
@@ -103,9 +144,9 @@ include_weapons()
 	include_weapon( "crossbow_explosive_upgraded_zm", false );
 
 	// these are not available yet until their functionality is more complete
-	include_weapon( "humangun_zm", true, false, maps\_zombiemode_weapons::default_wonder_weapon_weighting_func );
+	include_weapon( "humangun_zm", true, false, maps\_remix_zombiemode_weapons::default_wonder_weapon_weighting_func );
 	include_weapon( "humangun_upgraded_zm", false );
-	include_weapon( "sniper_explosive_zm", true, false, maps\_zombiemode_weapons::default_wonder_weapon_weighting_func );
+	include_weapon( "sniper_explosive_zm", true, false, maps\_remix_zombiemode_weapons::default_wonder_weapon_weighting_func );
 	include_weapon( "sniper_explosive_upgraded_zm", false );
 	//include_weapon( "tesla_gun_zm", false );
 	//include_weapon( "tesla_gun_upgraded_zm", false );

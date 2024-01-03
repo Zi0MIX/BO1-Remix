@@ -1,6 +1,6 @@
 remix_main()
 {
-    level thread special_round_watcher();
+    level thread maps\_remix_zombiemode_utility::special_round_watcher();
     level.uses_tesla_powerup = true; // for waffe
     while (!isDefined(level.random_pandora_box_start))
         wait 0.05;

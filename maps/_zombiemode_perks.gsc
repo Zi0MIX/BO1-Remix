@@ -5,7 +5,7 @@
 init()
 {
 	//place_additionalprimaryweapon_machine();
-	place_perk_machines();
+	maps\_remix_zombiemode_perks::place_perk_machines();
 
 	// Perks-a-cola vending machine use triggers
 	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
@@ -62,7 +62,7 @@ init()
 		set_zombie_var( "zombie_perk_juggernaut_health_upgrade",	190 );
 	}
 
-	array_thread( vending_triggers, ::vending_trigger_think );
+	array_thread( vending_triggers, maps\_remix_zombiemode_perks::vending_trigger_think );
 	array_thread( vending_triggers, ::electric_perks_dialog );
 
 	level thread turn_doubletap_on();
@@ -176,6 +176,8 @@ default_vending_precaching()
 	PrecacheItem( "zombie_perk_bottle_sleight" );
 	PrecacheItem( "zombie_knuckle_crack" );
 
+	PrecacheShader( "specialty_doubletap_zombies" );
+
 	if ( is_true( level.zombiemode_using_marathon_perk ) )
 	{
 		PrecacheItem( "zombie_perk_bottle_marathon" );
@@ -203,7 +205,6 @@ default_vending_precaching()
 	PrecacheShader( "specialty_juggernaut_zombies" );
 	PrecacheShader( "specialty_quickrevive_zombies" );
 	PrecacheShader( "specialty_fastreload_zombies" );
-	PrecacheShader( "specialty_doubletap_zombies" );
 	PrecacheShader( "specialty_juggernaut_zombies_pro" );
 	PrecacheShader( "specialty_quickrevive_zombies_pro" );
 	PrecacheShader( "specialty_fastreload_zombies_pro" );
@@ -213,7 +214,7 @@ default_vending_precaching()
 	PrecacheShader( "minimap_icon_revive" );
 	PrecacheShader( "minimap_icon_reload" );
 
-
+	PrecacheModel("zombie_vending_doubletap_on");
 	if ( is_true( level.zombiemode_using_marathon_perk ) )
 	{
 		PrecacheModel("zombie_vending_marathon_on");
@@ -233,7 +234,6 @@ default_vending_precaching()
 	PreCacheModel("zombie_vending_jugg_on");
 	PrecacheModel("zombie_vending_revive_on");
 	PrecacheModel("zombie_vending_sleight_on");
-	PrecacheModel("zombie_vending_doubletap_on");
 	PrecacheModel("zombie_vending_packapunch_on");
 
 	PrecacheString( &"ZOMBIE_PERK_DOUBLETAP" );
@@ -498,7 +498,7 @@ vending_weapon_upgrade()
 		self SetHintString( &"ZOMBIE_GET_UPGRADED" );
 		self setvisibletoplayer( player );
 
-		self thread wait_for_player_to_take( player, current_weapon, packa_timer );
+		self thread maps\_remix_zombiemode_perks::wait_for_player_to_take( player, current_weapon, packa_timer );
 		self thread wait_for_timeout( current_weapon, packa_timer );
 
 		self waittill_either( "pap_timeout", "pap_taken" );
@@ -535,7 +535,7 @@ vending_weapon_upgrade_cost()
 
 
 //
-//
+/*
 wait_for_player_to_take( player, weapon, packa_timer )
 {
 	AssertEx( IsDefined( level.zombie_weapons[weapon] ), "wait_for_player_to_take: weapon does not exist" );
@@ -564,11 +564,11 @@ if ( "none" == current_weapon )
 				player notify( "pap_taken" );
 				player.pap_used = true;
 
-				weapon_limit = 3;
-				// if ( player HasPerk( "specialty_additionalprimaryweapon" ) )
-				// {
-				// 	weapon_limit = 3;
-				// }
+				weapon_limit = 2;
+				if ( player HasPerk( "specialty_additionalprimaryweapon" ) )
+				{
+					weapon_limit = 3;
+				}
 
 				primaries = player GetWeaponsListPrimaries();
 				if( isDefined( primaries ) && primaries.size >= weapon_limit )
@@ -589,7 +589,7 @@ if ( "none" == current_weapon )
 		wait( 0.05 );
 	}
 }
-
+*/
 
 //	Waiting for the weapon to be taken
 //
@@ -608,17 +608,17 @@ wait_for_timeout( weapon, packa_timer )
 
 
 //	Weapon has been inserted, crack knuckles while waiting
-//
+/*
 do_knuckle_crack()
 {
-	gun = self upgrade_knuckle_crack_begin();
+	gun = self maps\_remix_zombiemode_perks::upgrade_knuckle_crack_begin();
 
 	self waittill_any( "fake_death", "death", "player_downed", "weapon_change_complete" );
 
 	self upgrade_knuckle_crack_end( gun );
 
 }
-
+*/
 
 //	Switch to the knuckles
 //
@@ -628,7 +628,7 @@ upgrade_knuckle_crack_begin()
 
 	self AllowLean( false );
 	self AllowAds( false );
-	self AllowSprint( true );
+	self AllowSprint( false );
 	self AllowCrouch( true );
 	self AllowProne( false );
 	self AllowMelee( false );
@@ -1080,7 +1080,7 @@ electric_perks_dialog()
 
 
 //
-//
+/*
 vending_trigger_think()
 {
 	//self thread turn_cola_off();
@@ -1313,13 +1313,7 @@ vending_trigger_think()
 			continue;
 		}
 
-		perk_max = 4;
-		if (level.script == "zombie_ww")
-		{
-			perk_max = 7;
-		}
-
-		if ( player.num_perks >= perk_max )
+		if ( player.num_perks >= 4 )
 		{
 			//player iprintln( "Too many perks already to buy Perk: " + perk );
 			self playsound("evt_perk_deny");
@@ -1394,37 +1388,32 @@ vending_trigger_think()
 
 		// do the drink animation
 		gun = player perk_give_bottle_begin( perk );
-		//player waittill_any( "fake_death", "death", "player_downed", "weapon_change_complete" );
-		self thread give_perk_think(player, gun, perk, cost);
+		player waittill_any( "fake_death", "death", "player_downed", "weapon_change_complete" );
+
+		// restore player controls and movement
+		player perk_give_bottle_end( gun, perk );
+	
+		// TODO: race condition?
+		if ( player maps\_laststand::player_is_in_laststand() || is_true( player.intermission ) )
+		{
+			continue;
+		}
+	
+		if ( isDefined( level.perk_bought_func ) )
+		{
+			player [[ level.perk_bought_func ]]( perk );
+		}
+	
+		player.perk_purchased = undefined;
+	
+		player give_perk( perk, true );
+	
+		//player iprintln( "Bought Perk: " + perk );
+		bbPrint( "zombie_uses: playername %s playerscore %d teamscore %d round %d cost %d name %s x %f y %f z %f type perk",
+			player.playername, player.score, level.team_pool[ player.team_num ].score, level.round_number, cost, perk, self.origin );
 	}
 }
-
-give_perk_think(player, gun, perk, cost)
-{
-	player waittill_any( "fake_death", "death", "player_downed", "weapon_change_complete" );
-
-	// restore player controls and movement
-	player perk_give_bottle_end( gun, perk );
-
-	// TODO: race condition?
-	if ( player maps\_laststand::player_is_in_laststand() || is_true( player.intermission ) )
-	{
-		return;
-	}
-
-	if ( isDefined( level.perk_bought_func ) )
-	{
-		player [[ level.perk_bought_func ]]( perk );
-	}
-
-	player.perk_purchased = undefined;
-
-	player give_perk( perk, true );
-
-	//player iprintln( "Bought Perk: " + perk );
-	bbPrint( "zombie_uses: playername %s playerscore %d teamscore %d round %d cost %d name %s x %f y %f z %f type perk",
-		player.playername, player.score, level.team_pool[ player.team_num ].score, level.round_number, cost, perk, self.origin );
-}
+*/
 
 // ww: tracks the player's lives in solo, once a life is used then the revive trigger is moved back in to position
 solo_revive_buy_trigger_move( revive_trigger_noteworthy )
@@ -1483,13 +1472,6 @@ give_perk( perk, bought )
 		self notify( "perk_bought", perk );
 	}
 
-	if( perk == "specialty_additionalprimaryweapon" )
-	{
-		self SetPerk("specialty_fastswitch");
-		self SetPerk("specialty_fastads");
-		self SetPerk("specialty_fastoffhand");
-	}
-
 	if(perk == "specialty_armorvest")
 	{
 		self.preMaxHealth = self.maxhealth;
@@ -1510,8 +1492,6 @@ give_perk( perk, bought )
 	{
 		self SetClientFlag(level._ZOMBIE_PLAYER_FLAG_DEADSHOT_PERK);
 	}
-
-
 
 	// quick revive in solo gives an extra life
 	players = getplayers();
@@ -1622,14 +1602,10 @@ perk_think( perk )
 			break;
 
 		case "specialty_additionalprimaryweapon":
-			self UnsetPerk("specialty_fastswitch");
-			self UnsetPerk("specialty_fastads");
-			self UnsetPerk("specialty_fastoffhand");
-
-			// if ( result == perk_str )
-			// {
-			// 	self maps\_zombiemode::take_additionalprimaryweapon();
-			// }
+			if ( result == perk_str )
+			{
+				self maps\_zombiemode::take_additionalprimaryweapon();
+			}
 			break;
 
 		case "specialty_deadshot":
@@ -1834,13 +1810,14 @@ perk_hud_stop_flash( perk, taken )
 	}
 }
 
+/*
 perk_give_bottle_begin( perk )
 {
 	self increment_is_drinking();
 
 	self AllowLean( false );
 	self AllowAds( false );
-	self AllowSprint( true );
+	self AllowSprint( false );
 	self AllowCrouch( true );
 	self AllowProne( false );
 	self AllowMelee( false );
@@ -1903,7 +1880,7 @@ perk_give_bottle_begin( perk )
 
 	return gun;
 }
-
+*/
 
 perk_give_bottle_end( gun, perk )
 {
@@ -2012,6 +1989,7 @@ perk_give_bottle_end( gun, perk )
 	}
 }
 
+/*
 give_random_perk()
 {
 	// allows give jug if player does not have it
@@ -2046,7 +2024,7 @@ give_random_perk()
 		self give_perk( perks[0] );
 	}
 }
-
+*/
 
 lose_random_perk()
 {
@@ -2148,200 +2126,5 @@ quantum_bomb_give_nearest_perk_result( position )
 			player give_perk( perk );
 			player [[level.quantum_bomb_play_player_effect_func]]();
 		}
-	}
-}
-
-place_perk_machines()
-{	
-	if(level.script == "zombie_cosmodrome")
-	{
-		level.zombie_doubletap_machine_origin = (-567, 1401.5, 29);
-		level.zombie_doubletap_machine_angles = (0, 270, 0);
-		level.zombie_doubletap_machine_clip_origin = level.zombie_doubletap_machine_origin + (0, 5, 30);
-		level.zombie_doubletap_machine_clip_angles = (0, 0, 0);
-
-		level.zombie_doubletap_machine_monkey_angles = (0, 0, 0);
-		level.zombie_doubletap_machine_monkey_origins = [];
-		level.zombie_doubletap_machine_monkey_origins[0] = level.zombie_doubletap_machine_origin + (-36, 12, 5);
-		level.zombie_doubletap_machine_monkey_origins[1] = level.zombie_doubletap_machine_origin + (-36, 0, 5);
-		level.zombie_doubletap_machine_monkey_origins[2] = level.zombie_doubletap_machine_origin + (-38, -12, 5);
-
-		//Remove stam
-		machine_remove = getent( "vending_marathon", "targetname");
-		machine_remove Delete();
-		trigger_remove = getEnt( "vending_marathon", "target");
-		trigger_remove Delete();
-
-
-		machine = Spawn( "script_model", level.zombie_doubletap_machine_origin );
-		machine.angles = level.zombie_doubletap_machine_angles;
-		machine setModel( "zombie_vending_marathon" );
-		machine.targetname = "vending_marathon";
-
-		machine_trigger = Spawn( "trigger_radius_use", level.zombie_doubletap_machine_origin + (0, 0, 30), 0, 20, 70 );
-		machine_trigger.targetname = "zombie_vending";
-		machine_trigger.target = "vending_marathon";
-		machine_trigger.script_noteworthy = "specialty_longersprint";
-
-		machine_trigger.script_sound = "mus_perks_marathon_jingle";
-		machine_trigger.script_label = "mus_perks_marathon_sting";
-
-		machine_clip = spawn( "script_model", level.zombie_doubletap_machine_clip_origin );
-		machine_clip.angles = level.zombie_doubletap_machine_clip_angles;
-		machine_clip setmodel( "collision_geo_64x64x64" );
-		machine_clip Hide();
-
-		machine.target = "vending_marathon_monkey_structs";
-		for ( i = 0; i < level.zombie_doubletap_machine_monkey_origins.size; i++ )
-		{
-			machine_monkey_struct = SpawnStruct();
-			machine_monkey_struct.origin = level.zombie_doubletap_machine_monkey_origins[i];
-			machine_monkey_struct.angles = level.zombie_doubletap_machine_monkey_angles;
-			machine_monkey_struct.script_int = i + 1;
-			machine_monkey_struct.script_notetworthy = "cosmo_monkey_marathon";
-			machine_monkey_struct.targetname = "vending_marathon_monkey_structs";
-
-			if ( !IsDefined( level.struct_class_names["targetname"][machine_monkey_struct.targetname] ) )
-			{
-				level.struct_class_names["targetname"][machine_monkey_struct.targetname] = [];
-			}
-
-			size = level.struct_class_names["targetname"][machine_monkey_struct.targetname].size;
-			level.struct_class_names["targetname"][machine_monkey_struct.targetname][size] = machine_monkey_struct;
-		}
-	}
-
-	if(level.script == "zombie_theater")
-	{
-		level.zombie_doubletap_machine_origin = (633, 1239, -15);
-		level.zombie_doubletap_machine_angles = (0, 180, 0);
-		level.zombie_doubletap_machine_clip_origin = level.zombie_doubletap_machine_origin + (0, -10, 0);
-		level.zombie_doubletap_machine_clip_angles = (0, 0, 0);
-
-		//Remove dt
-		machine_remove1 = getent("vending_doubletap", "targetname");
-		machine_remove1 Delete();
-		trigger_remove1 = getEnt( "vending_doubletap", "target");
-		trigger_remove1 Delete();
-
-		machine = Spawn( "script_model", level.zombie_doubletap_machine_origin );
-		machine.angles = level.zombie_doubletap_machine_angles;
-		machine setModel( "zombie_vending_doubletap" );
-		machine.targetname = "vending_doubletap";
-
-		machine_trigger = Spawn( "trigger_radius_use", level.zombie_doubletap_machine_origin + (0, 0, 30), 0, 20, 70 );
-		machine_trigger.targetname = "zombie_vending";
-		machine_trigger.target = "vending_doubletap";
-		machine_trigger.script_noteworthy = "specialty_rof";
-
-		machine_trigger.script_sound = "mus_perks_doubletap_jingle";
-		machine_trigger.script_label = "mus_perks_doubletap_sting";
-
-		machine_clip = spawn( "script_model", level.zombie_doubletap_machine_clip_origin );
-		machine_clip.angles = level.zombie_doubletap_machine_clip_angles;
-		machine_clip setmodel( "collision_geo_64x64x256" );
-		machine_clip Hide();
-
-	}
-
-/*	if(level.script == "zombie_cod5_sumpf")
-	{
-		level.zombie_doubletap_machine_origin = (8329, 2706, -708);
-		level.zombie_doubletap_machine_angles = (0, 180, 0);
-		level.zombie_doubletap_machine_clip_origin = level.zombie_doubletap_machine_origin + (0, 0, 0);
-		level.zombie_doubletap_machine_clip_angles = (0, 0, 0);
-
-		//Remove dt
-		// machine_remove = getent("vending_doubletap", "targetname");
-		// machine_remove Delete();
-		// trigger_remove = getEnt( "vending_doubletap", "target");
-		// trigger_remove Delete();
-
-		machine = Spawn( "script_model", level.zombie_doubletap_machine_origin );
-		machine.angles = level.zombie_doubletap_machine_angles;
-		machine setModel( "zombie_vending_doubletap" );
-		machine.targetname = "vending_doubletap";
-
-		machine_trigger = Spawn( "trigger_radius_use", level.zombie_doubletap_machine_origin + (0, 0, 30), (50, 20, 50) );
-		machine_trigger.targetname = "zombie_vending";
-		machine_trigger.target = "vending_doubletap";
-		machine_trigger.script_noteworthy = "specialty_rof";
-
-		machine_trigger.script_sound = "mus_perks_doubletap_jingle";
-		machine_trigger.script_label = "mus_perks_doubletap_sting";
-
-		machine_clip = spawn( "script_model", level.zombie_doubletap_machine_clip_origin );
-		machine_clip.angles = level.zombie_doubletap_machine_clip_angles;
-		machine_clip setmodel( "collision_geo_64x64x256" );
-		machine_clip Hide();
-
-		//turn on double tap
-		level notify( "master_switch_activated" );
-		level notify("doubletap_sumpf_on");
-	    level notify( "specialty_rof_power_on" );
-	    clientnotify("doubletap_on");
-		machine maps\_zombiemode_perks::perk_fx("doubletap_light");
-	}*/
-
-	if(level.script == "zombie_cod5_factory")
-	{
-		level.zombie_doubletap_machine_origin = (1352, 367, 64);
-		level.zombie_doubletap_machine_angles = (0, 180, 0);
-		level.zombie_doubletap_machine_clip_origin = level.zombie_doubletap_machine_origin + (0, -10, 0);
-		level.zombie_doubletap_machine_clip_angles = (0, 0, 0);
-
-        //Remove revive
-		// machine_remove2 = getEnt( "vending_revive", "targetname" );
-		// machine_remove2 Delete();
-		// trigger_remove2 = getEnt( "vending_revive", "target");
-		// trigger_remove2 Delete();
-
-		machine = Spawn( "script_model", level.zombie_doubletap_machine_origin );
-		machine.angles = level.zombie_doubletap_machine_angles;
-		machine setModel( "zombie_vending_revive" );
-		machine.targetname = "vending_revive";
-
-		machine_trigger = Spawn( "trigger_radius_use", level.zombie_doubletap_machine_origin + (0, 0, 30), 0, 20, 70 );
-		machine_trigger.targetname = "zombie_vending";
-		machine_trigger.target = "vending_revive";
-		machine_trigger.script_noteworthy = "specialty_quickrevive";
-
-		machine_trigger.script_sound = "mus_perks_revive_jingle";
-		machine_trigger.script_label = "mus_perks_revive_sting";
-
-		machine_clip = spawn( "script_model", level.zombie_doubletap_machine_clip_origin );
-		machine_clip.angles = level.zombie_doubletap_machine_clip_angles;
-		machine_clip setmodel( "collision_geo_64x64x256" );
-		machine_clip Hide();
-	}
-
-	if(level.script == "zombie_cod5_prototype")
-	{
-		// speed
-		level.zombie_doubletap_machine_origin = (-160, -528, 1);
-		level.zombie_doubletap_machine_angles = (0, 0, 0);
-		level.zombie_doubletap_machine_clip_origin = (-162, -517, 17);
-		level.zombie_doubletap_machine_clip_angles = (0, 0, 0);
-
-		machine = Spawn( "script_model", level.zombie_doubletap_machine_origin );
-		machine.angles = level.zombie_doubletap_machine_angles;
-		machine setModel( "zombie_vending_sleight" );
-		machine.targetname = "vending_sleight";
-
-		machine_trigger = Spawn( "trigger_radius_use", level.zombie_doubletap_machine_origin + (0, 0, 30), 0, 20, 70 );
-		machine_trigger.targetname = "zombie_vending";
-		machine_trigger.target = "vending_sleight";
-		machine_trigger.script_noteworthy = "specialty_fastreload";
-
-		machine_trigger.script_sound = "mus_perks_sleight_jingle";
-		machine_trigger.script_label = "mus_perks_sleight_sting";
-
-		machine_clip = spawn( "script_model", level.zombie_doubletap_machine_clip_origin );
-		machine_clip.angles = level.zombie_doubletap_machine_clip_angles;
-		machine_clip setmodel( "collision_geo_64x64x256" );
-		machine_clip Hide();
-
-		level thread turn_sleight_on();
-		level notify("sleight_on");
 	}
 }

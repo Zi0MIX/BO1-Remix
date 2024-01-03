@@ -64,14 +64,11 @@ init()
 		level.director_devgui_health = ::director_devgui_health;
 	}
 
-	//precacheshellshock( "electrocution" );
+	// precacheshellshock( "electrocution" );
 
 	// Number of current active boss zombies
 	level.num_director_zombies = 0;
-	level.last_director_round = 0;
-	flag_init("director_alive");
-	flag_init("potential_director");
-
+	
 	level.director_zombie_spawners = GetEntArray( "boss_zombie_spawner", "targetname" );
 	array_thread( level.director_zombie_spawners, ::add_spawn_function, maps\_zombiemode_ai_director::director_prespawn );
 
@@ -94,7 +91,7 @@ init()
 	}
 	if( !isDefined( level.director_zombie_scream_a_radius ) )
 	{
-		level.director_zombie_scream_a_radius_sq = 512*512; //1024*1024 old
+		level.director_zombie_scream_a_radius_sq = 1024*1024;
 	}
 	if( !isDefined( level.director_zombie_scream_b_chance ) )
 	{
@@ -131,7 +128,7 @@ init()
 	if( !isDefined( level.director_max_damage_taken ) )
 	{
 		level.director_max_damage_taken = 250000;
-		level.director_max_damage_taken_easy = 2500;
+		level.director_max_damage_taken_easy = 1000;
 
 		//if ( is_true( level.debug_director ) )
 		//{
@@ -162,9 +159,7 @@ init()
 	level.director_speed_buff = 0;
 
 	level thread setup_player_damage_watchers();
-	level thread director_max_ammo_watcher();
-
-	level thread possible_director_watcher();
+	level thread maps\_remix_zombiemode_ai_director::director_max_ammo_watcher();
 }
 
 director_precache_models()
@@ -491,6 +486,7 @@ init_director_zombie_anims()
 	level._zombie_board_taunt["director_zombie"][7] = %ai_zombie_taunts_5f;
 }
 
+/*
 director_zombie_spawn()
 {
 	self.script_moveoverride = true;
@@ -521,13 +517,13 @@ director_zombie_spawn()
 		director_zombie.animname = "director_zombie";
 
 		director_zombie thread director_zombie_think();
-		flag_set("director_alive");	// Runs only for 1st spawn
 	}
 	else
 	{
 		level.num_director_zombies--;
 	}
 }
+*/
 
 director_zombie_manager()
 {
@@ -539,7 +535,7 @@ director_zombie_manager()
 		{
 			if ( level.num_director_zombies < level.max_director_zombies )
 			{
-				start_boss director_zombie_spawn();
+				start_boss maps\_remix_zombiemode_ai_director::director_zombie_spawn();
 				break;
 			}
 			wait( 0.5 );
@@ -554,7 +550,7 @@ director_zombie_manager()
 			spawner = director_zombie_pick_best_spawner();
 			if( isDefined( spawner ) )
 			{
-				spawner director_zombie_spawn();
+				spawner maps\_remix_zombiemode_ai_director::director_zombie_spawn();
 			}
 			wait( 10 );
 		}
@@ -675,15 +671,14 @@ director_reset_light_flag()
 	}
 }
 
+/*
 director_watch_damage()
 {
 	self endon( "death" );
 	self endon( "humangun_leave" );
 
 	self.dmg_taken = 0;
-	level.director_damage = 0;
-	flag_set( "director_alive" );
-
+	
 	/#
 	self thread director_display_damage();
 	#/
@@ -709,8 +704,7 @@ director_watch_damage()
 		}
 
 		self.dmg_taken += amount;
-		level.director_damage += amount;		// Send to level var
-
+		
 		if ( self.health_state == "pristine" )
 		{
 			self.health_state = "full";
@@ -761,7 +755,7 @@ director_watch_damage()
 			wait_network_frame();
 			if ( !is_true( self.leaving_level ) && !is_true( self.entering_level ) && !is_true( self.sprint2walk ) )
 			{
-				self thread director_scream_in_water();
+				self thread maps\_remix_zombiemode_ai_director::director_scream_in_water();
 			}
 		}
 	}
@@ -816,7 +810,7 @@ director_watch_damage()
 	}
 	else
 	{
-		level thread maps\_zombiemode_powerups::specific_powerup_drop( "tesla", self.origin );
+		level thread maps\_zombiemode_powerups::specific_powerup_drop( "minigun", self.origin );
 	}
 
 	forward = VectorNormalize( AnglesToForward( self.angles ) );
@@ -827,8 +821,9 @@ director_watch_damage()
 	level notify( "quiet_on_the_set_achieved" );
 
 	exit = self thread [[ level.director_find_exit ]]();
-	self thread director_leave_map( exit, self.in_water );
+	self thread maps\_remix_zombiemode_ai_director::director_leave_map( exit, self.in_water );
 }
+*/
 
 //-----------------------------------------------------------------------------------------------
 // stumble anim and fx
@@ -859,20 +854,16 @@ director_stumble_watcher( animname )
 //-----------------------------------------------------------------------------------------------
 // reaction when shot in water
 //-----------------------------------------------------------------------------------------------
+/*
 director_scream_in_water()
 {
 	self endon( "death" );
 
 	if ( !isDefined( self.water_scream ) )
 	{
+				self.water_scream = true;
+
 		if ( is_true( self.is_melee ) )
-		{
-			return;
-		}
-
-		self.water_scream = true;
-
-		/*if ( is_true( self.is_melee ) )
 		{
 			while ( 1 )
 			{
@@ -882,7 +873,7 @@ director_scream_in_water()
 				}
 				wait_network_frame();
 			}
-		}*/
+		}
 
         if( IsDefined( level._audio_director_vox_play ) )
 	    {
@@ -906,8 +897,6 @@ director_scream_in_water()
 
 director_scream_delay()
 {
-	self endon( "director_exit" );
-
 	wait( 2.6 );
 	clientnotify( "ZDA" );
 	self thread director_blur();
@@ -922,9 +911,10 @@ director_blur()
 	for ( i = 0; i < players.size; i++ )
 	{
 		player = players[i];
-		player ShellShock( "electrocution", 1, true );
+		player ShellShock( "electrocution", 1.7, true );
 	}
 }
+*/
 
 //-----------------------------------------------------------------------------------------------
 // main ai for the director
@@ -955,7 +945,7 @@ director_zombie_think()
 
 	level notify( "audio_begin_director_vox" );
 
-	self thread director_watch_damage();
+	self thread maps\_remix_zombiemode_ai_director::director_watch_damage();
 	self thread zombie_melee_watcher();
 	self thread director_zombie_update_goal_radius();
 	self thread director_kill_prone();
@@ -2211,7 +2201,7 @@ groundhit_watcher( animname )
 		//affected_players[i] ShellShock( "electrocution", 1.5, true );
 		if ( affected_players[i] IsOnGround() )
 		{
-			affected_players[i] player_electrify();
+			affected_players[i] maps\_remix_zombiemode_ai_director::player_electrify();
 		}
 	}
 }
@@ -2239,7 +2229,7 @@ scream_b_watcher( animname )
 	}
 	for( i = 0; i < affected_players.size; i++ )
 	{
-		affected_players[i] ShellShock( "electrocution", 0.5, true ); //1.7 old
+		affected_players[i] ShellShock( "electrocution", 1.5, true );
 	}
 }
 
@@ -2371,11 +2361,11 @@ player_damage_watcher( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, s
 
 	if ( is_true( eAttacker.electrified ) )
 	{
-		self player_electrify();
+		self maps\_remix_zombiemode_ai_director::player_electrify();
 	}
 }
 
-
+/*
 player_electrify()
 {
 	self endon( "death" );
@@ -2386,15 +2376,16 @@ player_electrify()
 	if ( !IsDefined( self.electrified ) )
 	{
 		self.electrified = true;
-		//self setelectrified( SHOCK_TIME );
-		//self ShellShock( "electrocution", 0.5, true );
-		//self PlaySound("zmb_director_damage_zort");
+		self setelectrified( SHOCK_TIME );
+		self ShellShock( "electrocution", 0.5, true );
+		self PlaySound("zmb_director_damage_zort");
 		self setclientflag( level._CF_PLAYER_ELECTRIFIED );
 		wait( SHOCK_TIME );
 		self clearclientflag( level._CF_PLAYER_ELECTRIFIED );
 		self.electrified = undefined;
 	}
 }
+*/
 
 //-----------------------------------------------------------------------------------------------
 // set fx for client
@@ -2431,7 +2422,7 @@ zombie_melee_watcher(is_zombie)
 		{
 			if ( method == "MOD_MELEE" )
 			{
-				attacker player_electrify();
+				attacker maps\_remix_zombiemode_ai_director::player_electrify();
 				attacker thread maps\_zombiemode_audio::create_and_play_dialog( "general", "damage_shocked" );
 			}
 		}
@@ -2451,7 +2442,7 @@ zombie_clear_electric_buff( eInflictor, attacker, iDamage, sMeansOfDeath, sWeapo
 	{
 		if ( sMeansOfDeath == "MOD_MELEE" )
 		{
-			attacker player_electrify();
+			attacker maps\_remix_zombiemode_ai_director::player_electrify();
 		}
 	}
 
@@ -2491,6 +2482,7 @@ zombie_drop_max_ammo()
 //-----------------------------------------------------------------------------------------------
 // figure out what rounds electrified zombies can potentially drop max ammo
 //-----------------------------------------------------------------------------------------------
+/*
 director_max_ammo_watcher()
 {
 	level.director_max_ammo_available = false;
@@ -2510,12 +2502,13 @@ director_max_ammo_watcher()
 		{
 			level.director_max_ammo_available = true;
 			level waittill( "director_max_ammo_drop" );
-			level.director_max_ammo_round = level.round_number + randomintrange( 4, 5 ); //(4, 6) old
+			level.director_max_ammo_round = level.round_number + randomintrange( 4, 6 );
 
 			director_print( "next max ammo round " + level.director_max_ammo_round );
 		}
 	}
 }
+*/
 
 //-----------------------------------------------------------------------------------------------
 // unaffected by instakill
@@ -2565,7 +2558,7 @@ director_humangun_hit_response( upgraded )
 			self setclientflag( level._ZOMBIE_ACTOR_FLAG_DIRECTOR_DEATH );
 
 			exit = getstruct( self.water_trigger.target, "targetname" );
-			self thread director_leave_map( exit, true );
+			self thread maps\_remix_zombiemode_ai_director::director_leave_map( exit, true );
 		}
 		else
 		{
@@ -2633,15 +2626,12 @@ director_custom_idle()
 //-----------------------------------------------------------------------------------------------
 // leave the map for x seconds / rounds
 //-----------------------------------------------------------------------------------------------
+/*
 director_leave_map( exit, calm )
 {
 	self endon( "death" );
 
 	self.leaving_level = true;
-	flag_clear("director_alive");
-	if (flag("potential_director"))
-		flag_clear("potential_director");
-	level.last_director_round = level.round_number;
 	self [[ level.director_exit_level ]]( exit, calm );
 	self.leaving_level = undefined;
 
@@ -2653,6 +2643,7 @@ director_leave_map( exit, calm )
 	self thread director_reenter_map();
 
 }
+*/
 
 //-----------------------------------------------------------------------------------------------
 // wait a bit and come back
@@ -2696,7 +2687,7 @@ director_reenter_map()
 	level notify( "audio_begin_director_vox" );
 
 	self thread director_zombie_check_for_buff();
-	self thread director_watch_damage();
+	self thread maps\_remix_zombiemode_ai_director::director_watch_damage();
 	self thread director_zombie_update_goal_radius();
 	self thread director_zombie_update();
 
@@ -2964,22 +2955,4 @@ director_print( str )
 		iprintln( str + "\n" );
 	}
 #/
-}
-
-possible_director_watcher()
-{
-	while (true)
-	{
-		level waittill("end_of_round");
-
-		if (isDefined(level.last_director_round) && level.last_director_round > 0)
-		{
-			if (level.round_number > (level.last_director_round + 1))
-				flag_set("potential_director");
-
-			wait 15;
-			flag_clear("potential_director");
-		}
-		wait 0.1;
-	}
 }

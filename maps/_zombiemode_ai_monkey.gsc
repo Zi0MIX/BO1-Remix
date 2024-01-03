@@ -82,7 +82,7 @@ init()
 	}
 	if ( !isdefined( level.machine_damage_max ) )
 	{
-		level.machine_damage_max = 10;		// damage monkey does once player enters the zone
+		level.machine_damage_max = 8;		// damage monkey does once player enters the zone
 	}
 	if ( !isdefined( level.ground_hit_delay ) )
 	{
@@ -103,9 +103,9 @@ init()
 	flag_init( "perk_bought" );
 	flag_init( "monkey_free_perk" );
 
-	level thread monkey_round_tracker();
+	level thread maps\_remix_zombiemode_ai_monkey::monkey_round_tracker();
 
-	level.perk_lost_func = ::monkey_perk_lost;
+	level.perk_lost_func = maps\_remix_zombiemode_ai_monkey::monkey_perk_lost;
 	level.perk_bought_func = ::monkey_perk_bought;
 	level.revive_solo_fx_func = ::monkey_revive_solo_fx;
 }
@@ -556,6 +556,7 @@ monkey_setup_packs()
 //-----------------------------------------------------------------
 // increase half after each encounter
 //-----------------------------------------------------------------
+/*
 monkey_setup_health()
 {
 	switch( level.monkey_encounters )
@@ -577,13 +578,14 @@ monkey_setup_health()
 		break;
 	}
 
-	if ( level.monkey_zombie_health > 1500 )
+	if ( level.zombie_health > 1600 )
 	{
-		level.monkey_zombie_health = 1500;
+		level.zombie_health = 1600;
 	}
 
 	monkey_print( "monkey health = " + level.monkey_zombie_health );
 }
+*/
 
 //-----------------------------------------------------------------
 // grab the spawners in enabled zones and randomize them
@@ -1053,6 +1055,7 @@ monkey_round_aftermath()
 //-----------------------------------------------------------------
 // when to start a monkey round
 //-----------------------------------------------------------------
+/*
 monkey_round_tracker()
 {
 	flag_wait( "power_on" );
@@ -1061,14 +1064,7 @@ monkey_round_tracker()
 	level.monkey_save_spawn_func = level.round_spawn_func;
 	level.monkey_save_wait_func = level.round_wait_func;
 
-	if(level.round_number % 2 == 1)
-	{
-		level.next_monkey_round = level.round_number + 2;
-	}
-	else
-	{
-		level.next_monkey_round = level.round_number + 1;
-	}
+	level.next_monkey_round = level.round_number + randomintrange( 1, 4 );
 	level.prev_monkey_round = level.next_monkey_round;
 
 	while ( 1 )
@@ -1080,7 +1076,8 @@ monkey_round_tracker()
 			// only allow round change if someone has a perk
 			if ( !monkey_player_has_perk() )
 			{
-				level.next_monkey_round = level.next_monkey_round + 2;
+				level.next_monkey_round++;
+				monkey_print( "next monkey round at " + level.next_monkey_round );
 				continue;
 			}
 
@@ -1093,26 +1090,10 @@ monkey_round_tracker()
 			level.round_spawn_func = ::monkey_round_spawning;
 			level.round_wait_func = ::monkey_round_wait;
 
-			if(!IsDefined(level.prev_monkey_round_amount))
-			{
-				if(level.next_monkey_round % 2 != 1)
-				{
-					level.next_monkey_round++;
-				}
-				level.prev_monkey_round = level.next_monkey_round;
-				level.prev_monkey_round_amount = 4;
-				level.next_monkey_round = level.round_number + level.prev_monkey_round_amount;
-			}
-			else
-			{
-				if(level.next_monkey_round % 2 != 1)
-				{
-					level.next_monkey_round++;
-				}
-				level.prev_monkey_round = level.next_monkey_round;
-				level.next_monkey_round = level.round_number + 4;
-				level.prev_monkey_round_amount = undefined;
-			}
+			level.prev_monkey_round = level.next_monkey_round;
+			level.next_monkey_round = level.round_number + randomintrange( 4, 6 );
+
+			monkey_print( "next monkey round at " + level.next_monkey_round );
 		}
 		else if ( flag( "monkey_round" ) )
 		{
@@ -1121,6 +1102,7 @@ monkey_round_tracker()
 		}
 	}
 }
+*/
 
 //-----------------------------------------------------------------
 // monkey round begins
@@ -1137,7 +1119,7 @@ monkey_round_start()
 
 	level thread monkey_zombie_setup_perks();
 
-	level monkey_setup_health();
+	level maps\_remix_zombiemode_ai_monkey::monkey_setup_health();
 	level monkey_setup_spawners();
 	level monkey_setup_packs();
 	level monkey_pack_man_setup_perks();
@@ -1619,21 +1601,21 @@ monkey_zombie_grenade_throw( target )
 // changes the damage amount when player enters the same zone
 //		or shoots the monkey
 //-----------------------------------------------------------------
+/*
 monkey_zombie_watch_machine_damage()
 {
 	self endon( "death" );
 	self endon( "stop_perk_attack" );
 	self endon( "stop_machine_watch" );
 
-	machine = self.pack.machine;
-	machine waittill( "attacked" );
+	arrival_health = self.health;
 
 	while ( 1 )
 	{
 		monkey_zone = self monkey_get_zone();
 		if ( isdefined( monkey_zone ) )
 		{
-			if ( monkey_zone.is_occupied )
+			if ( monkey_zone.is_occupied || self.health < arrival_health )
 			{
 				monkey_print( "player is here, go crazy" );
 				self.machine_damage = level.machine_damage_max;
@@ -1644,6 +1626,7 @@ monkey_zombie_watch_machine_damage()
 		wait_network_frame();
 	}
 }
+*/
 
 monkey_zombie_set_state( state )
 {
@@ -1682,6 +1665,7 @@ monkey_zombie_get_state()
 //-----------------------------------------------------------------
 // attack machine until it's destroyed
 //-----------------------------------------------------------------
+/*
 monkey_zombie_attack_perk()
 {
 	self endon( "death" );
@@ -1697,7 +1681,7 @@ monkey_zombie_attack_perk()
 
 	self.following_player = false;
 
-	//self thread monkey_zombie_health_watcher();
+	self thread monkey_zombie_health_watcher();
 	self monkey_zombie_set_state( "attack_perk" );
 
 	//C. Ayers: Adding in player dialogue stating that their perk is being taken
@@ -1748,12 +1732,9 @@ monkey_zombie_attack_perk()
 
 	self thread monkey_wait_to_drop();
 
-	machine = self.pack.machine;
-	machine notify( "attacked" );
-
 	while ( 1 )
 	{
-		monkey_pack_flash_perk( self.perk.script_noteworthy, self.machine_damage );
+		monkey_pack_flash_perk( self.perk.script_noteworthy );
 
 		self animscripted( "perk_attack_anim", self.attack.origin, self.attack.angles, perk_attack_anim, "normal", %body, 1, 0.2 );
 		//self animscripted( "perk_attack_anim", self.origin, self.angles, perk_attack_anim, "normal", %body, 1 );
@@ -1762,7 +1743,6 @@ monkey_zombie_attack_perk()
 
 		if ( self monkey_zombie_perk_damage( self.machine_damage ) )
 		{
-			self monkey_pack_take_perk();
 			break;
 		}
 
@@ -1772,6 +1752,7 @@ monkey_zombie_attack_perk()
 	self notify( "stop_machine_watch" );
 	self monkey_zombie_set_state( "attack_perk_done" );
 }
+*/
 
 monkey_wait_to_drop()
 {
@@ -1800,6 +1781,7 @@ monkey_wait_to_drop()
 	monkey_print( "close to ground" );
 }
 
+/*
 play_player_perk_theft_vox( perk, monkey )
 {
     force_quit = 0;
@@ -1820,7 +1802,7 @@ play_player_perk_theft_vox( perk, monkey )
         player = getplayers();
         rand = RandomIntRange(0, player.size );
 
-        if ( monkey.pack.machine.monkey_health == 0 )
+        if ( monkey monkey_zombie_perk_damage( monkey.machine_damage ) )
 	    {
 		    level.perk_theft_vox[perk] = false;
 		    return;
@@ -1840,14 +1822,14 @@ play_player_perk_theft_vox( perk, monkey )
         wait(.05);
     }
 
-	while( IsDefined(monkey) && IsDefined(monkey.pack) && IsDefined(monkey.pack.machine) && IsDefined(monkey.pack.machine.monkey_health) &&
-		monkey.pack.machine.monkey_health != 0 )
+	while( !monkey monkey_zombie_perk_damage( monkey.machine_damage ) )
 	{
 	    wait(1);
 	}
 
 	level.perk_theft_vox[perk] = false;
 }
+*/
 
 play_attack_impacts( time )
 {
@@ -1883,8 +1865,8 @@ monkey_zombie_destroy_perk()
 			self waittill( "goal" );
 			self SetGoalPos( self.origin );
 
-			self thread monkey_zombie_watch_machine_damage();
-			self thread monkey_zombie_attack_perk();
+			self thread maps\_remix_zombiemode_ai_monkey::monkey_zombie_watch_machine_damage();
+			self thread maps\_remix_zombiemode_ai_monkey::monkey_zombie_attack_perk();
 		}
 	}
 }
@@ -2942,6 +2924,7 @@ monkey_zombie_perk_damage( amount )
 	return machine.monkey_health == 0;
 }
 
+/*
 monkey_pack_take_perk()
 {
 	players = getplayers();
@@ -2953,19 +2936,15 @@ monkey_pack_take_perk()
 	{
 		if ( players[i] HasPerk( perk ) )
 		{
-			//iprintln("taking perk " + perk);
 			perk_str = perk + "_stop";
 			players[i] notify( perk_str );
 
 			if ( flag( "solo_game" ) && perk == "specialty_quickrevive" )
 			{
 				players[i].lives--;
-				//iprintln(level.solo_lives_given);
-				level.solo_lives_given--;
 			}
 		}
 	}
-	//iprintln("took perk");
 }
 
 monkey_perk_lost( perk )
@@ -2978,8 +2957,16 @@ monkey_perk_lost( perk )
 		}
 	}
 
-	self maps\_zombiemode_perks::update_perk_hud();
+	if ( isdefined( self.perk_hud ) )
+	{
+		keys = getarraykeys( self.perk_hud );
+		for ( i = 0; i < self.perk_hud.size; i++ )
+		{
+			self.perk_hud[ keys[i] ].x = i * 30;
+		}
+	}
 }
+*/
 
 monkey_perk_bought( perk )
 {
@@ -2990,7 +2977,8 @@ monkey_perk_bought( perk )
 //-----------------------------------------------------------------
 // start flashing the perk icon
 //-----------------------------------------------------------------
-monkey_pack_flash_perk( perk, damage )
+/*
+monkey_pack_flash_perk( perk )
 {
 	if ( !isdefined( perk ) )
 	{
@@ -3000,9 +2988,10 @@ monkey_pack_flash_perk( perk, damage )
 	players = getplayers();
 	for ( i = 0; i < players.size; i++ )
 	{
-		players[i] maps\_zombiemode_perks::perk_hud_start_flash( perk, damage );
+		players[i] maps\_zombiemode_perks::perk_hud_start_flash( perk );
 	}
 }
+*/
 
 //-----------------------------------------------------------------
 // stop flashing the perk icon

@@ -38,7 +38,7 @@ hack_powerups()
 
 			powerup thread powerup_pickup_watcher(struct);
 
-			maps\_zombiemode_equip_hacker::register_pooled_hackable_struct(struct, ::powerup_hack );
+			maps\_zombiemode_equip_hacker::register_pooled_hackable_struct(struct, maps\_remix_zombiemode_hackables_powerups::powerup_hack );
 		}
 	}
 }
@@ -51,6 +51,7 @@ powerup_pickup_watcher(powerup_struct)
 	maps\_zombiemode_equip_hacker::deregister_hackable_struct(powerup_struct);
 }
 
+/*
 powerup_hack(hacker)
 {
 	self.powerup notify("hacked");
@@ -85,3 +86,4 @@ powerup_hack(hacker)
 
 	maps\_zombiemode_equip_hacker::deregister_hackable_struct(self);
 }
+*/

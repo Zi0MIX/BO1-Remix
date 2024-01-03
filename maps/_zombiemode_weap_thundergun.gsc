@@ -24,23 +24,15 @@ init()
     level._effect["thundergun_viewmodel_steam_upgraded"] = loadfx("weapon/thunder_gun/fx_thundergun_steam_view");
 
 
-    level._effect["thundergun_knockdown_ground"]    = loadfx( "weapon/thunder_gun/fx_thundergun_knockback_ground" );
-    level._effect["thundergun_smoke_cloud"]         = loadfx( "weapon/thunder_gun/fx_thundergun_smoke_cloud" );
+    level._effect["thundergun_knockdown_ground"]	= loadfx( "weapon/thunder_gun/fx_thundergun_knockback_ground" );
+    level._effect["thundergun_smoke_cloud"]			= loadfx( "weapon/thunder_gun/fx_thundergun_smoke_cloud" );
 
-    set_zombie_var( "thundergun_cylinder_radius",       180 );
-
-    set_zombie_var( "thundergun_fling_range",           650 ); // 40 feet
-    set_zombie_var( "thundergun_gib_range",             1200 ); // 75 feet
-    set_zombie_var( "thundergun_knockdown_range",       1500 ); // 100 feet
-    if(level.script == "zombie_ww")
-    {
-        set_zombie_var( "thundergun_fling_range",           2000);//450 ); // 40 feet
-        set_zombie_var( "thundergun_gib_range",             3000);//900 ); // 75 feet
-        set_zombie_var( "thundergun_knockdown_range",       3200 ); // 100 feet
-    }
-
-    set_zombie_var( "thundergun_gib_damage",            0 );
-    set_zombie_var( "thundergun_knockdown_damage",      0 );
+    set_zombie_var( "thundergun_cylinder_radius",		180 );
+    set_zombie_var( "thundergun_fling_range",			480 ); // 40 feet
+    set_zombie_var( "thundergun_gib_range",				900 ); // 75 feet
+    set_zombie_var( "thundergun_gib_damage",			75 );
+	set_zombie_var( "thundergun_knockdown_range",		1200 ); // 100 feet
+    set_zombie_var( "thundergun_knockdown_damage",		15 );
 
     level.thundergun_gib_refs = [];
     level.thundergun_gib_refs[level.thundergun_gib_refs.size] = "guts";
@@ -48,6 +40,7 @@ init()
     level.thundergun_gib_refs[level.thundergun_gib_refs.size] = "left_arm";
 
     level thread thundergun_on_player_connect();
+    level thread maps\_remix_zombiemode_weap_thundergun::post_init();
 }
 
 
@@ -56,11 +49,12 @@ thundergun_on_player_connect()
     for( ;; )
     {
         level waittill( "connecting", player );
-        player thread wait_for_thundergun_fired();
+        player thread maps\_remix_zombiemode_weap_thundergun::wait_for_thundergun_fired();
     }
 }
 
 
+/*
 wait_for_thundergun_fired()
 {
     self endon( "disconnect" );
@@ -72,7 +66,7 @@ wait_for_thundergun_fired()
         currentweapon = self GetCurrentWeapon();
         if( ( currentweapon == "thundergun_zm" ) || ( currentweapon == "thundergun_upgraded_zm" ) )
         {
-            self thread thundergun_fired(currentweapon);
+            self thread thundergun_fired();
 
             view_pos = self GetTagOrigin( "tag_flash" ) - self GetPlayerViewHeight();
             view_angles = self GetTagAngles( "tag_flash" );
@@ -84,18 +78,18 @@ wait_for_thundergun_fired()
 
 thundergun_network_choke()
 {
-    if ( level.thundergun_network_choke_count != 0 && !(level.thundergun_network_choke_count % 4) )
+    level.thundergun_network_choke_count++;
+	
+	if ( !(level.thundergun_network_choke_count % 10) )
     {
         wait_network_frame();
-        //wait_network_frame();
-        //wait_network_frame();
+        wait_network_frame();
+        wait_network_frame();
     }
-
-    level.thundergun_network_choke_count++;
 }
 
 
-thundergun_fired(currentweapon)
+thundergun_fired()
 {
     // ww: physics hit when firing
     PhysicsExplosionCylinder( self.origin, 600, 240, 1 );
@@ -115,29 +109,14 @@ thundergun_fired(currentweapon)
     level.thundergun_network_choke_count = 0;
     for ( i = 0; i < level.thundergun_fling_enemies.size; i++ )
     {
-        //thundergun_network_choke();
-        if(IsAI(level.thundergun_fling_enemies[i]))
-        {
-            level.thundergun_fling_enemies[i] thread thundergun_fling_zombie( self, level.thundergun_fling_vecs[i], i );
-        }
-        else if(IsPlayer(level.thundergun_fling_enemies[i]))
-        {
-            vec = vector_scale( level.thundergun_fling_vecs[i], 3 );
-            level.thundergun_fling_enemies[i] notify("grief_damage", currentweapon, "MOD_PROJECTILE", self, true, vec);
-        }
+        thundergun_network_choke();
+        level.thundergun_fling_enemies[i] thread thundergun_fling_zombie( self, level.thundergun_fling_vecs[i], i );
     }
 
     for ( i = 0; i < level.thundergun_knockdown_enemies.size; i++ )
     {
-        //thundergun_network_choke();
-        if(IsAI(level.thundergun_fling_enemies[i]))
-        {
-            level.thundergun_knockdown_enemies[i] thread thundergun_knockdown_zombie( self, level.thundergun_knockdown_gib[i] );
-        }
-        else if(IsPlayer(level.thundergun_fling_enemies[i]))
-        {
-            level.thundergun_fling_enemies[i] notify("grief_damage", currentweapon, "MOD_PROJECTILE", self);
-        }
+        thundergun_network_choke();
+        level.thundergun_knockdown_enemies[i] thread thundergun_knockdown_zombie( self, level.thundergun_knockdown_gib[i] );
     }
 
     level.thundergun_knockdown_enemies = [];
@@ -150,9 +129,7 @@ thundergun_fired(currentweapon)
 thundergun_get_enemies_in_range()
 {
     view_pos = self GetWeaponMuzzlePoint();
-    zombies = GetAiSpeciesArray( "axis", "all" );
-    zombies = array_merge(zombies, get_players());
-    zombies = get_array_of_closest( view_pos, zombies, undefined, undefined, level.zombie_vars["thundergun_knockdown_range"] );
+    zombies = get_array_of_closest( view_pos, GetAiSpeciesArray( "axis", "all" ), undefined, undefined, level.zombie_vars["thundergun_knockdown_range"] );
     if ( !isDefined( zombies ) )
     {
         return;
@@ -188,7 +165,7 @@ thundergun_get_enemies_in_range()
             continue;
         }
 
-        test_origin = zombies[i] GetCentroid();
+        test_origin = zombies[i] getcentroid();
         test_range_squared = DistanceSquared( view_pos, test_origin );
         if ( test_range_squared > knockdown_range_squared )
         {
@@ -213,7 +190,7 @@ thundergun_get_enemies_in_range()
             continue;
         }
 
-        if ( !zombies[i] DamageConeTrace( view_pos, self ) && !BulletTracePassed( view_pos, test_origin, false, undefined ) && !SightTracePassed( view_pos, test_origin, false, undefined ) )
+        if ( 0 == zombies[i] DamageConeTrace( view_pos, self ) )
         {
             // guy can't actually be hit from where we are
             zombies[i] thundergun_debug_print( "cone", (1, 0, 0) );
@@ -226,27 +203,26 @@ thundergun_get_enemies_in_range()
 
             // the closer they are, the harder they get flung
             dist_mult = (fling_range_squared - test_range_squared) / fling_range_squared;
-            /*fling_vec = VectorNormalize( test_origin - view_pos );
+            fling_vec = VectorNormalize( test_origin - view_pos );
 
             // within 6 feet, just push them straight away from the player, ignoring radial motion
             if ( 5000 < test_range_squared )
             {
                 fling_vec = fling_vec + VectorNormalize( test_origin - radial_origin );
             }
-            fling_vec = (fling_vec[0], fling_vec[1], abs( fling_vec[2] ));*/
-
-            // add more to the up angle so they always get flung up
-            angles = self GetPlayerAngles();
-            up_angle = 90 - angles[0];
-            up_angle = (180 - up_angle) / 3;
-            angles = (angles[0] - up_angle, angles[1], angles[2]);
-
-            fling_vec = AnglesToForward(angles);
+            fling_vec = (fling_vec[0], fling_vec[1], abs( fling_vec[2] ));
             fling_vec = vector_scale( fling_vec, 100 + 100 * dist_mult );
             level.thundergun_fling_vecs[level.thundergun_fling_vecs.size] = fling_vec;
 
             zombies[i] thread setup_thundergun_vox( self, true, false, false );
         }
+        else if ( test_range_squared < gib_range_squared )
+		{
+			level.thundergun_knockdown_enemies[level.thundergun_knockdown_enemies.size] = zombies[i];
+			level.thundergun_knockdown_gib[level.thundergun_knockdown_gib.size] = true;
+
+			zombies[i] thread setup_thundergun_vox( self, false, true, false );
+		}
         else
         {
             level.thundergun_knockdown_enemies[level.thundergun_knockdown_enemies.size] = zombies[i];
@@ -256,6 +232,7 @@ thundergun_get_enemies_in_range()
         }
     }
 }
+*/
 
 thundergun_debug_print( msg, color )
 {
@@ -312,6 +289,7 @@ thundergun_fling_zombie( player, fling_vec, index )
 }
 
 
+/*
 thundergun_knockdown_zombie( player, gib )
 {
     self endon( "death" );
@@ -332,7 +310,7 @@ thundergun_knockdown_zombie( player, gib )
     else
     {
 
-        //self DoDamage( level.zombie_vars["thundergun_knockdown_damage"], player.origin, player );
+        self DoDamage( level.zombie_vars["thundergun_knockdown_damage"], player.origin, player );
 
 
 
@@ -344,12 +322,13 @@ thundergun_knockdown_zombie( player, gib )
         self thread animscripts\zombie_death::do_gib();
     }
 
-//  self playsound( "thundergun_impact" );
+//	self playsound( "thundergun_impact" );
     self.thundergun_handle_pain_notetracks = ::handle_thundergun_pain_notetracks;
-    //self DoDamage( level.zombie_vars["thundergun_knockdown_damage"], player.origin, player );
+    self DoDamage( level.zombie_vars["thundergun_knockdown_damage"], player.origin, player );
     self playsound( "fly_thundergun_forcehit" );
 
 }
+*/
 
 
 handle_thundergun_pain_notetracks( note )

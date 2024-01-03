@@ -5,15 +5,12 @@
 
 init()
 {
-	// custom weapons
-	//init_includes();
-
 	init_weapons();
 	init_weapon_upgrade();
 	init_weapon_toggle();
 	init_pay_turret();
 //	init_weapon_cabinet();
-	treasure_chest_init();
+	maps\_remix_zombiemode_weapons::treasure_chest_init();
 	level thread add_limited_tesla_gun();
 
 	PreCacheShader( "minimap_icon_mystery_box" );
@@ -21,6 +18,8 @@ init()
 	PrecacheShader( "specialty_firesale_zombies" );
 
 	level._zombiemode_check_firesale_loc_valid_func = ::default_check_firesale_loc_valid_func;
+
+	level thread maps\_remix_zombiemode_weapons::post_init();
 }
 
 default_check_firesale_loc_valid_func()
@@ -83,128 +82,46 @@ default_weighting_func()
 	return 1;
 }
 
-wonder_weapon_weighting_func()
+/*
+default_tesla_weighting_func()
 {	
-	return get_percentage_increase( level.pulls_since_last_wonder_weapon, level.player_drops_wonder_weapon );
-}
-
-// increase the chance of getting a wonder weapon after every 5 hits
-default_wonder_weapon_weighting_func()
-{
 	num_to_add = 1;
-	amount_to_add = (level.pulls_since_last_wonder_weapon / 5) / 10; //+10% every 5 pulls 
-	num_to_add += amount_to_add;
-
-	return num_to_add;
-}
-
-default_ray_gun_weighting_func()
-{
-	num_to_add = 1;
-	if( level.round_number < 25 )
+	if( isDefined( level.pulls_since_last_tesla_gun ) )
 	{
-		if( isDefined( level.pulls_since_last_ray_gun ) )
+		// player has dropped the tesla for another weapon, so we set all future polls to 20%
+		if( isDefined(level.player_drops_tesla_gun) && level.player_drops_tesla_gun == true )
 		{
-			if( level.pulls_since_last_ray_gun > 10 )
+			num_to_add += int(.2 * level.zombie_include_weapons.size);		
+		}
+		
+		// player has not seen tesla gun in late rounds
+		if( !isDefined(level.player_seen_tesla_gun) || level.player_seen_tesla_gun == false )
+		{
+			// after round 10 the Tesla gun percentage increases to 20%
+			if( level.round_number > 10 )
 			{
-				num_to_add += 0.5;
-			}
-			else if( level.pulls_since_last_ray_gun > 5 )
+				num_to_add += int(.2 * level.zombie_include_weapons.size);
+			}		
+			// after round 5 the Tesla gun percentage increases to 15%
+			else if( level.round_number > 5 )
 			{
-				num_to_add += 0.25;
+				// calculate the number of times we have to add it to the array to get the desired percent
+				num_to_add += int(.15 * level.zombie_include_weapons.size);
 			}
 		}
 	}
 	return num_to_add;
 }
 
-default_sniper_explosive_weighting_func()
-{
-	num_to_add = 1;
-	amount_to_add = (level.pulls_since_last_sniper_explosive / 5) / 10; //+10% every 5 pulls 
-	num_to_add += amount_to_add;
-	
-	return num_to_add;
-}
 
-
-//	Greatly elevate the chance to get it until someone has it, then make it even
-default_cymbal_monkey_weighting_func()
-{
-		if( level.round_number > 20 )
-		{
-			return 5;
-		}
-		else if( level.round_number > 15 )
-		{
-			return 4;
-		}
-		else if( level.round_number > 10 )
-		{
-			return 3;
-		}
-		else if( level.round_number > 5)
-		{
-			return 2;
-		}
-		else
-		{
-			return 1;
-		}
-}
-
-default_zombie_black_hole_bomb_weighting_func()
-{
-	if( level.round_number > 50 )
-	{
-		return 2;
-	}
-	else if( level.round_number > 20 )
-	{
-		return 5;
-	}
-	else if( level.round_number > 15 )
-	{
-		return 4;
-	}
-	else if( level.round_number > 10 )
-	{
-		return 3;
-	}
-	else if( level.round_number > 5)
-	{
-		return 2;
-	}
-	else
-	{
-		return 1;
-	}
-}
-
-get_percentage_increase( pulls_since_weapon, player_dropped )
-{	
-	num_to_add = 1;
-
-	if(!player_dropped)
-	{
-		num_to_add += 0.5; //150% for settup
-	}
-	else
-	{
-		amount_to_add = int(pulls_since_weapon / 5) / 10; //+10% every 5 pulls 
-		num_to_add += amount_to_add;
-	}
-
-	return num_to_add;
-}
-
+//
 //	For weapons which should only appear once the box moves
 default_1st_move_weighting_func()
 {
 	if( level.chest_moves > 0 )
 	{
 		num_to_add = 1;
-
+		
 		return num_to_add;
 	}
 	else
@@ -227,6 +144,38 @@ default_upgrade_weapon_weighting_func()
 		return 0;
 	}
 }
+
+
+//
+//	Slightly elevate the chance to get it until someone has it, then make it even
+default_cymbal_monkey_weighting_func()
+{
+	players = get_players();
+	count = 0;
+	for( i = 0; i < players.size; i++ )
+	{
+		if( players[i] has_weapon_or_upgrade( "zombie_cymbal_monkey" ) )
+		{
+			count++;
+		}
+	}
+	if ( count > 0 )
+	{
+		return 1;
+	}
+	else
+	{
+		if( level.round_number < 10 )
+		{
+			return 3;
+		}
+		else
+		{
+			return 5;
+		}
+	}
+}
+*/
 
 is_weapon_included( weapon_name )
 {
@@ -342,14 +291,10 @@ init_weapons()
  	add_zombie_weapon( "knife_ballistic_bowie_zm",	"knife_ballistic_bowie_upgraded_zm",	&"ZOMBIE_WEAPON_KNIFE_BALLISTIC",		10,		"bowie",	"",		undefined );
  	add_zombie_weapon( "knife_ballistic_sickle_zm",	"knife_ballistic_sickle_upgraded_zm",	&"ZOMBIE_WEAPON_KNIFE_BALLISTIC",		10,		"sickle",	"",		undefined );
  	add_zombie_weapon( "freezegun_zm",				"freezegun_upgraded_zm",				&"ZOMBIE_WEAPON_FREEZEGUN", 			10,		"freezegun",		"",		undefined );
- 	add_zombie_weapon( "zombie_black_hole_bomb",		undefined,							&"ZOMBIE_WEAPON_SATCHEL_2000", 			2000,	"gersh",			"",		undefined );
+ 	add_zombie_weapon( "zombie_black_hole_bomb",		undefined,								&"ZOMBIE_WEAPON_SATCHEL_2000", 			2000,	"gersh",			"",		undefined );
  	add_zombie_weapon( "zombie_nesting_dolls",		undefined,								&"ZOMBIE_WEAPON_NESTING_DOLLS", 		2000,	"dolls",	"",		undefined );
-	add_zombie_weapon( "blundergat_zm",				"blundergat_upgraded_zm",				&"ZOMBIE_WEAPON_BLUNDERGAT",			1500,	"shotgun",			"",		undefined );
 
-	// Custom weapons
-	add_zombie_weapon( "stoner63_zm",				"stoner63_upgraded_zm",					&"ZOMBIE_WEAPON_COMMANDO",				100,	"mg",			"",		undefined );
-	add_zombie_weapon( "ppsh_zm",					"ppsh_upgraded_zm",						&"ZOMBIE_WEAPON_COMMANDO",				100,	"smg",			"",		undefined );
-	add_zombie_weapon( "ak47_zm",					"ak47_ft_upgraded_zm",					&"ZOMBIE_WEAPON_COMMANDO",				100,	"assault",			"",		undefined );
+	maps\_remix_zombiemode_weapons::add_remix_weapons();
 
 	if(IsDefined(level._zombie_custom_add_weapons))
 	{
@@ -850,6 +795,7 @@ has_weapon_or_upgrade( weaponname )
 //		rubble - pieces that show when the box isn't there
 //			script_noteworthy should be the same as the use_trigger + "_rubble"
 //
+/*
 treasure_chest_init()
 {
 	if( level.mutators["mutator_noMagicBox"] )
@@ -857,13 +803,11 @@ treasure_chest_init()
 		chests = GetEntArray( "treasure_chest_use", "targetname" );
 		for( i=0; i < chests.size; i++ )
 		{
-
 			chests[i] get_chest_pieces();
 			chests[i] hide_chest();
 		}
 		return;
 	}
-
 	flag_init("moving_chest_enabled");
 	flag_init("moving_chest_now");
 	flag_init("chest_has_been_used");
@@ -891,91 +835,8 @@ treasure_chest_init()
 
 	level.chest_accessed = 0;
 
-	level.box_set = randomInt(3);	// Level var for hud
 	if (level.chests.size > 1)
 	{
-		// Always remove boxes here, using for loop above will cause inability to remove box model placeholders, and doing it in init_starting_chest_location() will cause conflicts, it'll try to reffer to keys that's already been removed (kino)
-		for (i=0; i<level.chests.size; i++ )
-		{
-			if(level.script == "zombie_theater")
-			{
-				// Set for dining
-				if (level.box_set == 0)
-				{
-					if(level.chests[i].script_noteworthy == "alleyway_chest")
-					{
-						level.chests[i] hide_rubble();
-						level.chests[i] hide_chest();
-						level.chests = array_remove_nokeys(level.chests, level.chests[i]);
-					}
-					else if(level.chests[i].script_noteworthy == "control_chest")
-					{
-						level.chests[i] hide_chest();
-						level.chests[i] hide_rubble();
-						level.chests = array_remove_nokeys(level.chests, level.chests[i]);
-					}
-					else if(level.chests[i].script_noteworthy == "start_chest")
-					{
-						level.chests[i] hide_chest();
-						level.chests[i] hide_rubble();
-						level.chests = array_remove_nokeys(level.chests, level.chests[i]);
-					}
-				}
-				// Set for hellroom
-				else if (level.box_set == 1)
-				{
-					if(level.chests[i].script_noteworthy == "dressing_chest")
-					{
-						level.chests[i] hide_rubble();
-						level.chests[i] hide_chest();
-						level.chests = array_remove_nokeys(level.chests, level.chests[i]);
-					}
-					else if(level.chests[i].script_noteworthy == "dining_chest")
-					{
-						level.chests[i] hide_chest();
-						level.chests[i] hide_rubble();
-						level.chests = array_remove_nokeys(level.chests, level.chests[i]);
-					}
-					else if(level.chests[i].script_noteworthy == "stage_chest")
-					{
-						level.chests[i] hide_chest();
-						level.chests[i] hide_rubble();
-						level.chests = array_remove_nokeys(level.chests, level.chests[i]);
-					}
-				}
-				// Set for no power
-				else if (level.box_set == 2)
-				{
-					if (level.chests[i].script_noteworthy == "theater_chest")
-					{
-						level.chests[i] hide_rubble();
-						level.chests[i] hide_chest();
-						level.chests = array_remove_nokeys(level.chests, level.chests[i]);
-					}
-				}
-			}
-
-			else if(level.script == "zombie_cod5_sumpf")
-			{
-				if(level.chests[i].script_noteworthy == "nw_chest")
-				{
-					level.chests[i] hide_rubble();
-					level.chests[i] hide_chest();
-					level.chests = array_remove_nokeys(level.chests, level.chests[i]);
-				}
-			}
-
-			else if(level.script == "zombie_cod5_factory")
-			{
-				if(level.chests[i].script_noteworthy == "chest3")
-				{
-					level.chests[i] hide_rubble();
-					level.chests[i] hide_chest();
-					level.chests = array_remove_nokeys(level.chests, level.chests[i]);
-				}
-			}
-		}
-		
 		flag_set("moving_chest_enabled");
 
 		level.chests = array_randomize(level.chests);
@@ -998,104 +859,7 @@ init_starting_chest_location()
     start_chest_found = false;
     for( i = 0; i < level.chests.size; i++ )
     {
-        if(level.script == "zombie_pentagon")
-        {
-			if(level.chests[i].script_noteworthy == "start_chest")
-			//if(IsSubStr(level.chests[i].script_noteworthy,  "start_chest" ))
-			{
-				level.chest_index = i;
-				level.chests[level.chest_index] hide_rubble();
-				level.chests[level.chest_index].hidden = false;
-			}
-			else
-			{
-				level.chests[i] hide_chest();
-			}
-        }
-		else if(level.script == "zombie_theater")
-        {
-			if (level.box_set == 0)
-			{
-				if(IsSubStr(level.chests[i].script_noteworthy,  "dining_chest" ))
-				{
-					level.chest_index = i;
-					level.chests[level.chest_index] hide_rubble();
-					level.chests[level.chest_index].hidden = false;
-				}
-				else
-				{
-					level.chests[i] hide_chest();
-				}
-			}
-			// Same starting box for hellroom and no power
-			else
-			{
-				if(IsSubStr(level.chests[i].script_noteworthy,  "crematorium_chest" ))
-				{
-					level.chest_index = i;
-					level.chests[level.chest_index] hide_rubble();
-					level.chests[level.chest_index].hidden = false;
-				}
-				else
-				{
-					level.chests[i] hide_chest();
-				}
-			}
-        }
-        else if(level.script == "zombie_coast")
-        {
-            if(IsSubStr(level.chests[i].script_noteworthy, "residence_chest" ))
-                {
-                    level.chest_index = i;
-                    level.chests[level.chest_index] hide_rubble();
-                    level.chests[level.chest_index].hidden = false;
-                }
-                else
-                {
-                    level.chests[i] hide_chest();
-                }
-        }
-        else if(level.script == "zombie_temple")
-        {
-            if(IsSubStr(level.chests[i].script_noteworthy, "caves1_chest" ))
-                {
-                    level.chest_index = i;
-                    level.chests[level.chest_index] hide_rubble();
-                    level.chests[level.chest_index].hidden = false;
-                }
-                else
-                {
-                    level.chests[i] hide_chest();
-                }
-        }
-        else if(level.script == "zombie_moon")
-        {
-            if(IsSubStr(level.chests[i].script_noteworthy, "bridge_chest" ))
-                {
-                    level.chest_index = i;
-                    level.chests[level.chest_index] hide_rubble();
-                    level.chests[level.chest_index].hidden = false;
-                }
-                else
-                {
-                    level.chests[i] hide_chest();
-                }
-        }
-        else if(level.script == "zombie_ww")
-        {
-            if(level.chests[i].script_noteworthy == "start_chest")
-            {
-                level.chest_index = i;
-                level.chests[level.chest_index] hide_rubble();
-                level.chests[level.chest_index].hidden = false;
-            }
-            else
-            {
-                level.chests[i] hide_chest();
-            }
-        }
-
-        else if( isdefined( level.random_pandora_box_start ) && level.random_pandora_box_start == true )
+        if( isdefined( level.random_pandora_box_start ) && level.random_pandora_box_start == true )
         {
             if ( start_chest_found || (IsDefined( level.chests[i].start_exclude ) && level.chests[i].start_exclude == 1) )
             {
@@ -1113,7 +877,7 @@ init_starting_chest_location()
         else
         {
             // Semi-random implementation (not completely random).  The list is randomized
-            //  prior to getting here.
+            //	prior to getting here.
             // Pick from any box marked as the "start_chest"
             if ( start_chest_found || !IsDefined(level.chests[i].script_noteworthy ) || ( !IsSubStr( level.chests[i].script_noteworthy, "start_chest" ) ) )
             {
@@ -1129,24 +893,15 @@ init_starting_chest_location()
         }
     }
 
-    //make first chest the first index
-    if(level.chest_index != 0)
-    {
-        level.chests = array_swap(level.chests,0,level.chest_index);
-        level.chest_index = 0;
-    }
-
     // Show the beacon
     if( !isDefined( level.pandora_show_func ) )
     {
         level.pandora_show_func = ::default_pandora_show_func;
     }
 
-	// if (isdefined(level.chests[level.chest_index]))
-	// {
 	level.chests[level.chest_index] thread [[ level.pandora_show_func ]]();
-	// }
 }
+*/
 
 //
 //	Rubble is the object that is visible when the box isn't
@@ -1305,6 +1060,7 @@ default_pandora_show_func( anchor, anchorTarget, pieces )
 	//Objective_Add( 0, "active", "Mystery Box", self.chest_lid.origin, "minimap_icon_mystery_box" );
 }
 
+/*
 treasure_chest_think()
 {
 	self endon("kill_chest_think");
@@ -1392,7 +1148,6 @@ treasure_chest_think()
 	}
 
 	flag_set("chest_has_been_used");
-	level.boxhits++;
 
 	self._box_open = true;
 	self._box_opened_by_fire_sale = false;
@@ -1439,16 +1194,13 @@ treasure_chest_think()
 		self sethintstring( &"ZOMBIE_TRADE_WEAPONS" );
 		self setCursorHint( "HINT_NOICON" );
 
-		box_tracker(self.chest_origin.weapon_string, self.chest_user);
-
 		self	thread decide_hide_show_hint( "weapon_grabbed");
 		//self setvisibletoplayer( user );
 
 		// Limit its visibility to the player who bought the box
 		self enable_trigger();
 		self thread treasure_chest_timeout();
-		self thread knife_for_shared_box( user );
-
+		
 		// make sure the guy that spent the money gets the item
 		// SRS 9/3/2008: ...or item goes back into the box if we time out
 		while( 1 )
@@ -1488,18 +1240,6 @@ treasure_chest_think()
 						user.playername, user.score, level.team_pool[ user.team_num ].score, level.round_number, self.zombie_cost, self.chest_origin.weapon_string, self.origin );
 					self notify( "user_grabbed_weapon" );
 					user thread treasure_chest_give_weapon( self.chest_origin.weapon_string );
-
-					//fix grenade ammo
-					if(is_lethal_grenade(self.chest_origin.weapon_string) && user GetWeaponAmmoClip(self.chest_origin.weapon_string) > 4)
-					{
-						user SetWeaponAmmoClip(self.chest_origin.weapon_string, 4);
-					}
-
-					if(is_tactical_grenade(self.chest_origin.weapon_string) && user GetWeaponAmmoClip(self.chest_origin.weapon_string) > 3)
-					{
-						user SetWeaponAmmoClip(self.chest_origin.weapon_string, 3);
-					}
-
 					break;
 				}
 				else if( grabber == level )
@@ -1530,16 +1270,16 @@ treasure_chest_think()
 
 		// PI_CHANGE_BEGIN
 		// JMA - we only update counters when it's available
-		if( isDefined(level.pulls_since_last_ray_gun) )
+		if( level.chest_moves > 0 && isDefined(level.pulls_since_last_ray_gun) )
 		{
 			level.pulls_since_last_ray_gun += 1;
 		}
 
-		if( isDefined(level.pulls_since_last_wonder_weapon) )
+		if( isDefined(level.pulls_since_last_tesla_gun) )
 		{
-			level.pulls_since_last_wonder_weapon += 1;
-			// iPrintLn(level.pulls_since_last_wonder_weapon);
+			level.pulls_since_last_tesla_gun += 1;
 		}
+		// PI_CHANGE_END
 
 		self disable_trigger();
 
@@ -1550,7 +1290,7 @@ treasure_chest_think()
 		//Chris_P
 		//magic box dissapears and moves to a new spot after a predetermined number of uses
 
-		wait 1; //3
+		wait 3;
 		if ( (is_true( level.zombie_vars["zombie_powerup_fire_sale_on"] ) && self [[level._zombiemode_check_firesale_loc_valid_func]]()) || self == level.chests[level.chest_index] )
 		{
 			self enable_trigger();
@@ -1566,6 +1306,7 @@ treasure_chest_think()
 
 	self thread treasure_chest_think();
 }
+*/
 
 //-------------------------------------------------------------------------------
 //	Disable trigger if can't buy weapon and also if someone else is using the chest
@@ -1609,6 +1350,7 @@ weapon_show_hint_choke()
 	}
 }
 
+/*
 decide_hide_show_hint( endon_notify )
 {
 	if( isDefined( endon_notify ) )
@@ -1628,6 +1370,7 @@ decide_hide_show_hint( endon_notify )
 		use_choke = true;
 	}
 
+
 	while( true )
 	{
 
@@ -1644,39 +1387,6 @@ decide_hide_show_hint( endon_notify )
 				self SetVisibleToPlayer( self.chest_user );
 			}
 		}
-		// fix for grenade ammo
-		else if(is_lethal_grenade(self.zombie_weapon_upgrade) || is_tactical_grenade(self.zombie_weapon_upgrade))
-		{	
-			dist = 256 * 256;
-			players = get_players();
-			for( i = 0; i < players.size; i++ )
-			{	
-				if(DistanceSquared( players[i].origin, self.origin ) < dist)
-				{
-					player_ammo = players[i] GetWeaponAmmoStock(self.zombie_weapon_upgrade);
-					max_ammo = undefined;
-
-					if(is_lethal_grenade(self.zombie_weapon_upgrade))
-					{
-						max_ammo = 4;
-					}
-					else if(is_tactical_grenade(self.zombie_weapon_upgrade))
-					{
-						max_ammo = 3;
-					}
-
-					if( players[i] can_buy_weapon() && player_ammo < max_ammo)
-					{	
-						self SetInvisibleToPlayer( players[i], false );
-					}
-					else
-					{	
-						self SetInvisibleToPlayer( players[i], true );
-					}
-				}
-			}
-			
-		}
 		else // all players
 		{
 			players = get_players();
@@ -1690,7 +1400,6 @@ decide_hide_show_hint( endon_notify )
 				{
 					self SetInvisibleToPlayer( players[i], true );
 				}
-
 			}
 		}
 
@@ -1709,6 +1418,7 @@ decide_hide_show_hint( endon_notify )
 		level._weapon_show_hint_choke ++;
 	}
 }
+*/
 
 can_buy_weapon()
 {
@@ -1796,7 +1506,7 @@ treasure_chest_move( player_vox )
 
 	level waittill("weapon_fly_away_end");
 
-	self.chest_lid thread treasure_chest_lid_close(false);
+	self.chest_lid thread maps\_remix_zombiemode_weapons::treasure_chest_lid_close(false);
 	self setvisibletoall();
 
 	self hide_chest();
@@ -1997,6 +1707,7 @@ check_for_desirable_chest_location()
 }
 
 
+/*
 rotateroll_box()
 {
 	angles = 40;
@@ -2005,15 +1716,16 @@ rotateroll_box()
 	while(isdefined(self))
 	{
 		self RotateRoll(angles + angles2, 0.5);
-		wait(0.40); //0.7
+		wait(0.7);
 		angles2 = 40;
 		self RotateRoll(angles * -2, 0.5);
-		wait(0.40); //0.7
+		wait(0.7);
 	}
 
 
 
 }
+*/
 //verify if that magic box is open to players or not.
 verify_chest_is_open()
 {
@@ -2038,23 +1750,24 @@ verify_chest_is_open()
 
 }
 
+/*
 treasure_chest_timeout()
 {
 	self endon( "user_grabbed_weapon" );
 	self.chest_origin endon( "box_hacked_respin" );
 	self.chest_origin endon( "box_hacked_rerespin" );
 
-	wait( 10 );
+	wait( 12 );
 	self notify( "trigger", level );
 }
 
 treasure_chest_lid_open()
 {
 	openRoll = 105;
-	openTime = 0.3; //0.5
+	openTime = 0.5;
 
-	self RotateRoll( 105, openTime, ( openTime * 0.4 ) ); //0.2
-	//TODO
+	self RotateRoll( 105, openTime, ( openTime * 0.5 ) );
+
 	play_sound_at_pos( "open_chest", self.origin );
 	play_sound_at_pos( "music_chest", self.origin );
 }
@@ -2062,13 +1775,14 @@ treasure_chest_lid_open()
 treasure_chest_lid_close( timedOut )
 {
 	closeRoll = -105;
-	closeTime = 0.3;
+	closeTime = 0.5;
 
-	self RotateRoll( closeRoll, closeTime, ( closeTime * 0.4 ) );
+	self RotateRoll( closeRoll, closeTime, ( closeTime * 0.5 ) );
 	play_sound_at_pos( "close_chest", self.origin );
 
 	self notify("lid_closed");
 }
+*/
 
 treasure_chest_ChooseRandomWeapon( player )
 {
@@ -2247,6 +1961,7 @@ clean_up_hacked_box()
 	}
 }
 
+/*
 treasure_chest_weapon_spawn( chest, player, respin )
 {
 	self endon("box_hacked_respin");
@@ -2267,7 +1982,7 @@ treasure_chest_weapon_spawn( chest, player, respin )
 	self.weapon_string = undefined;
 	modelname = undefined;
 	rand = undefined;
-	number_cycles = 40; //40
+	number_cycles = 40;
 
 	chest.chest_box setclientflag(level._ZOMBIE_SCRIPTMOVER_FLAG_BOX_RANDOM);
 
@@ -2276,19 +1991,19 @@ treasure_chest_weapon_spawn( chest, player, respin )
 
 		if( i < 20 )
 		{
-			wait( 0.025 ); // 0.05
+			wait( 0.05 );
 		}
 		else if( i < 30 )
 		{
-			wait( 0.05 ); // 0.1
+			wait( 0.1 );
 		}
 		else if( i < 35 )
 		{
-			wait( 0.1 ); // 0.2
+			wait( 0.2 );
 		}
 		else if( i < 38 )
 		{
-			wait( 0.15 ); // 0.3
+			wait( 0.3 );
 		}
 
 		if( i + 1 < number_cycles )
@@ -2345,7 +2060,7 @@ treasure_chest_weapon_spawn( chest, player, respin )
 
 		if( !isdefined( level.chest_min_move_usage ) )
 		{
-			level.chest_min_move_usage = 5;
+			level.chest_min_move_usage = 4;
 		}
 
 		if( level.chest_accessed < level.chest_min_move_usage )
@@ -2364,8 +2079,7 @@ treasure_chest_weapon_spawn( chest, player, respin )
 
 			// pulls 4 thru 8, there is a 15% chance of getting the teddy bear
 			// NOTE:  this happens in all cases
-			//if( level.chest_accessed >= 4 && level.chest_accessed < 8 )
-			if( level.chest_accessed >= 5 && level.chest_accessed < 10 )
+			if( level.chest_accessed >= 4 && level.chest_accessed < 8 )
 			{
 				if( random < 15 )
 				{
@@ -2381,8 +2095,7 @@ treasure_chest_weapon_spawn( chest, player, respin )
 			if ( level.chest_moves > 0 )
 			{
 				// between pulls 8 thru 12, the teddy bear percent is 30%
-				//if( level.chest_accessed >= 8 && level.chest_accessed < 12 )
-				if( level.chest_accessed >= 10 && level.chest_accessed < 15 )
+				if( level.chest_accessed >= 8 && level.chest_accessed < 13 )
 				{
 					if( random < 30 )
 					{
@@ -2395,8 +2108,7 @@ treasure_chest_weapon_spawn( chest, player, respin )
 				}
 
 				// after 12th pull, the teddy bear percent is 50%
-				//if( level.chest_accessed >= 13 )
-				if( level.chest_accessed >= 15 )
+				if( level.chest_accessed >= 13 )
 				{
 					if( random < 50 )
 					{
@@ -2450,7 +2162,7 @@ treasure_chest_weapon_spawn( chest, player, respin )
 	{
 		wait .5;	// we need a wait here before this notify
 		level notify("weapon_fly_away_start");
-		wait 1; //2
+		wait 2;
 		self.weapon_model MoveZ(500, 4, 3);
 
 		if(IsDefined(self.weapon_model_dw))
@@ -2475,14 +2187,19 @@ treasure_chest_weapon_spawn( chest, player, respin )
 		acquire_weapon_toggle( rand, player );
 
 		//turn off power weapon, since player just got one
-		if( rand == "tesla_gun_zm" || rand == "ray_gun_zm" || rand == "thundergun_zm" || rand == "humangun_zm" || rand == "sniper_explosive_zm" || rand == "microwavegundw_zm" || rand == "shrink_ray_zm" || rand == "blundergat_zm" )
+		if( rand == "tesla_gun_zm" || rand == "ray_gun_zm" )
 		{
-			level.pulls_since_last_wonder_weapon = 0;
-		}
-
-		if( rand == "ray_gun_zm" )
-		{
-			level.pulls_since_last_ray_gun = 0;
+			if( rand == "ray_gun_zm" )
+			{
+//				level.chest_moves = false;
+				level.pulls_since_last_ray_gun = 0;
+			}
+			
+			if( rand == "tesla_gun_zm" )
+			{
+				level.pulls_since_last_tesla_gun = 0;
+				level.player_seen_tesla_gun = true;
+			}			
 		}
 
 		if(!IsDefined(respin))
@@ -2529,55 +2246,11 @@ treasure_chest_weapon_spawn( chest, player, respin )
 //
 chest_get_min_usage()
 {
-	min_usage = 5;
-
-	/*
-	players = get_players();
-
-	// Special case min box pulls before 1st box move
-	if( level.chest_moves == 0 )
-	{
-		if( players.size == 1 )
-		{
-			min_usage = 2;
-		}
-		else if( players.size == 2 )
-		{
-			min_usage = 2;
-		}
-		else if( players.size == 3 )
-		{
-			min_usage = 3;
-		}
-		else
-		{
-			min_usage = 4;
-		}
-	}
-	// Box has moved, what is the minimum number of times it can move again?
-	else
-	{
-		if( players.size == 1 )
-		{
-			min_usage = 2;
-		}
-		else if( players.size == 2 )
-		{
-			min_usage = 2;
-		}
-		else if( players.size == 3 )
-		{
-			min_usage = 3;
-		}
-		else
-		{
-			min_usage = 3;
-		}
-	}
-	*/
+	min_usage = 4;
 
 	return( min_usage );
 }
+*/
 
 //
 //
@@ -2631,11 +2304,12 @@ chest_get_max_usage()
 }
 
 
+/*
 timer_til_despawn(floatHeight)
 {
 	self endon("kill_weapon_movement");
 	// SRS 9/3/2008: if we timed out, move the weapon back into the box instead of deleting it
-	putBackTime = 8;
+	putBackTime = 12;
 	self MoveTo( self.origin - ( 0, 0, floatHeight ), putBackTime, ( putBackTime * 0.5 ) );
 	wait( putBackTime );
 
@@ -2644,6 +2318,7 @@ timer_til_despawn(floatHeight)
 		self Delete();
 	}
 }
+*/
 
 treasure_chest_glowfx()
 {
@@ -2659,12 +2334,13 @@ treasure_chest_glowfx()
 }
 
 // self is the player string comes from the randomization function
+/*
 treasure_chest_give_weapon( weapon_string )
 {
 	self.last_box_weapon = GetTime();
 	primaryWeapons = self GetWeaponsListPrimaries();
 	current_weapon = undefined;
-	weapon_limit = 3;
+	weapon_limit = 2;
 
 	if( self HasWeapon( weapon_string ) )
 	{
@@ -2677,10 +2353,10 @@ treasure_chest_give_weapon( weapon_string )
 		return;
 	}
 
- 	// if ( self HasPerk( "specialty_additionalprimaryweapon" ) )
- 	// {
- 	// 	weapon_limit = 4;
- 	// }
+ 	if ( self HasPerk( "specialty_additionalprimaryweapon" ) )
+ 	{
+ 		weapon_limit = 3;
+ 	}
 
 	// This should never be true for the first time.
 	if( primaryWeapons.size >= weapon_limit )
@@ -2696,27 +2372,12 @@ treasure_chest_give_weapon( weapon_string )
 		{
 			if( !is_offhand_weapon( weapon_string ) )
 			{
+				// PI_CHANGE_BEGIN
+				// JMA - player dropped the tesla gun
 				if( current_weapon == "tesla_gun_zm" )
 				{
 					level.player_drops_tesla_gun = true;
 				}
-
-				if( current_weapon == "blundergat_zm" )
-				{
-					level.player_drops_wonder_weapon = true;
-				}
-
-				if( current_weapon == "humangun_zm" )
-				{
-					level.player_drops_humangun = true;
-				}
-
-				if( current_weapon == "sniper_explosive_zm" )
-				{
-					level.player_drops_sniper_explosive = true;
-				}
-
-
 				// PI_CHANGE_END
 
 				if ( issubstr( current_weapon, "knife_ballistic_" ) )
@@ -2768,6 +2429,7 @@ treasure_chest_give_weapon( weapon_string )
 	self play_weapon_vo(weapon_string);
 
 }
+*/
 
 
 pay_turret_think( cost )
@@ -2964,7 +2626,7 @@ weapon_spawn_think()
 	ammo_cost = get_ammo_cost( self.zombie_weapon_upgrade );
 	is_grenade = (WeaponType( self.zombie_weapon_upgrade ) == "grenade");
 
-	self thread decide_hide_show_hint();
+	self thread maps\_remix_zombiemode_weapons::decide_hide_show_hint();
 
 	self.first_time_triggered = false;
 	for( ;; )
@@ -3205,9 +2867,12 @@ get_pack_a_punch_weapon_options( weapon )
 
 weapon_give( weapon, is_upgrade )
 {
+	// Redirect cause it's used around a lot
+	maps\_remix_zombiemode_weapons::weapon_give(weapon, is_upgrade);
+	/*
 	primaryWeapons = self GetWeaponsListPrimaries();
 	current_weapon = undefined;
-	weapon_limit = 3;
+	weapon_limit = 2;
 
 	//if is not an upgraded perk purchase
 	if( !IsDefined( is_upgrade ) )
@@ -3215,10 +2880,10 @@ weapon_give( weapon, is_upgrade )
 		is_upgrade = false;
 	}
 
- 	// if ( self HasPerk( "specialty_additionalprimaryweapon" ) )
- 	// {
- 	// 	weapon_limit = 4;
- 	// }
+ 	if ( self HasPerk( "specialty_additionalprimaryweapon" ) )
+ 	{
+ 		weapon_limit = 3;
+ 	}
 
 	// This should never be true for the first time.
 	if( primaryWeapons.size >= weapon_limit )
@@ -3279,17 +2944,7 @@ weapon_give( weapon, is_upgrade )
 	self SwitchToWeapon( weapon );
 
 	self play_weapon_vo(weapon);
-
-	//fix grenade ammo
-	if(is_lethal_grenade(weapon) && self GetWeaponAmmoClip(weapon) > 4)
-	{
-		self SetWeaponAmmoClip(weapon, 4);
-	}
-
-	if(is_tactical_grenade(weapon) && self GetWeaponAmmoClip(weapon) > 3)
-	{
-		self SetWeaponAmmoClip(weapon, 3);
-	}
+	*/
 }
 
 play_weapon_vo(weapon)
@@ -3367,6 +3022,9 @@ get_player_index(player)
 
 ammo_give( weapon )
 {
+	// Redirect
+	maps\_remix_zombiemode_weapons::ammo_give(weapon);
+	/*
 	// We assume before calling this function we already checked to see if the player has this weapon...
 
 	// Should we give ammo to the player
@@ -3419,17 +3077,6 @@ ammo_give( weapon )
 // 		{
 // 			self GiveMaxAmmo( weapon+"_upgraded" );
 // 		}
-
-		// fix for grenade ammo
-		if(is_lethal_grenade(weapon) && self GetWeaponAmmoClip(weapon) > 4)
-		{
-			self SetWeaponAmmoClip(weapon, 4);
-		}
-
-		if(is_tactical_grenade(weapon) && self GetWeaponAmmoClip(weapon) > 3)
-		{
-			self SetWeaponAmmoClip(weapon, 3);
-		}
 		return true;
 	}
 
@@ -3437,170 +3084,5 @@ ammo_give( weapon )
 	{
 		return false;
 	}
-}
-
-//include new weapons
-init_includes()
-{
-	include_weapon("ak47_zm");
- 	include_weapon("stoner63_zm");
- 	include_weapon("ppsh_zm");
-
- 	vending_weapon_upgrade_trigger = GetEntArray("zombie_vending_upgrade", "targetname");
-	if(vending_weapon_upgrade_trigger.size >= 1)
-	{
- 		include_weapon("ak47_ft_upgraded_zm", false);
-	 	include_weapon("stoner63_upgraded_zm", false);
-	 	include_weapon("ppsh_upgraded_zm", false);
- 	}
-}
-
-// sharedbox
-knife_for_shared_box( user )
-{
-	self endon( "user_grabbed_weapon" );
-
-	while(1)
-	{
-		if(user meleeButtonPressed() && isplayer( user ) && distance(self.origin, user.origin) <= 100)
-		{
-			self SetVisibleToAll();
-			self thread respin_respin_box();
-
-			wait 10;
-			break;
-		}
-		wait 0.05;
-	}
-	
-	self notify( "trigger", level );
-}
-
-respin_respin_box()
-{
-	org = self.chest_origin.origin;
-	
-	if(IsDefined(self.chest_origin.weapon_model))
-	{
-		self.chest_origin.weapon_model notify("kill_weapon_movement");
-		self.chest_origin.weapon_model moveto(org + (0,0,40), 0.5);
-	}
-	
-	if(IsDefined(self.chest_origin.weapon_model_dw))
-	{
-		self.chest_origin.weapon_model_dw notify("kill_weapon_movement");
-		self.chest_origin.weapon_model_dw moveto(org + (0,0,40) - (3,3,3), 0.5);
-	}
-	
-	self.chest_origin notify("box_hacked_rerespin");
-	
-	self.box_rerespun = true;
-	
-	self thread fake_weapon_powerup_thread(self.chest_origin.weapon_model, self.chest_origin.weapon_model_dw);
-	
-}
-
-fake_weapon_powerup_thread(weapon1, weapon2)
-{
-	weapon1 endon ("death");
-
-	playfxontag (level._effect["powerup_on_solo"], weapon1, "tag_origin");
-	
-	playsoundatposition("zmb_spawn_powerup", weapon1.origin);
-	weapon1 PlayLoopSound("zmb_spawn_powerup_loop");
-	
-	self thread fake_weapon_powerup_timeout(weapon1, weapon2);
-	
-	while (isdefined(weapon1))
-	{
-		waittime = randomfloatrange(2.5, 5);
-		yaw = RandomInt( 360 );
-		if( yaw > 300 )
-		{
-			yaw = 300;
-		}
-		else if( yaw < 60 )
-		{
-			yaw = 60;
-		}
-		yaw = weapon1.angles[1] + yaw;
-		weapon1 rotateto ((-60 + randomint(120), yaw, -45 + randomint(90)), waittime, waittime * 0.5, waittime * 0.5);
-		
-		if(IsDefined(weapon2))
-		{
-			weapon2 rotateto ((-60 + randomint(120), yaw, -45 + randomint(90)), waittime, waittime * 0.5, waittime * 0.5);
-		}
-		wait randomfloat (waittime - 0.1);
-	}
-}
-
-fake_weapon_powerup_timeout(weapon1, weapon2)
-{
-	weapon1 endon ("death");
-
-	wait 10;
-
-	// for (i = 0; i < 40; i++)
-	// {
-	// 	// hide and show
-	// 	if (i % 2)
-	// 	{
-	// 		weapon1 hide();
-	// 		if(IsDefined(weapon2))
-	// 		{
-	// 			weapon2 Hide();
-	// 		}
-	// 	}
-	// 	else
-	// 	{
-	// 		weapon1 show();
-	// 		if(IsDefined(weapon2))
-	// 		{
-	// 			weapon2 Hide();
-	// 		}
-	// 	}
-
-	// 	if (i < 15)
-	// 	{
-	// 		wait 0.5;
-	// 	}
-	// 	else if (i < 25)
-	// 	{
-	// 		wait 0.25;
-	// 	}
-	// 	else
-	// 	{
-	// 		wait 0.1;
-	// 	}
-	// }
-	
-	//self.chest.chest_origin notify("weapon_grabbed");
-	self notify( "trigger", level ); 
-	
-	if(IsDefined(weapon1))
-	{
-		weapon1 Delete();
-	}
-	
-	if(IsDefined(weapon2))
-	{
-		weapon2 Delete();
-	}
-}
-
-debug_print_boxes()
-{
-	for (i=0; i<level.chests.size; i++)
-	{
-		iPrintLn(level.chests[i].script_noteworthy);
-		// iPrintLn(level.chests[i].targetname);
-		wait 1;
-	}
-}
-
-remove_melee()
-{
-	melee = self get_player_melee_weapon();
-	self TakeWeapon(melee);
-	return melee;
+	*/
 }

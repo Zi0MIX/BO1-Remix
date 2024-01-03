@@ -4,7 +4,7 @@ remix_main()
 	PreCacheModel("collision_geo_512x512x512");
 	PreCacheModel("collision_geo_128x128x128");
 
-    level thread maps\_zombiemode_utility::special_round_watcher();
+    level thread maps\_remix_zombiemode_utility::special_round_watcher();
 
     while (!isDefined(level.meteor_counter))
         wait 0.05;
@@ -268,7 +268,7 @@ include_weapons()
 	// Special
 	include_weapon( "ray_gun_zm", true, false, ::factory_ray_gun_weighting_func );
 	include_weapon( "ray_gun_upgraded_zm", false );
-	include_weapon( "tesla_gun_zm", true, false, maps\_zombiemode_weapons::default_wonder_weapon_weighting_func );
+	include_weapon( "tesla_gun_zm", true, false, maps\_remix_zombiemode_weapons::default_wonder_weapon_weighting_func );
 	include_weapon( "tesla_gun_upgraded_zm", false );
 	include_weapon( "zombie_cymbal_monkey", true, false, maps\_zombiemode_weapons::default_cymbal_monkey_weighting_func );
 

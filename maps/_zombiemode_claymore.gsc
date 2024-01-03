@@ -17,28 +17,26 @@ init()
 		model hide();
 	}
 
-	array_thread(trigs,::buy_claymores);
-	level thread give_claymores_after_rounds();
+	array_thread(trigs,maps\_remix_zombiemode_claymore::buy_claymores);
+	level thread maps\_remix_zombiemode_claymore::give_claymores_after_rounds();
 
-	level.pickup_claymores = ::pickup_claymores;
+	level.pickup_claymores = maps\_remix_zombiemode_claymore::pickup_claymores;
 	level.pickup_claymores_trigger_listener = ::pickup_claymores_trigger_listener;
 
 	level.claymore_detectionDot = cos( 70 );
 	level.claymore_detectionMinDist = 20;
 
-	level thread update_claymore_fires();
+	level thread maps\_remix_zombiemode_claymore::update_claymore_fires();
 }
 
+/*
 buy_claymores()
 {
 	self.zombie_cost = 1000;
-	self UseTriggerRequireLookAt();
 	self sethintstring( &"ZOMBIE_CLAYMORE_PURCHASE" );
 	self setCursorHint( "HINT_NOICON" );
 
-	//level thread set_claymore_visible();
-	self.placeable_mine_name = "claymore_zm";
-	self thread maps\_zombiemode_weapons::decide_hide_show_hint();
+	level thread set_claymore_visible();
 	self.claymores_triggered = false;
 
 	while(1)
@@ -62,38 +60,38 @@ buy_claymores()
 			{
 				if ( !who is_player_placeable_mine( "claymore_zm" ) )
 				{
-					who maps\_zombiemode_weapons::check_collector_achievement( "claymore_zm" );
-					who thread show_claymore_hint("claymore_purchased");
-					who thread maps\_zombiemode_audio::create_and_play_dialog( "weapon_pickup", "grenade" );
-
-					who thread claymore_watch();
-					who thread claymore_setup();
-
 					play_sound_at_pos( "purchase", self.origin );
 
 					//set the score
-					who maps\_zombiemode_score::minus_to_player_score( self.zombie_cost );
+					who maps\_zombiemode_score::minus_to_player_score( self.zombie_cost ); 
+					who maps\_zombiemode_weapons::check_collector_achievement( "claymore_zm" );
+					who thread claymore_setup();
+					who thread show_claymore_hint("claymore_purchased");
+					who thread maps\_zombiemode_audio::create_and_play_dialog( "weapon_pickup", "grenade" );
+
+					// JMA - display the claymores
+					if( self.claymores_triggered == false )
+					{						
+						model = getent( self.target, "targetname" ); 					
+						model thread maps\_zombiemode_weapons::weapon_show( who ); 
+						self.claymores_triggered = true;
+					}
 
 					trigs = getentarray("claymore_purchase","targetname");
 					for(i = 0; i < trigs.size; i++)
 					{
 						trigs[i] SetInvisibleToPlayer(who);
 					}
-
-					play_sound_at_pos( "purchase", self.origin );
 				}
-
-				// JMA - display the claymores
-				if( self.claymores_triggered == false )
+				else
 				{
-					model = getent( self.target, "targetname" );
-					model thread maps\_zombiemode_weapons::weapon_show( who );
-					self.claymores_triggered = true;
+					who thread show_claymore_hint("already_purchased");
 				}
 			}
 		}
 	}
 }
+*/
 
 set_claymore_visible()
 {
@@ -118,6 +116,7 @@ set_claymore_visible()
 	}
 }
 
+/*
 claymore_watch()
 {
 	self endon("death");
@@ -128,14 +127,9 @@ claymore_watch()
 		if(weapname == "claymore_zm")
 		{
 			claymore.owner = self;
-			//claymore thread satchel_damage();
+			claymore thread satchel_damage();
 			claymore thread claymore_detonation();
 			claymore thread play_claymore_effects();
-
-			if(level.gamemode != "survival")
-			{
-				claymore thread claymore_damage();
-			}
 
 			self notify( "zmb_enable_claymore_prompt" );
 		}
@@ -144,6 +138,8 @@ claymore_watch()
 
 claymore_setup()
 {
+	self thread claymore_watch();
+
 	self giveweapon("claymore_zm");
 	self set_player_placeable_mine("claymore_zm");
 	self setactionslot(4,"weapon","claymore_zm");
@@ -157,8 +153,11 @@ pickup_claymores()
 	if ( !player hasweapon( "claymore_zm" ) )
 	{
 		player thread claymore_watch();
-		player thread claymore_setup();
-
+		
+		player giveweapon("claymore_zm");
+		player set_player_placeable_mine("claymore_zm");
+		player setactionslot(4,"weapon","claymore_zm");
+		player setweaponammoclip("claymore_zm",0);
 		player notify( "zmb_enable_claymore_prompt" );
 	}
 	else
@@ -181,6 +180,7 @@ pickup_claymores()
 		player notify( "zmb_disable_claymore_prompt" );
 	}
 }
+*/
 
 pickup_claymores_trigger_listener( trigger, player )
 {
@@ -255,6 +255,7 @@ shouldAffectWeaponObject( object )
 	return ( dot > level.claymore_detectionDot );
 }
 
+/*
 claymore_detonation()
 {
 	self endon("death");
@@ -277,21 +278,15 @@ claymore_detonation()
 	damagearea enablelinkto();
 	damagearea linkto( self );
 
-	self.trigger = damagearea;
-
 	self thread delete_claymores_on_death( damagearea );
 
-	if(!isdefined(self.owner.mines))
-		self.owner.mines = [];
-	self.owner.mines = array_add( self.owner.mines, self );
+	if(!isdefined(level.claymores))
+		level.claymores = [];
+	level.claymores = array_add( level.claymores, self );
 
-	amount = level.max_mines / get_players().size;
-
-	if( self.owner.mines.size > amount )
-	{
-		self.owner.mines[0] detonate( self.owner );
-	}
-
+	if( level.claymores.size > 15 && GetDvar( #"player_sustainAmmo") != "0" )
+	level.claymores[0] delete();
+	
 	while(1)
 	{
 		damagearea waittill( "trigger", ent );
@@ -299,10 +294,7 @@ claymore_detonation()
 		if ( isdefined( self.owner ) && ent == self.owner )
 			continue;
 
-		if( level.gamemode == "survival" && isDefined( ent.pers ) && isDefined( ent.pers["team"] ) && ent.pers["team"] != playerTeamToAllow )
-			continue;
-
-		if( level.gamemode != "survival" && IsPlayer(ent) && ent.vsteam == self.owner.vsteam )
+		if( isDefined( ent.pers ) && isDefined( ent.pers["team"] ) && ent.pers["team"] != playerTeamToAllow )
 			continue;
 
 		if ( !ent shouldAffectWeaponObject( self ) )
@@ -310,9 +302,6 @@ claymore_detonation()
 
 		if ( ent damageConeTrace(self.origin, self) > 0 )
 		{
-			wait_to_fire_claymore();
-
-			self notify("pickUpTrigger_death");
 			self playsound ("claymore_activated_SP");
 			wait 0.4;
 			if ( isdefined( self.owner ) )
@@ -328,19 +317,13 @@ claymore_detonation()
 delete_claymores_on_death(ent)
 {
 	self waittill("death");
-
-	self.owner.mines = array_removeUndefined(self.owner.mines);
-
-	if(isDefined(self.tag_origin))
-	{
-		self.tag_origin Delete();
-	}
 	// stupid getarraykeys in array_remove reversing the order - nate
-	//level.claymores = array_remove_nokeys( level.claymores, self );
+	level.claymores = array_remove_nokeys( level.claymores, self );
 	wait .05;
 	if ( isdefined( ent ) )
 		ent delete();
 }
+*/
 
 satchel_damage()
 {
@@ -410,6 +393,7 @@ play_claymore_effects()
 	PlayFXOnTag( level._effect[ "claymore_laser" ], self, "tag_fx" );
 }
 
+/*
 give_claymores_after_rounds()
 {
 	while(1)
@@ -423,16 +407,16 @@ give_claymores_after_rounds()
 			{
 				if ( players[i] is_player_placeable_mine( "claymore_zm" ) )
 				{
-					players[i] giveweapon("claymore_zm");
-					players[i] set_player_placeable_mine("claymore_zm");
-					players[i] setactionslot(4,"weapon","claymore_zm");
-					players[i] setweaponammoclip("claymore_zm",2);
-					players[i] notify( "zmb_disable_claymore_prompt" );
+					players[i]  giveweapon("claymore_zm");
+					players[i]  set_player_placeable_mine("claymore_zm");
+					players[i]  setactionslot(4,"weapon","claymore_zm");
+					players[i]  setweaponammoclip("claymore_zm",2);
 				}
 			}
 		}
 	}
 }
+*/
 
 init_hint_hudelem(x, y, alignX, alignY, fontscale, alpha)
 {
@@ -473,53 +457,4 @@ show_claymore_hint(string)
 	self.hintelem setText(text);
 	wait(3.5);
 	self.hintelem settext("");
-}
-
-claymore_damage()
-{
-	self endon( "death" );
-
-	tag_origin = spawn("script_model",self.origin);
-	tag_origin.angles = self.angles;
-	tag_origin setmodel(self.model);
-	tag_origin linkto(self);
-	self.tag_origin = tag_origin;
-
-	tag_origin setcandamage(true);
-	tag_origin.health = 100000;
-
-	while(1)
-	{
-		tag_origin waittill("damage", amount, attacker);
-		if(attacker.vsteam != self.owner.vsteam)
-		{
-			PlayFX(level._effect["equipment_damage"], self.origin);
-
-			if(IsDefined(self.trigger))
-			{
-				self.trigger delete();
-			}
-			tag_origin Delete();
-			self delete();
-		}
-	}
-}
-
-update_claymore_fires()
-{
-	while ( true )
-	{
-		level.hasClaymoreFiredRecently = false;
-		wait_network_frame();
-	}
-}
-
-wait_to_fire_claymore()
-{
-	while ( level.hasClaymoreFiredRecently )
-	{
-		wait_network_frame();
-	}
-
-	level.hasClaymoreFiredRecently = true;
 }

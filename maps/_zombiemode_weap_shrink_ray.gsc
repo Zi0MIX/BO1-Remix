@@ -358,7 +358,7 @@ shrink_zombie(upgraded, attacker)
 		
 		//Wait
 		self thread play_ambient_vox();
-		self thread watch_for_kicked();
+		self thread maps\_remix_zombiemode_weap_shrink_ray::watch_for_kicked();
 		self thread watch_for_death();
 		
 		self.zombie_board_tear_down_callback = ::zomibe_shrunk_board_tear_down;
@@ -503,6 +503,7 @@ play_shrink_sound( alias )
 //	}
 //}
 
+/*
 watch_for_kicked()
 {
 	self endon("death");
@@ -515,8 +516,6 @@ watch_for_kicked()
 	self.shrinkTrigger EnableLinkTo();
 	self.shrinkTrigger LinkTo( self );
 	
-	self thread delete_on_unshrink();
-
 	while(1)
 	{
 		self.shrinkTrigger waittill("trigger", who);
@@ -569,17 +568,7 @@ watch_for_kicked()
 		}
 	}		
 }
-
-delete_on_unshrink()
-{
-	self endon("death");
-
-	self waittill("unshrink");
-	if( isDefined(self.shrinkTrigger))
-	{
-		self.shrinkTrigger Delete();
-	}
-}
+*/
 
 watch_for_death()
 {
@@ -676,15 +665,16 @@ shrink_death(killer)
 	self dodamage(self.health + 666, self.origin, killer);
 }
 
+/*
 shrink_ray_get_enemies_in_range( upgraded, shrinkable_objects )
 {
-	range = 1000;//480; //40 feet
-	radius = 80;//60; //5 feet
+	range = 480; //40 feet
+	radius = 60; //5 feet
 	
 	if(upgraded)
 	{
-		range = 1300;//1200; //100 feet
-		radius = 85; //7 feet	
+		range = 1200; //100 feet
+		radius = 84; //7 feet	
 	}
 	hitZombies = [];
 
@@ -788,6 +778,7 @@ shrink_ray_get_enemies_in_range( upgraded, shrinkable_objects )
 	
 	return hitZombies;
 }
+*/
 
 shrink_ray_debug_print( msg, color )
 {

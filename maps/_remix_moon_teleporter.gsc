@@ -48,7 +48,7 @@ display_time_survived()
 		
 		nomanslandtime = level.nml_best_time; 
 		player_survival_time = int( nomanslandtime/1000 ); 
-		player_survival_time_in_mins = to_mins_short( player_survival_time );		
+		player_survival_time_in_mins = maps\_remix_zombiemode_utility::to_mins_short( player_survival_time );		
 		survived[i] SetText( &"ZOMBIE_SURVIVED_NOMANS", player_survival_time_in_mins );
 		survived[i] FadeOverTime( 1 );
 		survived[i].alpha = 1;

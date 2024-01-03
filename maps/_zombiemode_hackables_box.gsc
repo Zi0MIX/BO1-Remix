@@ -357,9 +357,10 @@ init_summon_box(create)
 	}
 }
 
+/*
 summon_box_thread(hacker)
 {
-	self.chest.last_hacked_round = level.round_number + 5; //RandomIntRange(2,5);
+	self.chest.last_hacked_round = level.round_number + RandomIntRange(2,5);
 
 	maps\_zombiemode_equip_hacker::deregister_hackable_struct(self);
 
@@ -385,10 +386,11 @@ summon_box_thread(hacker)
 	self.chest thread maps\_zombiemode_weapons::hide_chest();
 	self.chest thread maps\_zombiemode_weapons::show_rubble();
 }
+*/
 
 summon_box(hacker)
 {
-	self thread summon_box_thread(hacker);
+	self thread maps\_remix_zombiemode_hackables_box::summon_box_thread(hacker);
 
 	if( isdefined( hacker ) )
 	{

@@ -40,28 +40,30 @@ init()
 	level.zombie_death_animscript_override = ::black_hole_bomb_corpse_hide;
 
 	// ww: setup the initial_attract_func and arrival_attract_func overrides
-	level.black_hole_bomb_poi_initial_attract_func = ::black_hole_bomb_initial_attract_func;
+	level.black_hole_bomb_poi_initial_attract_func = maps\_remix_zombiemode_weap_black_hole::black_hole_bomb_initial_attract_func;
 	level.black_hole_bomb_poi_arrival_attract_func = ::black_hole_bomb_arrival_attract_func;
 
 	level._black_hole_bomb_zombies_anim_change = []; // array needed for anim change throttling
 	flag_init( "bhb_anim_change_allowed" ); // flag to control when ai can add themselves to the array
 	level thread black_hole_bomb_throttle_anim_changes(); // throttling function
 	flag_set( "bhb_anim_change_allowed" );
+
 }
 
 player_give_black_hole_bomb()
 {
 	self giveweapon( "zombie_black_hole_bomb" );
 	self set_player_tactical_grenade( "zombie_black_hole_bomb" );
-	self thread player_handle_black_hole_bomb();
+	self thread maps\_remix_zombiemode_weap_black_hole::player_handle_black_hole_bomb();
 }
 
+/*
 #using_animtree( "zombie_cymbal_monkey" ); // WW: A new animtree or should we just use generic human's throw?
 player_handle_black_hole_bomb()
 {
-	//self notify( "starting_black_hole_bomb" );
+	self notify( "starting_black_hole_bomb" );
 	self endon( "disconnect" );
-	//self endon( "starting_black_hole_bomb" );
+	self endon( "starting_black_hole_bomb" );
 
 	// Min distance to attract positions
 	attract_dist_diff = level.black_hole_attract_dist_diff;
@@ -82,92 +84,94 @@ player_handle_black_hole_bomb()
 		max_attract_dist = 2056; // WW: controls the pull distance
 	}
 
-	grenade = get_thrown_black_hole_bomb();
-
-	self thread player_handle_black_hole_bomb();
-
-	if( IsDefined( grenade ) )
+	while( true )
 	{
-		if( self maps\_laststand::player_is_in_laststand() || is_true( self.intermission ) )
+		grenade = get_thrown_black_hole_bomb();
+		if( IsDefined( grenade ) )
 		{
-			grenade delete();
-			return;
-		}
-
-		grenade hide();
-		grenade.angles = (0, grenade.angles[1], 0);
-
-		model = spawn( "script_model", grenade.origin );
-		model.angles = grenade.angles;
-		model SetModel( "t5_bh_bomb_world" );
-		model linkTo( grenade );
-
-		info = spawnStruct();
-		info.sound_attractors = [];
-		grenade thread monitor_zombie_groans( info ); // WW: this might need to change
-		velocitySq = 10000*10000;
-		oldPos = grenade.origin;
-
-		while( velocitySq != 0 )
-		{
-			wait( 0.05 );
-
-			if( !isDefined( grenade ) )
+			if( self maps\_laststand::player_is_in_laststand() || is_true( self.intermission ) )
 			{
-				return;
+				grenade delete();
+				continue;
 			}
+			grenade hide();
+			model = spawn( "script_model", grenade.origin );
+			model SetModel( "t5_bh_bomb_world" );
+			model linkTo( grenade );
+			model.angles = grenade.angles;
 
-			velocitySq = distanceSquared( grenade.origin, oldPos );
+			info = spawnStruct();
+			info.sound_attractors = [];
+			grenade thread monitor_zombie_groans( info ); // WW: this might need to change
+			velocitySq = 10000*10000;
 			oldPos = grenade.origin;
-			grenade.angles = (grenade.angles[0], grenade.angles[1], 0);
-		}
 
-		if( isDefined( grenade ) )
-		{
-			model._black_hole_bomb_player = self; // saves who threw the grenade, used to assign the damage when zombies die
-			model.targetname = "zm_bhb";
-			model._new_ground_trace = true;
-
-			grenade resetmissiledetonationtime();
-
-			if ( IsDefined( level.black_hole_bomb_loc_check_func ) )
+			while( velocitySq != 0 )
 			{
-				if ( [[ level.black_hole_bomb_loc_check_func ]]( grenade, model, info ) )
+				wait( 0.05 );
+
+				if( !isDefined( grenade ) )
 				{
-					return;
+					break;
 				}
+
+				velocitySq = distanceSquared( grenade.origin, oldPos );
+				oldPos = grenade.origin;
 			}
-
-			if ( IsDefined( level._blackhole_bomb_valid_area_check ) )
+			if( isDefined( grenade ) )
 			{
-				if ( [[ level._blackhole_bomb_valid_area_check ]]( grenade, model, self ) )
+				model unlink();
+				model.origin = grenade.origin;
+				model.angles = grenade.angles;
+				model._black_hole_bomb_player = self; // saves who threw the grenade, used to assign the damage when zombies die
+				model.targetname = "zm_bhb";
+				model._new_ground_trace = true;
+
+				grenade resetmissiledetonationtime();
+
+				if ( IsDefined( level.black_hole_bomb_loc_check_func ) )
 				{
-					return;
-				}
-			}
-
-			valid_poi = check_point_in_active_zone( grenade.origin );
-			// ww: There used to be a second check here for check_point_in_playable_area which was from the cymbal monkey.
-			// This second check was removed because the black hole bomb has a reaction if it is tossed somewhere that can't
-			// be accessed. Something similar could be done for the cymbal monkey as well.
-
-
-			if(valid_poi)
-			{
-				self thread black_hole_bomb_kill_counter( model );
-				level thread black_hole_bomb_cleanup( grenade, model );
-
-				if( IsDefined( level._black_hole_bomb_poi_override ) ) // allows pois to be ignored immediately by ai
-				{
-					model thread [[level._black_hole_bomb_poi_override]]();
+					if ( [[ level.black_hole_bomb_loc_check_func ]]( grenade, model, info ) )
+					{
+						continue;
+					}
 				}
 
-				model create_zombie_point_of_interest( max_attract_dist, num_attractors, 0, true, level.black_hole_bomb_poi_initial_attract_func, level.black_hole_bomb_poi_arrival_attract_func );
-				model SetClientFlag( level._SCRIPTMOVER_CLIENT_FLAG_BLACKHOLE );
-				grenade thread do_black_hole_bomb_sound( model, info ); // WW: This might not work if it is based on the model
-				level thread black_hole_bomb_teleport_init( grenade );
-				grenade.is_valid = true;
-				level notify("attractor_positions_generated");
+				if ( IsDefined( level._blackhole_bomb_valid_area_check ) )
+				{
+					if ( [[ level._blackhole_bomb_valid_area_check ]]( grenade, model, self ) )
+					{
+						continue;
+					}
+				}
+
+				valid_poi = check_point_in_active_zone( grenade.origin );
+				// ww: There used to be a second check here for check_point_in_playable_area which was from the cymbal monkey.
+				// This second check was removed because the black hole bomb has a reaction if it is tossed somewhere that can't
+				// be accessed. Something similar could be done for the cymbal monkey as well.
+
+
+				if(valid_poi)
+				{
+					self thread black_hole_bomb_kill_counter( model );
+					level thread black_hole_bomb_cleanup( grenade, model );
+
+					if( IsDefined( level._black_hole_bomb_poi_override ) ) // allows pois to be ignored immediately by ai
+					{
+						model thread [[level._black_hole_bomb_poi_override]]();
+					}
+
+					model create_zombie_point_of_interest( max_attract_dist, num_attractors, 0, true, level.black_hole_bomb_poi_initial_attract_func, level.black_hole_bomb_poi_arrival_attract_func );
+					model SetClientFlag( level._SCRIPTMOVER_CLIENT_FLAG_BLACKHOLE );
+					grenade thread do_black_hole_bomb_sound( model, info ); // WW: This might not work if it is based on the model
+					level thread black_hole_bomb_teleport_init( grenade );
+					grenade.is_valid = true;
+				}
+				else
+				{
+					self.script_noteworthy = undefined;
+					level thread black_hole_bomb_stolen_by_sam( self, model );
+				}
 			}
 			else
 			{
@@ -175,13 +179,10 @@ player_handle_black_hole_bomb()
 				level thread black_hole_bomb_stolen_by_sam( self, model );
 			}
 		}
-		else
-		{
-			self.script_noteworthy = undefined;
-			level thread black_hole_bomb_stolen_by_sam( self, model );
-		}
+		wait( 0.05 );
 	}
 }
+*/
 
 wait_for_attractor_positions_complete()
 {
@@ -190,6 +191,7 @@ wait_for_attractor_positions_complete()
 	self.attract_to_origin = false;
 }
 
+/*
 black_hole_bomb_cleanup( parent, model )
 {
 	model endon( "sam_stole_it" );
@@ -205,10 +207,6 @@ black_hole_bomb_cleanup( parent, model )
 			{
 				model Delete();
 
-				level notify("attractor_positions_generated");
-
-				//level thread anims_test();
-
 				wait_network_frame();
 			}
 			break;
@@ -219,20 +217,7 @@ black_hole_bomb_cleanup( parent, model )
 
 	level thread black_hole_bomb_corpse_collect( grenade_org );
 }
-
-anims_test()
-{
-	wait 1;
-
-	zombs = GetAiSpeciesArray("axis");
-	for(i=0;i<zombs.size;i++)
-	{
-		if(IsSubStr(zombs[i] black_hole_bomb_store_movement_anim(), "fast_pull"))
-		{
-			iprintln("anim didnt switch");
-		}
-	}
-}
+*/
 
 black_hole_bomb_corpse_collect( vec_origin )
 {
@@ -370,6 +355,7 @@ black_hole_bomb_exists()
 	return IsDefined( level.zombie_weapons["zombie_black_hole_bomb"] );
 }
 
+/*
 // -- causes the zombie to react to the black hole, controls walk cycles, marks zombie for black hole death
 black_hole_bomb_initial_attract_func( ent_poi )
 {
@@ -379,11 +365,6 @@ black_hole_bomb_initial_attract_func( ent_poi )
 	//self endon( "path_timer_done" );
 
 	if( IsDefined( self.pre_black_hole_bomb_run_combatanim ) )
-	{
-		return;
-	}
-
-	if(self.animname == "astro_zombie")
 	{
 		return;
 	}
@@ -420,11 +401,8 @@ black_hole_bomb_initial_attract_func( ent_poi )
 	}
 
 	// save original movement animation
-	if( !IsDefined( self.pre_black_hole_bomb_run_combatanim ) )
-	{
-		self.pre_black_hole_bomb_run_combatanim = self black_hole_bomb_store_movement_anim();
-	}
-
+	self.pre_black_hole_bomb_run_combatanim = self black_hole_bomb_store_movement_anim();
+	
 	if( IsDefined( level._black_hole_attract_override ) )
 	{
 		level [ [ level._black_hole_attract_override ] ]();
@@ -487,14 +465,16 @@ black_hole_bomb_initial_attract_func( ent_poi )
 			{
 				self black_hole_bomb_event_horizon_death( self._current_black_hole_bomb_origin, ent_poi );
 			}
+
 		}
 
-		wait( 0.05 );
+		wait( 0.1 );
 	}
 
 	// zombie wasn't sucked in to the hole before it collapsed, put him back to normal.
 	self thread black_hole_bomb_escaped_zombie_reset();
 }
+*/
 
 // -- store and return the current zombie movement anim
 black_hole_bomb_store_movement_anim()
@@ -528,16 +508,17 @@ black_hole_bomb_being_pulled_fx()
 	self._black_hole_bomb_being_pulled_in_fx = 1;
 }
 
+/*
 // -- decides which pulled in anim should be played
 black_hole_bomb_attract_walk()
 {
 	self endon( "death" );
 
-	//flag_wait( "bhb_anim_change_allowed" );  // permission for adding to the array
-	//level._black_hole_bomb_zombies_anim_change = add_to_array( level._black_hole_bomb_zombies_anim_change, self, false ); // no dupes allowed
+	flag_wait( "bhb_anim_change_allowed" );  // permission for adding to the array
+	level._black_hole_bomb_zombies_anim_change = add_to_array( level._black_hole_bomb_zombies_anim_change, self, false ); // no dupes allowed
 
 	// wait for permission to change anim
-	//self ent_flag_wait( "bhb_anim_change" );
+	self ent_flag_wait( "bhb_anim_change" );
 
 	self.a.runBlendTime = 0.9;
 	self clear_run_anim();
@@ -586,11 +567,11 @@ black_hole_bomb_attract_run()
 	// there are three fast pulls for zombies and legless so this random can happen here
 	rand = RandomIntRange( 1, 4 );
 
-	//flag_wait( "bhb_anim_change_allowed" ); // permission for adding to the array
-	//level._black_hole_bomb_zombies_anim_change = add_to_array( level._black_hole_bomb_zombies_anim_change, self, false ); // no dupes allowed
+	flag_wait( "bhb_anim_change_allowed" ); // permission for adding to the array
+	level._black_hole_bomb_zombies_anim_change = add_to_array( level._black_hole_bomb_zombies_anim_change, self, false ); // no dupes allowed
 
 	// wait for permission to change anim
-	//self ent_flag_wait( "bhb_anim_change" );
+	self ent_flag_wait( "bhb_anim_change" );
 
 	self.a.runBlendTime = 0.9;
 	self clear_run_anim();
@@ -624,7 +605,7 @@ black_hole_bomb_attract_run()
 	self._bhb_change_anim_notified = 1;
 	self.a.runBlendTime = self._normal_run_blend_time;
 }
-
+*/
 
 // plays the animation of the zombie being pulled in
 black_hole_bomb_death_anim()
@@ -665,6 +646,7 @@ black_hole_bomb_death_while_attracted()
 }
 
 // -- causes death once the ai reaches goal
+/*
 black_hole_bomb_arrival_attract_func( ent_poi )
 {
 	self endon( "death" );
@@ -672,22 +654,11 @@ black_hole_bomb_arrival_attract_func( ent_poi )
 	//self endon( "bad_path" );
 	self endon( "path_timer_done" );
 
-	if(self.animname == "astro_zombie")
-	{
-		return;
-	}
-
 	soul_spark_end = ent_poi.origin;
 
 	// once goal hits the ai is at their poi and should die
 	self waittill( "goal" );
 
-	/*if(!IsDefined(ent_poi))
-	{
-		return;
-	}*/
-
-	self._black_hole_bomb_collapse_death = 1;
 	if( IsDefined( self._bhb_horizon_death ) )
 	{
 		self [[ self._bhb_horizon_death ]]( self._current_black_hole_bomb_origin, ent_poi );
@@ -703,12 +674,6 @@ black_hole_bomb_arrival_attract_func( ent_poi )
 black_hole_bomb_event_horizon_death( vec_black_hole_org, grenade )
 {
 	self endon( "death" );
-
-	if(!IsDefined(grenade))
-	{
-		level notify("attractor_positions_generated");
-		return;
-	}
 
 	self maps\_zombiemode_spawner::zombie_eye_glow_stop();
 	self playsound ("wpn_gersh_device_kill");
@@ -727,8 +692,9 @@ black_hole_bomb_event_horizon_death( vec_black_hole_org, grenade )
 
 	grenade notify( "black_hole_bomb_kill" );
 
-	self DoDamage( self.health + 50, self.origin + ( 0, 0, 50 ), self._black_hole_bomb_tosser, undefined, "crush" );
+	self DoDamage( self.health + 50, self.origin + ( 0, 0, 50 ), self._black_hole_bomb_tosser, "zombie_black_hole_bomb", "MOD_CRUSH" );
 }
+*/
 
 // -- hide the corpse after death
 black_hole_bomb_corpse_hide()
@@ -752,15 +718,16 @@ black_hole_bomb_corpse_hide()
 }
 
 // -- zombies that don't get caught in the event horizon go back to normal
+/*
 black_hole_bomb_escaped_zombie_reset()
 {
 	self endon( "death" );
 
-	//flag_wait( "bhb_anim_change_allowed" );  // permission for adding to the array
-	//level._black_hole_bomb_zombies_anim_change = add_to_array( level._black_hole_bomb_zombies_anim_change, self, false ); // no dupes allowed
+	flag_wait( "bhb_anim_change_allowed" );  // permission for adding to the array
+	level._black_hole_bomb_zombies_anim_change = add_to_array( level._black_hole_bomb_zombies_anim_change, self, false ); // no dupes allowed
 
 	// wait for permission to change anim
-	//self ent_flag_wait( "bhb_anim_change" );
+	self ent_flag_wait( "bhb_anim_change" );
 
 	// need the new fx before running these functions again
 	// clear the flag that causes the back sparks
@@ -842,6 +809,7 @@ black_hole_bomb_escaped_zombie_reset()
 		self.crouchrun_combatanim = level.scr_anim[ self.animname ][ self.pre_black_hole_bomb_run_combatanim ];
 	}
 
+
 	// reset all variables for the black hole in case this zombie gets attracted again
 	self.pre_black_hole_bomb_run_combatanim = undefined;
 	self._black_hole_attract_walk = 0;
@@ -876,14 +844,8 @@ black_hole_bomb_escaped_zombie_reset()
 
 	self._had_legs = undefined;
 	self._bhb_ent_flag_init = 0;
-
-	// run anim doesn't always switch for some reason, if we keep setting self.needs_run_update to true it will eventually change
-	for(i=0;i<30;i++)
-	{
-		wait_network_frame();
-		self.needs_run_update = true;
-	}
 }
+*/
 
 // -- black hole bomb anim change throttling
 black_hole_bomb_throttle_anim_changes()
@@ -1251,6 +1213,7 @@ black_hole_bomb_exit_clean_up()
 }
 
 // if the player throws it to an unplayable area samantha steals it
+/*
 black_hole_bomb_stolen_by_sam( ent_grenade, ent_model )
 {
 	if( !IsDefined( ent_model ) )
@@ -1259,13 +1222,6 @@ black_hole_bomb_stolen_by_sam( ent_grenade, ent_model )
 	}
 
 	//ent_grenade notify( "sam_stole_it" );
-
-	ent_model UnLink();
-
-	if(IsDefined(ent_grenade))
-	{
-		ent_grenade resetmissiledetonationtime();
-	}
 
 	direction = ent_model.origin;
 	direction = (direction[1], direction[0], 0);
@@ -1279,13 +1235,21 @@ black_hole_bomb_stolen_by_sam( ent_grenade, ent_model )
 		direction = (direction[0] * -1, direction[1], 0);
 	}
 
-	if( is_true( level.player_4_vox_override ) )
+	// Play laugh sound here, players should connect the laugh with the movement which will tell the story of who is moving it
+	players = GetPlayers();
+	for( i = 0; i < players.size; i++ )
 	{
-		ent_model playsound( "zmb_laugh_rich" );
-	}
-	else
-	{
-		ent_model playsound( "zmb_laugh_child" );
+		if( IsAlive( players[i] ) )
+		{
+			if( is_true( level.player_4_vox_override ) )
+			{
+				players[i] playlocalsound( "zmb_laugh_rich" );
+			}
+			else
+			{
+				players[i] playlocalsound( "zmb_laugh_child" );
+			}
+		}
 	}
 
 	// play the fx on the model
@@ -1302,6 +1266,7 @@ black_hole_bomb_stolen_by_sam( ent_grenade, ent_model )
 	ent_model Delete();
 
 }
+*/
 
 // setup anims needed for the black hole bomb
 #using_animtree( "generic_human" );

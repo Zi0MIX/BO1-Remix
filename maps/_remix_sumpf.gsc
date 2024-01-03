@@ -3,7 +3,7 @@ remix_main()
     // pap clip
 	precachemodel( "collision_geo_64x64x256");
 
-    level thread maps\_zombiemode_utility::special_round_watcher();
+    level thread maps\_remix_zombiemode_utility::special_round_watcher();
 
     while (!isDefined(level.has_pack_a_punch))
         wait 0.05;
@@ -216,7 +216,7 @@ include_weapons()
 	include_weapon( "zombie_bar", false, true );
 
 	// Special
-	include_weapon( "tesla_gun_zm", true, false, maps\_zombiemode_weapons::default_wonder_weapon_weighting_func );
+	include_weapon( "tesla_gun_zm", true, false, maps\_remix_zombiemode_weapons::default_wonder_weapon_weighting_func );
 	include_weapon( "tesla_gun_upgraded_zm", false );
 
 	// Custom weapons

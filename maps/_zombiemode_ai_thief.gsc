@@ -51,7 +51,7 @@ init()
 	level.num_thief_zombies = 0;
 
 	level.thief_zombie_spawners = GetEntArray( "thief_zombie_spawner", "targetname" );
-	array_thread( level.thief_zombie_spawners, ::add_spawn_function, maps\_zombiemode_ai_thief::thief_prespawn );
+	array_thread( level.thief_zombie_spawners, ::add_spawn_function, maps\_remix_zombiemode_ai_thief::thief_prespawn );
 
 	if( !isDefined( level.max_thief_zombies ) )
 	{
@@ -86,7 +86,7 @@ init()
 	flag_clear( "last_thief_down" );
 	flag_init( "death_in_pre_game" ); // ww: flag for pre game death
 
-	level thread thief_round_tracker();
+	level thread maps\_remix_zombiemode_ai_thief::thief_round_tracker();
 
 	level thread thief_init_portals();
 
@@ -108,6 +108,7 @@ thief_init_trap_clips()
 	sh_clip connectpaths();
 }
 
+/*
 #using_animtree( "generic_human" );
 thief_prespawn()
 {
@@ -174,6 +175,7 @@ thief_prespawn()
 	self.taken = false;
 	self.no_powerups = true;
 	self.blink = false;
+	self.bonfire = true;
 
 	self setTeamForEntity( "axis" );
 
@@ -181,10 +183,13 @@ thief_prespawn()
 	self.freezegun_damage_response_func = ::thief_freezegun_damage_response;
 	self.deathanimscript = ::thief_post_death;
 	self.zombie_damage_claymore_func = ::thief_damage_claymore;
+	self.nuke_damage_func = ::thief_nuke_damage;
 
 	self.pregame_damage = 0;
 	self.endgame_damage = 0;
 	self.speed_damage = 0;
+
+	self.ignore_solo_last_stand = 1;
 
 	self.light = [];
 	for ( i = 0; i < 5; i++ )
@@ -196,6 +201,7 @@ thief_prespawn()
 
 	self notify( "zombie_init_done" );
 }
+*/
 
 thief_health_watch()
 {
@@ -334,12 +340,12 @@ thief_zombie_spawn()
 		thief_zombie.script_noteworthy = self.script_noteworthy;
 		thief_zombie.targetname = self.targetname;
 		thief_zombie.target = self.target;
-		thief_zombie.deathFunction = maps\_zombiemode_ai_thief::thief_zombie_die;
+		thief_zombie.deathFunction = maps\_remix_zombiemode_ai_thief::thief_zombie_die;
 		thief_zombie.animname = "thief_zombie";
 
 		thief_zombie.exit_origin = thief_zombie.origin;
 
-		thief_zombie thread thief_zombie_think();
+		thief_zombie thread maps\_remix_zombiemode_ai_thief::thief_zombie_think();
 	}
 	else
 	{
@@ -421,6 +427,7 @@ thief_round_aftermath()
 	level.thief_intermission = false;
 }
 
+/*
 thief_round_tracker()
 {
 	flag_wait( "power_on" );
@@ -428,15 +435,7 @@ thief_round_tracker()
 	level.thief_save_spawn_func = level.round_spawn_func;
 	level.thief_save_wait_func = level.round_wait_func;
 
-	if(level.round_number % 2 == 1)
-	{
-		level.next_thief_round = level.round_number + 2;
-	}
-	else
-	{
-		level.next_thief_round = level.round_number + 1;
-	}
-
+	level.next_thief_round = level.round_number + randomintrange( 1, 4 );
 	level.prev_thief_round = level.next_thief_round;
 
 	while ( 1 )
@@ -455,7 +454,7 @@ thief_round_tracker()
 			level.round_wait_func = ::thief_round_wait;
 
 			level.prev_thief_round = level.next_thief_round;
-			level.next_thief_round = level.round_number + 4;
+			level.next_thief_round = level.round_number + randomintrange( 4, 6 );
 		}
 		else if ( level.prev_thief_round == level.round_number )
 		{
@@ -475,8 +474,8 @@ thief_round_start()
 	flag_set( "thief_round" );
 
 	//AUDIO: Got rid of typical announcer vox
-	//level thread maps\zombie_pentagon_amb::play_pentagon_announcer_vox( "zmb_vox_pentann_thiefstart" );
-	//level thread play_looping_alarms( 7 );
+	level thread maps\zombie_pentagon_amb::play_pentagon_announcer_vox( "zmb_vox_pentann_thiefstart" );
+	level thread play_looping_alarms( 7 );
 	level thread maps\_zombiemode_audio::change_zombie_music( "dog_start" );
 
 	if ( isDefined( level.thief_round_start ) )
@@ -491,6 +490,7 @@ thief_round_start()
 	// turn lights off
 	clientnotify( "TLF" );
 }
+*/
 
 thief_round_vision()
 {
@@ -527,6 +527,7 @@ thief_round_stop()
 //-----------------------------------------------------------------
 // setup trap watch
 //-----------------------------------------------------------------
+/*
 thief_trap_watcher()
 {
 	traps = getentarray( "zombie_trap", "targetname" );
@@ -559,13 +560,12 @@ thief_trap_watch( trig )
 	clip = getent( trig.target + "_clip", "targetname" );
 	clip.dis = false;
 
-	self thread thief_trap_stop_watch(trig);
-
 	while ( 1 )
 	{
 		if ( trig._trap_in_use == 1 && trig._trap_cooling_down == 0 && !clip.dis )
 		{
 			thief_print( "blocking " + trig.target );
+
 			// block path
 			clip.origin = clip.realorigin;
 			clip disconnectpaths();
@@ -574,31 +574,16 @@ thief_trap_watch( trig )
 		else if ( (trig._trap_in_use == 0 || trig._trap_cooling_down == 1) && clip.dis )
 		{
 			thief_print( "unblocking " + trig.target );
+
 			clip.origin += ( 0, 0, 10000 );
 			clip connectpaths();
 			clip.dis = false;
 		}
+
 		wait_network_frame();
 	}
 }
-
-thief_trap_stop_watch(trig)
-{
-	self endon( "death" );
-
-	clip = getent( trig.target + "_clip", "targetname" );
-
-	self waittill( "thief_trap_stop" );
-
-	if(clip.dis)
-	{
-		thief_print( "unblocking " + trig.target );
-
-		clip.origin += ( 0, 0, 10000 );
-		clip connectpaths();
-		clip.dis = false;
-	}
-}
+*/
 
 thief_zombie_pick_best_spawner()
 {
@@ -636,6 +621,7 @@ thief_scale_health( health )
 	return health;
 }
 
+/*
 thief_zombie_think()
 {
 	self endon( "death" );
@@ -686,8 +672,19 @@ thief_zombie_think()
 	self.fx_org linkto( self );
 	PlayFxOnTag( level._effect["tech_trail"], self.fx_org, "tag_origin" );
 
+	self thread thief_zombie_hunt();
+}
+*/
+
+thief_zombie_hunt()
+{
+	self endon( "death" );
+	self endon( "end_hunt" );
+
+
 	while ( 1 )
 	{
+		self thread thief_zombie_victim_disconnect();
 		self thief_zombie_set_visibility();
 		self thief_portal_to_victim();
 
@@ -696,6 +693,25 @@ thief_zombie_think()
 		self thread thief_chasing();
 
 		self waittill( "next_victim" );
+	}
+}
+
+thief_zombie_victim_disconnect()
+{
+	self endon( "death" );
+	self endon( "victim_done" );
+
+	player = self.victims.current;
+	if ( isDefined( player ) )
+	{
+		player waittill( "disconnect" );
+	}
+
+	self notify( "end_hunt" );
+	if ( self thief_get_next_victim() )
+	{
+		wait_network_frame();
+		self thread thief_zombie_hunt();
 	}
 }
 
@@ -758,6 +774,7 @@ thief_zombie_choose_run()
 	}
 }
 
+/*
 thief_zombie_die()
 {
 	self maps\_zombiemode_spawner::reset_attack_spot();
@@ -800,12 +817,14 @@ thief_zombie_die()
 			}
 		}
 
+	if ( self.bonfire )
+	{
 		// drop bonfire sale
-		level thread maps\_zombiemode_powerups::specific_powerup_drop( "tesla", self.origin );
+		level thread maps\_zombiemode_powerups::specific_powerup_drop( "bonfire_sale", self.origin );
 	}
 	else
 	{
-		level thread maps\_zombiemode_powerups::specific_powerup_drop( "bonfire_sale", self.origin );
+		level thread maps\_zombiemode_powerups::specific_powerup_drop( "fire_sale", self.origin );
 	}
 
 	forward = VectorNormalize( AnglesToForward( self.angles ) );
@@ -830,11 +849,11 @@ thief_zombie_die()
 	self thief_clear_portals();
 
 	flag_set( "last_thief_down" );
-	//level thread maps\zombie_pentagon_amb::play_pentagon_announcer_vox( "zmb_vox_pentann_thiefend_good" );
+	level thread maps\zombie_pentagon_amb::play_pentagon_announcer_vox( "zmb_vox_pentann_thiefend_good" );
 
 	return false;
 }
-
+*/
 
 //-----------------------------------------------------------------
 // cleanup fx
@@ -886,6 +905,8 @@ thief_turn_player()
 thief_watch_controls( thief )
 {
 	self endon( "released" );
+	self endon( "disconnect" );
+
 	zombie_attack = %ai_zombie_tech_grab;
 	animLen = getAnimLength( zombie_attack );
 	time = 0.5 + animLen;
@@ -898,6 +919,7 @@ thief_watch_controls( thief )
 //-----------------------------------------------------------------
 // take money, weapons, or perks, don't take claymores
 //-----------------------------------------------------------------
+/*
 thief_take_loot()
 {
 	player = self.victims.current;
@@ -916,8 +938,7 @@ thief_take_loot()
 	is_laststand = player maps\_laststand::player_is_in_laststand();
 
 	// don't take these items...choose random primary instead
-	if ( weapon == "claymore_zm" || weapon == "knife_zm" || weapon == "bowie_knife_zm" || weapon == "frag_grenade_zm" ||
-		 weapon == "zombie_bowie_flourish" || weapon == "none" || isSubStr( weapon, "zombie_perk_bottle" ) || is_laststand )
+	if ( is_offhand_weapon( weapon ) || weapon == "zombie_bowie_flourish" || weapon == "none" || isSubStr( weapon, "zombie_perk_bottle" ) || is_laststand )
 	{
 		primaries = player GetWeaponsListPrimaries();
 		if( isDefined( primaries ) )
@@ -975,7 +996,7 @@ thief_take_loot()
 		// don't give minigun powerup back
 		if ( weapon == "minigun_zm" )
 		{
-			maps\_zombiemode_powerups::minigun_weapon_powerup_off();
+			player maps\_zombiemode_powerups::minigun_weapon_powerup_off();
 			weapon = undefined;
 		}
 	}
@@ -1000,24 +1021,49 @@ thief_return_loot()
 			{
 				if ( isDefined( self.victims.weapon[j] ) )
 				{
-					// more than 2...take one and return the thief's
+					// more than weapon_limit...take one and return the thief's
+					weapon_limit = 2;
+					if ( players[i] HasPerk( "specialty_additionalprimaryweapon" ) )
+					{
+						weapon_limit = 3;
+					}
+
 					primaries = players[i] GetWeaponsListPrimaries();
-					if ( isDefined( primaries ) && primaries.size >= 3 )
+					if ( isDefined( primaries ) && primaries.size >= weapon_limit )
 					{
 						weapon = players[i] GetCurrentWeapon();
 
 						// don't take these items...choose random primary instead
-						if ( weapon == "claymore_zm" || weapon == "knife_zm" || weapon == "bowie_knife_zm" || weapon == "frag_grenade_zm" ||
-							 weapon == "zombie_bowie_flourish" || isSubStr( weapon, "zombie_perk_bottle" ) )
+						if ( is_offhand_weapon( weapon ) || weapon == "zombie_bowie_flourish" || isSubStr( weapon, "zombie_perk_bottle" ) )
 						{
-							weapon = primaries[1];
+							weapon = primaries[weapon_limit - 1];
+						}
+
+						// player got the weapon the thief stole
+						if ( players[i] HasWeapon( self.victims.weapon[j] ) )
+						{
+							weapon = self.victims.weapon[j];
+						}
+
+						// player has non-upgrade version of what the thief stole
+						for ( k = 0; k < primaries.size; k++ )
+						{
+							if ( !maps\_zombiemode_weapons::is_weapon_upgraded( primaries[k] ) )
+							{
+								weapon_upgraded = level.zombie_weapons[ primaries[k] ].upgrade_name;
+								if ( weapon_upgraded == self.victims.weapon[j] )
+								{
+									weapon = primaries[k];
+									break;
+								}
+							}
 						}
 
 						players[i] TakeWeapon( weapon );
 						primaries = players[i] GetWeaponsListPrimaries();
 					}
 
-					if ( isDefined( primaries ) && primaries.size < 3 )
+					if ( isDefined( primaries ) && primaries.size < weapon_limit )
 					{
 						players[i] GiveWeapon( self.victims.weapon[j], 0, players[i] maps\_zombiemode_weapons::get_pack_a_punch_weapon_options( self.victims.weapon[j] ) );
 						players[i] SwitchToWeapon( self.victims.weapon[j] );
@@ -1027,7 +1073,7 @@ thief_return_loot()
 		}
 	}
 }
-
+*/
 
 //-----------------------------------------------------------------
 // make sure all the lights are out when thief dies
@@ -1089,6 +1135,7 @@ thief_chasing()
 {
 	self endon( "stop_thief_chasing" );
 	self endon( "death" );
+	self.victims.current endon( "disconnect" );
 
 	player = self.victims.current;
 
@@ -1229,6 +1276,7 @@ thief_adjust_health()
 thief_steal()
 {
 	self endon( "death" );
+	self.victims.current endon( "disconnect" );
 
 	self.state = "stealing";
 
@@ -1238,7 +1286,7 @@ thief_steal()
 	self SetVisibleToAll();
 
 	self thief_turn_player();
-	self thief_take_loot();
+	self maps\_remix_zombiemode_ai_thief::thief_take_loot();
 
 	thief_print( "starting grab anim" );
 
@@ -1269,6 +1317,7 @@ thief_steal()
 thief_try_steal()
 {
 	self endon( "death" );
+	self.victims.current endon( "disconnect" );
 
 	STEAL_DIST = 64;
 	STEAL_DIST2 = STEAL_DIST * STEAL_DIST;
@@ -1332,9 +1381,10 @@ thief_get_next_victim()
 {
 	self.victims.current_idx++;
 
-	if ( self.victims.current_idx == self.victims.max )
+	if ( self.victims.current_idx >= self.victims.max )
 	{
 		self thread thief_end_game();
+		return 0;
 	}
 	else
 	{
@@ -1344,6 +1394,8 @@ thief_get_next_victim()
 		self notify( "next_victim" );
 		thief_print( self.victims.current.playername + " is next" );
 	}
+
+	return 1;
 }
 
 
@@ -1571,6 +1623,7 @@ thief_blink( attacker )
 //-----------------------------------------------------------------
 // damage override, track some stats
 //-----------------------------------------------------------------
+/*
 thief_actor_damage( weapon, damage, attacker )
 {
 	//self thread thief_blink( attacker );
@@ -1612,8 +1665,15 @@ thief_actor_damage( weapon, damage, attacker )
 		}
 	}
 
+	// disable bonfire if player used insta-kill
+	if ( level.zombie_vars["zombie_insta_kill"] )
+	{
+		self.bonfire = false;
+	}
+
 	return damage;
 }
+*/
 
 //-----------------------------------------------------------------
 // setup the portals for thief use
@@ -1744,6 +1804,7 @@ thief_take_player()
 	player FreezeControls( false );
 	player notify( "released" );
 
+	self notify( "victim_done" );
 	self thief_get_next_victim();
 }
 
@@ -1832,11 +1893,34 @@ player_knuckle_crack_end()
 
 
 //-----------------------------------------------------------------
+// goto the bottom floor, will only happen on the last victim disconnecting
+//-----------------------------------------------------------------
+thief_goto_bottom()
+{
+	self endon( "death" );
+
+	floor_self = thief_check_floor( self );
+
+	if ( floor_self != 3 )
+	{
+		thief_print( "not on floor 3" );
+
+		self thief_goto_portal( floor_self );
+
+		thief_pos = getstruct( "thief_start", "targetname" );
+		self thief_teleport( thief_pos );
+	}
+}
+
+
+//-----------------------------------------------------------------
 // run through portals in order (4-3-2-1) before exiting at power
 //-----------------------------------------------------------------
 thief_end_game()
 {
 	self endon( "death" );
+
+	// self thief_goto_bottom();
 
 	//self thief_adjust_health();
 
@@ -2048,6 +2132,7 @@ thief_check_walk()
 thief_check_vision()
 {
 	self endon( "death" );
+	self.victims.current endon( "disconnect" );
 
 	VISION_DIST = 12 * 75;
 	VISION_DIST2 = VISION_DIST * VISION_DIST;
@@ -2205,6 +2290,22 @@ thief_damage_claymore( mod, hit_location, hit_origin, player )
 	}
 }
 
+
+//-----------------------------------------------------------------
+// no bonfire if killed by nuke
+//-----------------------------------------------------------------
+/*
+thief_nuke_damage()
+{
+	self endon( "death" );
+
+	self.bonfire = false;
+
+	self thread animscripts\zombie_death::flame_death_fx();
+	self playsound ("evt_nuked");
+	self dodamage( self.health + 666, self.origin );
+}
+*/
 
 //-----------------------------------------------------------------
 // how long before thief can speed back up
@@ -2370,7 +2471,7 @@ thief_ship_cheat_round_2()
 //AUDIO SECTION
 play_looping_alarms( wait_time )
 {
-    /*wait( wait_time );
+    wait( wait_time );
 
     structs = getstructarray( "defcon_alarms", "targetname" );
     sound_ent = [];
@@ -2390,7 +2491,7 @@ play_looping_alarms( wait_time )
 
     wait(1);
 
-    array_delete( sound_ent );*/
+    array_delete( sound_ent );
 }
 
 

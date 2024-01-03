@@ -207,7 +207,7 @@ time_summary_hud()
 
 	// Initialize vars
 	level.displaying_time_summary = 0;
-	last_zombie_count = get_zombie_number(1);
+	last_zombie_count = maps\_remix_zombiemode_utility::get_zombie_number(1);
 	round_time_array = array();
 	round_time = 0;
 
@@ -229,8 +229,8 @@ time_summary_hud()
 			round_start_time = int(getTime() / 1000);
 			// Calculate total time at the beginning of next round
 			game_time = round_start_time - level.beginning_timestamp;
-			level.total_time_text = to_mins_short(game_time);
-			// self setClientDvar("total_time_value", to_mins_short(gt));
+			level.total_time_text = maps\_remix_zombiemode_utility::to_mins_short(game_time);
+			// self setClientDvar("total_time_value", maps\_remix_zombiemode_utility::to_mins_short(gt));
 
 			if (flag("game_paused"))
 			{
@@ -246,9 +246,9 @@ time_summary_hud()
 
 		// Grab zombie count from current round for SPH
 		if(flag("dog_round") || flag("thief_round") || flag("monkey_round"))
-			current_zombie_count = get_zombie_number(level.round_number - 1);
+			current_zombie_count = maps\_remix_zombiemode_utility::get_zombie_number(level.round_number - 1);
 		else
-			current_zombie_count = get_zombie_number();
+			current_zombie_count = maps\_remix_zombiemode_utility::get_zombie_number();
 
 		// Calculate predicted round time
 		if ((level.round_number == level.last_special_round + 1) && (level.round_number > 4))
@@ -257,8 +257,8 @@ time_summary_hud()
 			round_time_array = array();		// Reset the array
 		}
 		predicted = (round_time / last_zombie_count) * current_zombie_count;
-		level.predicted_round_text = to_mins_short(int(predicted));
-		// self setClientDvar("predicted_value", to_mins_short(int(predicted)));
+		level.predicted_round_text = maps\_remix_zombiemode_utility::to_mins_short(int(predicted));
+		// self setClientDvar("predicted_value", maps\_remix_zombiemode_utility::to_mins_short(int(predicted)));
 
 		level waittill("end_of_round");
 
@@ -273,8 +273,8 @@ time_summary_hud()
 		round_end_time = int(getTime() / 1000);
 		round_time = round_end_time - round_start_time;
 		round_time_array[round_time_array.size] = round_time;
-		level.round_time_text = to_mins_short(round_time);
-		// self setClientDvar("round_time_value", to_mins_short(round_time));
+		level.round_time_text = maps\_remix_zombiemode_utility::to_mins_short(round_time);
+		// self setClientDvar("round_time_value", maps\_remix_zombiemode_utility::to_mins_short(round_time));
 
 		// Calculate SPH
 		sph = round_time / (current_zombie_count / 24);

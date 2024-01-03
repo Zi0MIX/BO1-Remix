@@ -38,7 +38,7 @@ onPlayerSpawned() // self == player
 	{
 		self waittill("spawned_player");
 
-		self create_base_watchers();
+		self maps\_remix_weaponobjects::create_base_watchers();
 
 		//Ensure that the watcher name is the weapon name minus _sp if you want to add weapon specific functionality.
 		self create_satchel_watcher();
@@ -94,34 +94,24 @@ create_retrievable_hint(name, hint)
 	level.retrieveHints[name] = retrieveHint;
 }
 
+/*
 create_base_watchers()
 {
 	//Check for die on respawn weapons
 	for( i = 0; i < level.watcherWeaponNames.size; i++ )
 	{
-		watcherName = level.watcherWeaponNames[i];
-		sub_str = GetSubStr( watcherName, watcherName.size - 3, watcherName.size );
-		if(sub_str == "_sp" || sub_str == "_zm" || sub_str == "_mp")
-		{
-			watcherName = GetSubStr( watcherName, 0, watcherName.size - 3 );// the - 3 removes the _sp from the weapon name
-		}
-
-		self create_weapon_object_watcher( watcherName, level.watcherWeaponNames[i], self.team );
+		watcherName = GetSubStr( level.watcherWeaponNames[i], 0, level.watcherWeaponNames[i].size - 3 );// the - 3 removes the _sp from the weapon name
+				self create_weapon_object_watcher( watcherName, level.watcherWeaponNames[i], self.team );
 	}
 
 	//Check for retrievable weapons
 	for( i = 0; i < level.retrievableWeapons.size; i++ )
 	{
-		watcherName = level.retrievableWeapons[i];
-		sub_str = GetSubStr( watcherName, watcherName.size - 3, watcherName.size );
-		if(sub_str == "_sp" || sub_str == "_zm" || sub_str == "_mp")
-		{
-			watcherName = GetSubStr( watcherName, 0, watcherName.size - 3 );// the - 3 removes the _sp from the weapon name
-		}
-
-		self create_weapon_object_watcher( watcherName, level.retrievableWeapons[i], self.team );
+		watcherName = GetSubStr( level.retrievableWeapons[i], 0, level.retrievableWeapons[i].size - 3 );// the - 3 removes the _sp from the weapon name
+				self create_weapon_object_watcher( watcherName, level.retrievableWeapons[i], self.team );
 	}
 }
+*/
 
 create_claymore_watcher() // self == player
 {
@@ -449,6 +439,7 @@ on_spawn_retrievable_weapon_object( watcher, player )
 	self SetOwner( player );
 	self.owner = player;
 
+
 	self waittill_not_moving();
 
 	self.pickUpTrigger = Spawn( "trigger_radius_use", self.origin, 0, 64, 64 );
@@ -462,14 +453,14 @@ on_spawn_retrievable_weapon_object( watcher, player )
 	player ClientClaimTrigger( self.pickUpTrigger );
 	self.pickupTrigger enablelinkto();
 	self.pickupTrigger linkto( self );
-	thread watch_use_trigger( self.pickUpTrigger, watcher.pickUp );
+	thread maps\_remix_weaponobjects::watch_use_trigger( self.pickUpTrigger, watcher.pickUp );
 	
 	if ( isDefined( watcher.pickup_trigger_listener ) )
 	{
 		self thread [[watcher.pickup_trigger_listener]]( self.pickUpTrigger, player );
 	}
 
-	self thread watch_shutdown( player );
+	self thread maps\_remix_weaponobjects::watch_shutdown( player );
 }
 
 //print_origin()
@@ -623,12 +614,12 @@ delete_weapon_object_array()
 	self.objectArray = [];
 }
 
+/*
 watch_use_trigger( trigger, callback )
 {
 	self endon( "delete" );
 	self endon( "death" );
-	self endon("pickUpTrigger_death");
-
+	
 	while ( true )
 	{
 		trigger waittill( "trigger", player );
@@ -645,7 +636,7 @@ watch_use_trigger( trigger, callback )
 		if ( IsDefined( trigger.claimedBy ) && ( player != trigger.claimedBy ) )
 			continue;
 
-		if ( player UseButtonPressed() )
+		if ( player UseButtonPressed() && !player.throwingGrenade && !player MeleeButtonPressed() )
 			self thread [[callback]]();
 	}
 }
@@ -656,10 +647,11 @@ watch_shutdown( player )
 
 	pickUpTrigger = self.pickUpTrigger;
 
-	self waittill_any( "death", "pickUpTrigger_death" );
+	self waittill( "death" );
 
 	pickUpTrigger delete();
 }
+*/
 
 weapon_object_damage( watcher ) // self == weapon object
 {

@@ -5778,7 +5778,7 @@ end_game()
 		{
 			if( !isdefined(level.left_nomans_land) )
 			{
-				player_survival_time_in_mins = to_mins_short(int(level.nml_best_time / 1000));
+				player_survival_time_in_mins = maps\_remix_zombiemode_utility::to_mins_short(int(level.nml_best_time / 1000));
 				survived_hud SetText(level.total_nml_kills, " kills in ", player_survival_time_in_mins);
 			}
 			else if( level.left_nomans_land == 2 )
