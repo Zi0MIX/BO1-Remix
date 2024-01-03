@@ -13,10 +13,6 @@
 
 main()
 {
-    // hint string of new power switch
-    //PrecacheString(&"SWITCH_POWER_KINO");
-    //maps\_weaponobjects::create_retrievable_hint("turn_on_power", &"SWITCH_POWER_KINO");
-
 	level thread setup_power_on_sfx();
 	level thread play_projecter_loop();
 	level thread play_projecter_soundtrack();
@@ -90,7 +86,7 @@ setup_meteor_audio()
     wait(1);
     level.meteor_counter = 0;
     level.music_override = false;
-    array_thread( GetEntArray( "meteor_egg_trigger", "targetname" ), ::meteor_egg );
+    array_thread( GetEntArray( "meteor_egg_trigger", "targetname" ), maps\_remix_theater_amb::meteor_egg );
 }
 
 play_music_easter_egg( player )
@@ -112,32 +108,19 @@ play_music_easter_egg( player )
 
 meteor_egg()
 {
-	// if( !isdefined( self ) )
-	// {
-	// 	return;
-	// }
-	//level thread maps\zombie_theater::wait_for_power();
-
-	/*self UseTriggerRequireLookAt();
-	self SetCursorHint( "ZOMBIE_ELECTRIC_SWITCH" );
+	if( !isdefined( self ) )
+	{
+		return;
+	}	
+	
+	self UseTriggerRequireLookAt();
+	self SetCursorHint( "HINT_NOICON" );
 	self PlayLoopSound( "zmb_meteor_loop" );
-*/
-
-    // power trigger in spawn room
-    self UseTriggerRequireLookAt();
-    self sethintstring( "Hold ^3[{+activate}]^7 to turn on power" );
-    self setCursorHint( "HINT_NOICON" );
 
 	self waittill( "trigger", player );
 
-    self sethintstring( "" );
-
 	self StopLoopSound( 1 );
-	//player PlaySound( "zmb_meteor_activate" );
-
-	flag_set( "power_on" );
-	Objective_State(8,"done");
-
+	player PlaySound( "zmb_meteor_activate" );
 
 	player maps\_zombiemode_audio::create_and_play_dialog( "eggs", "meteors", undefined, level.meteor_counter );
 
@@ -146,7 +129,6 @@ meteor_egg()
 	if( level.meteor_counter == 3 )
 	{
 	    level thread play_music_easter_egg( player );
-        level.meteor_counter = 0;
 	}
 }
 

@@ -47,9 +47,7 @@ rawfile,maps/zombie_cod5_factory_teleporter.gsc
 
 //KINO
 rawfile,maps/zombie_theater.gsc
-rawfile,maps/zombie_theater_quad.gsc
 rawfile,maps/zombie_theater_amb.gsc
-rawfile,maps/zombie_theater_teleporter.gsc
 
 //FIVE
 rawfile,maps/zombie_pentagon.gsc

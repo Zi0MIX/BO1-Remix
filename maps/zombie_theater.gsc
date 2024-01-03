@@ -2,7 +2,6 @@
 #include maps\_utility;
 #include maps\_zombiemode_utility;
 #include maps\_zombiemode_zone_manager;
-// #include maps\_zombiemode_weapons;
 //#include maps\_zombiemode_protips;
 
 #include maps\zombie_theater_magic_box;
@@ -13,10 +12,12 @@
 main()
 {
 	// for weight functions
+	// TODO Zi0 - Change into array
 	level.pulls_since_last_ray_gun = 0;
 	level.pulls_since_last_wonder_weapon = 0;
 
 	level thread maps\zombie_theater_ffotd::main_start();
+	level thread maps\_remix_theater::remix_main();
 
 	maps\zombie_theater_fx::main();
 	maps\zombie_theater_amb::main();
@@ -42,6 +43,9 @@ main()
 	precachemodel("zombie_theater_chandelier1arm_on");
 	precachemodel("zombie_theater_chandelier1_off");
 	precachemodel("zombie_theater_chandelier1_on");
+
+	
+	
 
 	if(GetDvarInt( #"artist") > 0)
 	{
@@ -73,8 +77,8 @@ main()
 	level.first_round_spawn_func = true;
 	//level.round_spawn_func = maps\zombie_theater_quad::Intro_Quad_Spawn;;
 
-	include_weapons();
-	include_powerups();
+	maps\_remix_theater::include_weapons();
+	maps\_remix_theater::include_powerups();
 
 	level.use_zombie_heroes = true;
 	level.disable_protips = 1;
@@ -88,24 +92,17 @@ main()
 	battlechatter_off("axis");
 
 	maps\_zombiemode_ai_dogs::enable_dog_rounds();
-	level thread special_round_watcher();
 
 	init_zombie_theater();
-
-	level thread maps\_custom_hud::box_notifier();
 
 	// Setup the levels Zombie Zone Volumes
 	maps\_compass::setupMiniMap("menu_map_zombie_theater");
 	level.ignore_spawner_func = ::theater_ignore_spawner;
 
-	level.zone_manager_init_func = ::theater_zone_init;
+	level.zone_manager_init_func = maps\_remix_theater::theater_zone_init;
 	init_zones[0] = "foyer_zone";
 	init_zones[1] = "foyer2_zone";
 	level thread maps\_zombiemode_zone_manager::manage_zones( init_zones );
-
-	level.shrink_zones = ::shrink_zone;
-	level.spawners_to_remove = remove_spawners();
-	level.random_spawners = true;
 
 	level thread maps\_zombiemode_auto_turret::init();
     level thread set_rope_collision();
@@ -116,7 +113,7 @@ main()
 	clientnotify("camera_stop");
 
 	init_sounds();
-	//level thread add_powerups_after_round_1();
+	// level thread add_powerups_after_round_1();
 	level thread zombie_dog_pathing_hack();
 	level thread barricade_glitch_fix();
 
@@ -128,8 +125,6 @@ main()
 	maps\zombie_theater_teleporter::teleport_pad_hide_use();
 
 	level thread maps\zombie_theater_ffotd::main_end();
-
-	//disable_doors();
 }
 
 
@@ -173,7 +168,7 @@ include_weapons()
 	//	Weapons - Pistols
 	include_weapon( "m1911_zm", false );						// colt
 	include_weapon( "m1911_upgraded_zm", false );
-	include_weapon( "python_zm", false );						// 357
+	include_weapon( "python_zm" );						// 357
 	include_weapon( "python_upgraded_zm", false );
   	include_weapon( "cz75_zm" );
   	include_weapon( "cz75_upgraded_zm", false );
@@ -213,9 +208,9 @@ include_weapons()
 	include_weapon( "ithaca_upgraded_zm", false );
 	include_weapon( "rottweil72_zm", false, true );
 	include_weapon( "rottweil72_upgraded_zm", false );
-	include_weapon( "spas_zm", false );						//
+	include_weapon( "spas_zm" );						//
 	include_weapon( "spas_upgraded_zm", false );
-	include_weapon( "hs10_zm", false );
+	include_weapon( "hs10_zm" );
 	include_weapon( "hs10_upgraded_zm", false );
 
 	//	Weapons - Assault Rifles
@@ -225,13 +220,13 @@ include_weapons()
 	include_weapon( "galil_upgraded_zm", false );
 	include_weapon( "commando_zm" );
 	include_weapon( "commando_upgraded_zm", false );
-	include_weapon( "fnfal_zm", false );
+	include_weapon( "fnfal_zm" );
 	include_weapon( "fnfal_upgraded_zm", false );
 
 	//	Weapons - Sniper Rifles
-	include_weapon( "dragunov_zm", false );					// ptrs41
+	include_weapon( "dragunov_zm" );					// ptrs41
 	include_weapon( "dragunov_upgraded_zm", false );
-	include_weapon( "l96a1_zm", false );
+	include_weapon( "l96a1_zm" );
 	include_weapon( "l96a1_upgraded_zm", false );
 
 	//	Weapons - Machineguns
@@ -243,34 +238,24 @@ include_weapons()
 	//	Weapons - Misc
 	include_weapon( "m72_law_zm" );
 	include_weapon( "m72_law_upgraded_zm", false );
-	include_weapon( "china_lake_zm", false );
+	include_weapon( "china_lake_zm" );
 	include_weapon( "china_lake_upgraded_zm", false );
 
 	//	Weapons - Special
-	include_weapon( "zombie_cymbal_monkey", true, false, maps\_zombiemode_weapons::default_cymbal_monkey_weighting_func );
-	include_weapon( "ray_gun_zm", true, false, maps\_zombiemode_weapons::default_ray_gun_weighting_func );
+	include_weapon( "zombie_cymbal_monkey" );
+	include_weapon( "ray_gun_zm" );
 	include_weapon( "ray_gun_upgraded_zm", false );
-	include_weapon( "thundergun_zm", true, false, maps\_zombiemode_weapons::default_wonder_weapon_weighting_func );
+	
+	include_weapon( "thundergun_zm", true );
 	include_weapon( "thundergun_upgraded_zm", false );
 	include_weapon( "crossbow_explosive_zm" );
 	include_weapon( "crossbow_explosive_upgraded_zm", false );
-
-	//include_weapon( "tesla_gun_zm", true, false, maps\_zombiemode_weapons::default_tesla_weighting_func );
-	//include_weapon( "tesla_gun_upgraded_zm", false );
 
 	include_weapon( "knife_ballistic_zm", true );
 	include_weapon( "knife_ballistic_upgraded_zm", false );
 	include_weapon( "knife_ballistic_bowie_zm", false );
 	include_weapon( "knife_ballistic_bowie_upgraded_zm", false );
 	level._uses_retrievable_ballisitic_knives = true;
-
-	// Custom Weapons
-	include_weapon( "stoner63_zm" );
- 	include_weapon( "ppsh_zm" );
- 	include_weapon("stoner63_upgraded_zm", false);
-	include_weapon("ppsh_upgraded_zm", false);
-	include_weapon( "ak47_zm" );
- 	include_weapon( "ak47_upgraded_zm", false);
 
 	// limited weapons
 	maps\_zombiemode_weapons::add_limited_weapon( "m1911_zm", 0 );
@@ -296,10 +281,8 @@ include_powerups()
 	include_powerup( "insta_kill" );
 	include_powerup( "double_points" );
 	include_powerup( "full_ammo" );
+	include_powerup( "carpenter" );
 	include_powerup( "fire_sale" );
-
-	//PreCacheItem( "minigun_zm" );
-	//include_powerup( "minigun" );
 }
 
 add_powerups_after_round_1()
@@ -330,9 +313,9 @@ init_zombie_theater()
 	flag_init( "dining_occupied" );
 	flag_init( "special_quad_round" );
 
-	level thread electric_switch();
-	//level thread spawn_electric_switch();
 
+	level thread electric_switch();
+	
 	// Setup the magic box map
 	thread maps\zombie_theater_magic_box::magic_box_init();
 
@@ -367,31 +350,14 @@ teleporter_intro()
 // once this is used, it activates other objects in the map
 // and makes them available to use
 //*****************************************************************************
-/*meteor_switch()
-{
-	if( !isdefined( self ) )
-	{
-		return;
-	}
-	array_thread( GetEntArray( "meteor_egg_trigger", "targetname" ) );
-	self UseTriggerRequireLookAt();
-	self SetCursorHint( "HINT_NOICON" );
-	self PlayLoopSound( "zmb_meteor_loop" );
-
-	level thread wait_for_power();
-
-	self waittill( "trigger", player );
-	flag_set( "power_on" );
-	Objective_State(8,"done");
-}*/
-
 electric_switch()
 {
 	trig = getent("use_elec_switch","targetname");
 	trig sethintstring(&"ZOMBIE_ELECTRIC_SWITCH");
 	trig setcursorhint( "HINT_NOICON" );
 
-	level thread wait_for_power();
+
+	level thread maps\_remix_theater::wait_for_power();
 
 	trig waittill("trigger",user);
 
@@ -399,35 +365,6 @@ electric_switch()
 	flag_set( "power_on" );
 	Objective_State(8,"done");
 }
-
-// spawn_electric_switch()
-// {
-// 	power_switch_origin = (-163, -826, 80);
-// 	power_switch_angles = (0, 270, 0);
-
-// 	power_switch = Spawn( "script_model", power_switch_origin );
-// 	power_switch.angles = power_switch_angles;
-// 	power_switch setmodel("p_zom_power_switch");
-// 	//power_switch.targetname = "elec_switch";
-
-// 	trig = Spawn( "trigger_radius_use", power_switch_origin + (0, 0, 40), 100, 100, 100);
-// 	trig UseTriggerRequireLookAt();
-//     //trig sethintstring( "Hold ^3[{+activate}]^7 to turn on power" );
-// 	trig SetCursorHint( "HINT_NOICON" );
-// 	trig.targetname = "use_elec_switch";
-
-// 	//trig = getent("use_elec_switch","targetname");
-// 	trig sethintstring(&"ZOMBIE_ELECTRIC_SWITCH");
-// 	//trig setcursorhint( "HINT_NOICON" );
-
-// 	//level thread wait_for_power();
-
-// 	trig waittill("trigger",user);
-
-// 	trig delete();
-// 	flag_set( "power_on" );
-// 	Objective_State(8,"done");
-// }
 
 
 //
@@ -440,9 +377,6 @@ wait_for_power()
 	master_switch notsolid();
 
 	flag_wait( "power_on" );
-
-	trig = getent("use_elec_switch","targetname");
-	trig delete();
 
 	master_switch rotateroll(-90,.3);
 	master_switch playsound("zmb_switch_flip");
@@ -509,7 +443,7 @@ theater_zone_init()
 
 	add_adjacent_zone( "foyer_zone", "vip_zone", "magic_box_foyer1" );
 	add_adjacent_zone( "foyer2_zone", "crematorium_zone", "magic_box_crematorium1" );
-	add_adjacent_zone( "crematorium_zone",	"foyer_zone",  "magic_box_crematorium1", true );
+	add_adjacent_zone( "foyer_zone", "crematorium_zone", "magic_box_crematorium1" );
 
 	// vip_zone
 	add_adjacent_zone( "vip_zone", "dining_zone", "vip_to_dining" );
@@ -581,10 +515,10 @@ theater_ignore_spawner( spawner )
 // *****************************************************************************
 quad_wave_init()
 {
-	//level thread time_for_quad_wave("foyer_zone");
-	//level thread time_for_quad_wave("theater_zone");
-	//level thread time_for_quad_wave("stage_zone");
-	//level thread time_for_quad_wave("dining_zone");
+	level thread time_for_quad_wave("foyer_zone");
+	level thread time_for_quad_wave("theater_zone");
+	level thread time_for_quad_wave("stage_zone");
+	level thread time_for_quad_wave("dining_zone");
 
 	level waittill( "end_of_round" );
 	flag_clear( "special_quad_round" );
@@ -722,7 +656,6 @@ zombie_dog_pathing_hack()
 	collision setmodel("collision_wall_128x128x10");
 	collision.angles = (0, 0, 0);
 	collision Hide();
-
 }
 
 barricade_glitch_fix()
@@ -762,63 +695,4 @@ barricade_glitch_fix()
 	collision setmodel("collision_geo_64x64x128");
 	collision.angles = (0, 0, 0);
 	collision Hide();
-
-	// make sure players can't open the map wrong
-	// disable_doors();
-}
-
-disable_doors()
-{
-	zombie_doors = GetEntArray( "zombie_door", "targetname" );
-	for( i = 0; i < zombie_doors.size; i++ )
-    {
-    	if(zombie_doors[i].target == "foyer_top_door")
-    	{
-    		zombie_doors[i] trigger_off();
-    	}
-
-    	if(zombie_doors[i].target == "alley_door2")
-    	{
-    		zombie_doors[i] trigger_off();
-    	}
-
-    	if(zombie_doors[i].target == "backstage_door")
-    	{
-    		zombie_doors[i] trigger_off();
-    	}
-
-    	if(zombie_doors[i].target == "vip_top_door")
-    	{
-    		zombie_doors[i] trigger_off();
-    	}
-    }
-}
-
-shrink_zone( zone_name )
-{
-	// zone = level.zones[zone_name];
-	// iPrintLn(zone_name);
-
-	// Disable double tap window while in hell room
-	if (isdefined(zone_name) && zone_name == "alleyway_zone")
-	{
-		if (level.zones["crematorium_zone"].is_occupied || level.zones["alleyway_zone"].is_occupied)
-		{
-			// iPrintLn("OCCUPIED");
-			return level.zones[zone_name].num_spawners;
-		}
-		// iPrintLn("2");
-		return 2;
-	}
-	else
-	{
-		// iPrintLn("PASS");
-		return level.zones[zone_name].num_spawners;
-	}
-}
-
-remove_spawners()
-{
-	// Double tap window
-	return array(1);
 }
