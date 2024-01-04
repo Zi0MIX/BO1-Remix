@@ -86,16 +86,13 @@ main()
 
 	maps\_remix_zombiemode::init_dvars();
 	init_mutators();
-	init_strings();
-	init_levelvars();
+	maps\_remix_zombiemode::init_strings();
+	maps\_remix_zombiemode::init_levelvars();
 	init_animscripts();
 	init_sounds();
 	init_shellshocks();
 	init_flags();
 	init_client_flags();
-	init_hud_dvars();
-
-	//isClientPluto("com_useConfig", "");
 
 	register_offhand_weapons_for_level_defaults();
 
@@ -548,6 +545,7 @@ init_shellshocks()
 	PrecacheShellshock( level.player_killed_shellshock );
 }
 
+/*
 init_strings()
 {
 	PrecacheString( &"ZOMBIE_WEAPONCOSTAMMO" );
@@ -558,16 +556,6 @@ init_strings()
 	PrecacheString( &"ZOMBIE_SURVIVED_ROUNDS" );
 	PrecacheString( &"ZOMBIE_SURVIVED_NOMANS" );
 	PrecacheString( &"ZOMBIE_EXTRA_LIFE" );
-
-	// Remix strings
-	PrecacheString(&"HUD_HUD_ZOMBIES_COOP_PAUSE");
-	PrecacheString(&"HUD_HUD_ZOMBIES_ROUNDTIME");
-	PrecacheString(&"HUD_HUD_ZOMBIES_SPH");
-	PrecacheString(&"HUD_HUD_ZOMBIES_TOTALTIME");
-	PrecacheString(&"HUD_HUD_ZOMBIES_PREDICTED");
-	PrecacheString(&"MOD_YOU_WIN");
-	PrecacheString(&"MOD_NML_END_KILLS");
-	PrecacheString(&"MOD_NML_END_TIME");
 
 	add_zombie_hint( "undefined", &"ZOMBIE_UNDEFINED" );
 
@@ -628,6 +616,7 @@ init_strings()
 	add_zombie_hint( "powerup_fire_sale_cost", &"ZOMBIE_FIRE_SALE_COST" );
 
 }
+*/
 
 init_sounds()
 {
@@ -678,6 +667,7 @@ init_sounds()
 
 }
 
+/*
 init_levelvars()
 {
 	// Variables
@@ -727,7 +717,7 @@ init_levelvars()
 	set_zombie_var( "zombie_health_increase", 			100,	false,	column );	//	cumulatively add this to the zombies' starting health each round (up to round 10)
 	set_zombie_var( "zombie_health_increase_multiplier",0.1, 	true,	column );	//	after round 10 multiply the zombies' starting health by this amount
 	set_zombie_var( "zombie_health_start", 				150,	false,	column );	//	starting health of a zombie at round 1
-	set_zombie_var( "zombie_spawn_delay", 				1.0,	true,	column );	// Base time to wait between spawning zombies.  This is modified based on the round number.
+	set_zombie_var( "zombie_spawn_delay", 				2.0,	true,	column );	// Base time to wait between spawning zombies.  This is modified based on the round number.
 	set_zombie_var( "zombie_new_runner_interval", 		 10,	false,	column );	//	Interval between changing walkers who are too far away into runners
 	set_zombie_var( "zombie_move_speed_multiplier", 	  8,	false,	column );	//	Multiply by the round number to give the base speed value.  0-40 = walk, 41-70 = run, 71+ = sprint
 
@@ -816,7 +806,7 @@ init_dvars()
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
 	//setDvar( "ik_enable", "0" );
 }
-
+*/
 
 init_mutators()
 {
