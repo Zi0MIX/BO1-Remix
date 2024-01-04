@@ -2,6 +2,17 @@
 #include common_scripts\utility;
 #include maps\_zombiemode_utility;
 
+remix_hud_initialize()
+{
+	level thread timer_hud();
+	level thread round_timer_hud();
+	level thread time_summary_hud();
+	level thread hud_trade_header();
+
+	// level thread display_sph();
+	// level thread hud_color_watcher();	// For later
+}
+
 create_hud( side, top )
 {
 	hud = NewClientHudElem( self );
