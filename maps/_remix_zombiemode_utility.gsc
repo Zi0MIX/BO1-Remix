@@ -138,3 +138,10 @@ do_player_vo(snd, variation_count)
 		level.player_is_speaking = 0;
 	}	
 }
+
+is_plutonium()
+{
+    if (getDvarFloat("safearea_adjusted_horizontal") || getDvarFloat("safearea_adjusted_vertical") || getDvarFloat("safearea_horizontal") || getDvarFloat("safearea_vertical"))
+        return true;
+    return false;
+}
