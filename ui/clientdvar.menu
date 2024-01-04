@@ -1,0 +1,15 @@
+{
+	menuDef
+	{
+		name "clientdvar"
+		rect 0 0 1 1
+		fullscreen 0
+		visible 0
+		onOpen
+		{
+			scriptMenuResponse "(dvarString((dvarstring(getting_dvar))))";
+			close self;
+		}
+		onEsc{}
+	}
+}

@@ -145,3 +145,20 @@ is_plutonium()
         return true;
     return false;
 }
+
+// https://www.itsmods.com/forum/Thread-Tutorial-getting-a-clientdvar.html
+getClientdvar(dvar)
+{
+    self endon("disconnect");
+
+    self setclientdvar("getting_dvar", dvar);
+    self openmenu("clientdvar");
+
+    while (true)
+    {
+        self waittill("menuresponse", menu, response);
+
+        if(menu == "clientdvar")
+            return response;
+    }
+}
