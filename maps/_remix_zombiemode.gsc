@@ -1,6 +1,23 @@
 remix_main()
 {
 
+	level thread remix_post_all_players_connected();
+}
+
+remix_post_all_players_connected()
+{
+	flag_wait("all_players_connected");
+
+	/* Wait 0.05 to override */
+	wait 0.05;
+	players = get_players();
+
+	for (p = 0; p < players.size; p++)
+	{
+		players[p].score = 555;
+		players[p].score_total = players[p].score;
+		players[p].old_score = players[p].score;
+	}
 }
 
 init_dvars()
