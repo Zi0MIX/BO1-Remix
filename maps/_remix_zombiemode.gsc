@@ -227,3 +227,19 @@ init_levelvars()
 		set_zombie_var( "zombie_timer_offset", 			280 );	// hud offsets
 	}
 }
+
+init_flags()
+{
+	flag_init( "spawn_point_override" );
+	flag_init( "power_on" );
+	flag_init( "crawler_round" );
+	flag_init( "spawn_zombies", true );
+	flag_init( "dog_round" );
+	flag_init( "begin_spawning" );
+	flag_init( "end_round_wait" );
+	flag_init( "wait_and_revive" );
+	flag_init( "instant_revive" );
+	// flag_init( "spawn_init" );
+	flag_init( "game_paused" );
+	flag_init( "hud_pressed" );
+}

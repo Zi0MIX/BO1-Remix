@@ -91,7 +91,7 @@ main()
 	init_animscripts();
 	init_sounds();
 	init_shellshocks();
-	init_flags();
+	maps\_remix_zombiemode::init_flags();
 	init_client_flags();
 
 	register_offhand_weapons_for_level_defaults();
@@ -976,7 +976,7 @@ initZombieLeaderboardData()
 	level.zombieLeaderboardNumber["zombie_moon"]["kills"] = 32;
 }
 
-
+/*
 init_flags()
 {
 	flag_init( "spawn_point_override" );
@@ -987,11 +987,9 @@ init_flags()
 	flag_init( "begin_spawning" );
 	flag_init( "end_round_wait" );
 	flag_init( "wait_and_revive" );
-	flag_init( "instant_revive" );
-	// flag_init( "spawn_init" );
-	flag_init( "game_paused" );
-	flag_init( "hud_pressed" );
+	flag_init("instant_revive");
 }
+*/
 
 // Client flags registered here should be for global zombie systems, and should
 // prefer to use high flag numbers and work downwards.
