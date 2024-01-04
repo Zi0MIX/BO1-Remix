@@ -237,9 +237,6 @@ post_all_players_connected()
 		level thread crawler_round_tracker();
 	}
 
-	// Flag signaling start of round, for director hud
-	level thread just_spawned_exception();
-
 	//chrisp - adding spawning vo
 	//level thread spawn_vo();
 

@@ -6,6 +6,7 @@ remix_main()
 	level thread override_max_damage_taken();
 
 	level thread possible_director_watcher();
+	level thread just_spawned_exception();
 
     // Change to disable or enable knifing while having waffe
     level.fix_wunderwaffe = true;
@@ -45,6 +46,14 @@ possible_director_watcher()
 		}
 		wait 0.1;
 	}
+}
+
+just_spawned_exception()
+{
+	level waittill ("all_players_connected");
+	flag_set ("spawn_init");
+	wait 15;
+	flag_clear ("spawn_init");
 }
 
 check_to_set_play_outro_movie()

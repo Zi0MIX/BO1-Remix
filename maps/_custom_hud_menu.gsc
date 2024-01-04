@@ -469,14 +469,3 @@ george_health_bar()
 		}
 	}
 }
-
-just_spawned_exception()
-{
-	while (1)
-	{
-		level waittill ("all_players_connected");
-		flag_set ( "spawn_init" );
-		wait 15;
-		flag_clear ( "spawn_init" );
-	}
-}
