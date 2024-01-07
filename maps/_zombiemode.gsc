@@ -21,6 +21,8 @@ main()
 
 	//level.start_time = GetTime();
 
+	// level.player_too_many_weapons_monitor = true;
+	// level.player_too_many_weapons_monitor_func = ::player_too_many_weapons_monitor;
 	level._dontInitNotifyMessage = 1;
 
 	//init_additionalprimaryweapon_machine_locatons();
@@ -1659,10 +1661,10 @@ onPlayerSpawned()
 			self thread player_out_of_playable_area_monitor();
 		}
 
-		/*if ( is_true( level.player_too_many_weapons_monitor ) )
+		if ( is_true( level.player_too_many_weapons_monitor ) )
 		{
 			self thread [[level.player_too_many_weapons_monitor_func]]();
-		}*/
+		}
 
 		if( isdefined( self.initialized ) )
 		{
