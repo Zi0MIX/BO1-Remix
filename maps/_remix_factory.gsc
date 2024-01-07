@@ -72,6 +72,7 @@ factory_always_bowie()
 		while (!is_true(self.initialized))
 			wait 0.05;
 
+		// Only play animation the first time
 		if (!is_true(self.bowie_given))
 		{
 			gun = self maps\_zombiemode_bowie::do_bowie_flourish_begin();
