@@ -13,6 +13,27 @@ remix_hud_initialize()
 	// level thread hud_color_watcher();	// For later
 }
 
+remix_player_hud_initialize()
+{
+	self thread time_summary_hud();
+	self thread remaining_hud();
+	self thread drop_tracker_hud();
+	self thread health_bar_hud();
+	self thread zone_hud();
+	if(level.script == "zombie_coast")
+		self thread maps\_custom_hud_menu::george_health_bar();
+
+	self thread tab_hud();
+
+	// testing only
+	//self thread get_position();
+	//self thread get_zone();
+	//self thread get_doors_nearby();
+	//self thread get_ent_nearby();
+	//self thread get_perks_nearby();
+	//self thread set_move_speed();
+}
+
 create_hud( side, top )
 {
 	hud = NewClientHudElem( self );
