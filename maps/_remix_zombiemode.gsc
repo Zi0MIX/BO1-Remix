@@ -1414,3 +1414,169 @@ actor_killed_override(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDi
 	}
 
 }
+
+end_game()
+{
+	level waittill ( "end_game" );
+
+	clientnotify( "zesn" );
+
+	if (level.win_game && level.script == "zombie_ww")
+	{
+		level thread maps\_zombiemode_audio::change_zombie_music( "reset" );
+	} 
+	else
+	{
+		level thread maps\_zombiemode_audio::change_zombie_music( "game_over" );
+	}
+
+	//AYERS: Turn off ANY last stand audio at the end of the game
+	players = get_players();
+	for( i = 0; i < players.size; i++ )
+	{
+		setClientSysState( "lsm", "0", players[i] );
+	}
+
+	StopAllRumbles();
+
+	level.intermission = true;
+	level.zombie_vars["zombie_powerup_insta_kill_time"] = 0;
+	level.zombie_vars["zombie_powerup_fire_sale_time"] = 0;
+	level.zombie_vars["zombie_powerup_point_doubler_time"] = 0;
+	wait 0.1;
+
+	update_leaderboards();
+
+	game_over = [];
+	survived = [];
+
+	players = get_players();
+
+	game_over_hud = newHudElem();
+	game_over_hud.alignX = "center";
+	game_over_hud.alignY = "middle";
+	game_over_hud.horzAlign = "center";
+	game_over_hud.vertAlign = "middle";
+	game_over_hud.y = -130;
+	game_over_hud.foreground = true;
+	game_over_hud.fontScale = 3;
+	game_over_hud.alpha = 0;
+	game_over_hud.color = (1.0, 1.0, 1.0);
+
+	survived_hud = newHudElem();
+	survived_hud.alignX = "center";
+	survived_hud.alignY = "middle";
+	survived_hud.horzAlign = "center";
+	survived_hud.vertAlign = "middle";
+	survived_hud.y = -100;
+	survived_hud.foreground = true;
+	survived_hud.fontScale = 2;
+	survived_hud.alpha = 0;
+	survived_hud.color = (1.0, 1.0, 1.0);
+
+	// Split screen ain't on PC anyways, no need to scan all the players
+	if (players[0] isSplitScreen())
+	{
+		game_over_hud.y += 40;
+		survived_hud.y += 40;
+	}
+
+	if (level.win_game)
+		game_over_hud SetText(&"MOD_YOU_WIN");
+	else
+		game_over_hud SetText(&"ZOMBIE_GAME_OVER");
+
+	//OLD COUNT METHOD
+	if( level.round_number < 2 )
+	{
+		if( level.script == "zombie_moon" )
+		{
+			if( !isdefined(level.left_nomans_land) )
+			{
+				player_survival_time_in_mins = maps\_remix_zombiemode_utility::to_mins_short(int(level.nml_best_time / 1000));
+				survived_hud SetText(level.total_nml_kills, " kills in ", player_survival_time_in_mins);
+			}
+			else if( level.left_nomans_land == 2 )
+			{
+				survived_hud SetText( &"ZOMBIE_SURVIVED_ROUND" );
+			}
+		}
+		else
+		{
+			survived_hud SetText( &"ZOMBIE_SURVIVED_ROUND" );
+		}
+	}
+	else
+	{
+		survived_hud SetText( &"ZOMBIE_SURVIVED_ROUNDS", level.round_number );
+	}
+
+	game_over_hud FadeOverTime(1);
+	game_over_hud.alpha = 1;
+	survived_hud FadeOverTime(1);
+	survived_hud.alpha = 1;
+		
+	players = get_players();
+	for (i = 0; i < players.size; i++)
+	{
+		players[i] SetClientDvars( "ammoCounterHide", "1",
+				"miniscoreboardhide", "1" );
+		//players[i] maps\_zombiemode_solo::solo_destroy_lives_hud();
+		//players[i] maps\_zombiemode_ability::clear_hud();
+	}
+	destroy_chalk_hud();
+
+	UploadStats();
+
+	wait( 1 );
+
+	//play_sound_at_pos( "end_of_game", ( 0, 0, 0 ) );
+	wait( 2 );
+	intermission();
+	wait( level.zombie_vars["zombie_intermission_time"] );
+
+	level notify( "stop_intermission" );
+	array_thread( get_players(), ::player_exit_level );
+
+	bbPrint( "zombie_epilogs: rounds %d", level.round_number );
+
+	survived_hud FadeOverTime(1);
+	survived_hud.alpha = 0;
+	game_over_hud FadeOverTime(1);
+	game_over_hud.alpha = 0;
+
+	wait( 1.5 );
+
+
+/*	we are not currently supporting the shared screen tech
+	if( IsSplitScreen() )
+	{
+		players = get_players();
+		for( i = 0; i < players.size; i++ )
+		{
+			share_screen( players[i], false );
+		}
+	}
+*/
+
+	for ( j = 0; j < get_players().size; j++ )
+	{
+		player = get_players()[j];
+		player CameraActivate( false );
+
+		survived[j] Destroy();
+		game_over[j] Destroy();
+	}
+
+	if ( level.onlineGame || level.systemLink )
+	{
+		ExitLevel( false );
+	}
+	else
+	{
+		MissionFailed();
+	}
+
+	// Let's not exit the function
+	wait( 666 );
+}
