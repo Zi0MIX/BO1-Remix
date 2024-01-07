@@ -147,7 +147,7 @@ is_plutonium()
 }
 
 // https://www.itsmods.com/forum/Thread-Tutorial-getting-a-clientdvar.html
-getClientdvar(dvar)
+get_client_dvar(dvar)
 {
     self endon("disconnect");
 
