@@ -23,8 +23,6 @@ remix_player_hud_initialize()
 	if(level.script == "zombie_coast")
 		self thread maps\_custom_hud_menu::george_health_bar();
 
-	self thread tab_hud();
-
 	// testing only
 	//self thread get_position();
 	//self thread get_zone();
@@ -34,38 +32,16 @@ remix_player_hud_initialize()
 	//self thread set_move_speed();
 }
 
-create_hud( side, top )
-{
-	hud = NewClientHudElem( self );
-	hud.horzAlign = side;
-	hud.vertAlign = top;
-	hud.alignX = side;
-	hud.alignY = top;
-	hud.alpha = 0;
-	hud.fontscale = 1.3;
-	hud.color = ( 1.0, 1.0, 1.0 );
-	hud.hidewheninmenu = 1;
-	return hud;
-}
-
 hud_level_wait()
 {
-	flag_wait( "all_players_spawned" );
+	flag_wait("all_players_spawned");
 	wait 3.15;
 }
 
 hud_wait()
 {
-	flag_wait( "all_players_spawned" );
+	flag_wait("all_players_spawned");
 	wait 2;
-}
-
-hud_end( hud )
-{
-	self endon("disconnect");
-
-	level waittill ( "end_game" );
-	hud destroy_hud();
 }
 
 hud_fade( hud, alpha, duration )
@@ -81,34 +57,13 @@ toggled_hud_fade(hud, alpha)
 	hud.alpha = alpha;
 }
 
-tab_hud()
-{	
-	self endon("disconnect");
-	level endon("end_game");
-	
-	// if(getDvar( "hud_button" ) == "")
-	// 	self setClientDvar( "hud_button", "tab" );
-
-	while (true)
-	{	
-		if(self scoresButtonPressed() )
-		{	
-			flag_set( "hud_pressed" );
-			self setClientDvar( "hud_tab", 1 );
-		}
-		else
-		{
-			flag_clear( "hud_pressed" );
-			self setClientDvar( "hud_tab", 0 );
-		}
-
-		wait 0.05;
-	}
-}
-
 timer_hud()
 {
-	hud_level_wait();
+	flag_wait("initial_blackscreen_passed");
+
+	y_pos = 2;
+	if (maps\_remix_zombiemode_utility::is_plutonium())
+		y_pos = 17;
 
 	level.timer = NewHudElem();
 	level.timer.horzAlign = "right";
@@ -116,50 +71,33 @@ timer_hud()
 	level.timer.alignX = "right";
 	level.timer.alignY = "top";
 	level.timer.x = -4;
-	level.timer.y = 2 + level.pluto_offset;
+	level.timer.y = y_pos;
 	level.timer.fontScale = 1.3;
 	level.timer.alpha = 1;
 	level.timer.hidewheninmenu = 0;
 	level.timer.foreground = 1;
-	level.timer.color = (1, 1, 1); // Awaiting new color func
+	level.timer.color = (1, 1, 1);
 
 	level.timer SetTimerUp(0);
-
-	while (true)
-	{
-		current_time = int(getTime() / 1000);
-		level.total_time = current_time - level.total_pause_time - level.beginning_timestamp;
-
-		// reset 43200
-		if ((level.total_time >= 43200) && (isDefined(level.paused) && !level.paused)) // 12h
-		{
-			level.win_game = true;
-			level notify( "end_game" );
-			players = get_players();
-			for(i = 0; players.size > i; i++)
-			{
-				players[i] freezecontrols(false);
-			}
-			break;
-		}
 	/* Attach info about game start */
 	level.timer.beginning = int(getTime() / 1000);
 
-		wait 0.05;
-	}
-
-	while (true)
-	{
-		level.timer setTimer(level.total_time - 0.1);
-		wait 0.5;
-	}
+	// TODO toggling hud
 }
 
 round_timer_hud()
 {
 	level endon("end_game");
 
-	hud_level_wait();
+	flag_wait("initial_blackscreen_passed");
+
+	/* Do not initialize round timer until players left no man's land */
+	while (level.script == "zombie_moon" && !isDefined(level.left_nomans_land))
+		wait 0.05;
+
+	y_pos = 17;
+	if (maps\_remix_zombiemode_utility::is_plutonium())
+		y_pos = 32;
 
 	level.round_timer = NewHudElem();
 	level.round_timer.horzAlign = "right";
@@ -167,63 +105,16 @@ round_timer_hud()
 	level.round_timer.alignX = "right";
 	level.round_timer.alignY = "top";
 	level.round_timer.x = -4;
-	level.round_timer.y = 17 + level.pluto_offset;
+	level.round_timer.y = y_pos;
 	level.round_timer.fontScale = 1.3;
-	level.round_timer.alpha = 0;
-	level.round_timer.color = (1, 1, 1); // Awaiting new color func
+	level.round_timer.alpha = 1;
+	level.round_timer.color = (1, 1, 1);
 
-	// Prevent round time from working on first NML
-	while (!isDefined(level.left_nomans_land) && level.script == "zombie_moon")
-		wait 0.05;
+	level.round_timer setTimerUp(0);
+	level.round_timer.beginning = int(getTime() / 1000);
+	level.round_timer thread freeze_timer(0, "start_of_round");
 
-	while (true)
-	{
-		level waittill ( "start_of_round" );
-
-		// Don't want to start the round if ppl ain't on the moon
-		if (isdefined(level.on_the_moon) && !level.on_the_moon)
-		{
-			wait 0.05;
-			continue;
-		}
-
-		// Exclude time spent in pause
-		if (isdefined(flag( "game_paused" )))
-		{
-			while (flag("game_paused"))
-				wait 0.05;
-		}
-
-		level.round_timer setTimerUp(0);
-
-		while(level.displaying_time_summary)
-			wait 0.05;
-
-		current_round = level.round_number;
-		dvar_state = 0;
-		tab_state = 0;
-
-		while (current_round == level.round_number)
-		{
-			wait 0.05;
-
-			if ((level.zombie_total + get_enemy_count()) <= 0)
-				break;
-
-			if (dvar_state == getDvarInt("hud_round_timer") && tab_state == getDvarInt("hud_tab"))
-				continue;
-
-			if (getDvarInt("hud_round_timer") || getDvarInt("hud_tab"))
-				hud_fade(level.round_timer, 1, 0.075);
-			else
-				hud_fade(level.round_timer, 0, 0.075);
-
-			dvar_state = getDvarInt("hud_round_timer");
-			tab_state = getDvarInt("hud_tab");
-		}
-		level waittill("end_of_round");
-		hud_fade(level.round_timer, 0, 0.15);
-	}
+	// TODO toggling hud
 }
 
 time_summary_hud()
@@ -380,15 +271,6 @@ display_time_summary()
 	summary destroy_hud();
 
 	level.displaying_time_summary = 0;
-}
-
-set_client_dvars( dvar, value )
-{
-	players = get_players();
-	for(i = 0; i < players.size; i++)
-	{
-		players[i] setClientDvar(dvar, value);
-	}
 }
 
 coop_pause_hud()

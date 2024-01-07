@@ -244,8 +244,6 @@ post_all_players_connected()
 	{
 		level.music_override = false;
 	}
-
-	level thread _remix_hud::remix_hud_initialize();
 }
 
 zombiemode_melee_miss()

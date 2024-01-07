@@ -22,13 +22,22 @@ remix_main()
 	//isClientPluto("com_useConfig", "");
 
 	level thread remix_post_all_players_connected();
+	level thread set_initial_blackscreen_passed();	// Allow for bo2 style hud initialization
 
+	/* Remix main loop */
 	while (true)
 	{
 		level waittill("start_of_round");
+		level.round_timer setTimer(0);
+		level.round_timer.beginning = int(getTime() / 1000);
 
 		/* Stop the game if coop pause has been initiated, otherwise do nothing */
 		level.time_paused += server_coop_pause();
+
+		level waittill("end_of_round");
+
+		// TODO need additional logic for nml
+		level.round_timer thread maps\_remix_hud::freeze_timer(int(getTime() / 1000) - level.round_timer.beginning, "start_of_round");
 	}
 }
 
@@ -36,8 +45,8 @@ remix_post_all_players_connected()
 {
 	flag_wait("all_players_connected");
 
-	/* Wait 0.05 to override */
-	wait 0.05;
+	level thread maps\_remix_hud::remix_hud_initialize();
+
 	players = get_players();
 
 	for (p = 0; p < players.size; p++)
@@ -46,6 +55,15 @@ remix_post_all_players_connected()
 		players[p].score_total = players[p].score;
 		players[p].old_score = players[p].score;
 		players[p] thread client_remix_coop_pause_watcher();
+		players[p] thread maps\_remix_hud::remix_player_hud_initialize();
+	}
+}
+set_initial_blackscreen_passed()
+{
+	level waittill("fade_in_complete");
+	flag_set("initial_blackscreen_passed");
+}
+
 server_coop_pause()
 {
 	// TODO notify player if coop pause has been denied
@@ -122,9 +140,6 @@ init_dvars()
 	SetDvar( "player_lastStandBleedoutTime", "45" );
 
 	SetDvar( "scr_deleteexplosivesonspawn", "0" );
-
-	// Pluto HUD
-    maps\_remix_zombiemode_utility::init_dvar("hud_pluto", 0);
 
     // Disable player quotes
     maps\_remix_zombiemode_utility::init_dvar("player_quotes", 0);
