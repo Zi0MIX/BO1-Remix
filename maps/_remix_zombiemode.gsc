@@ -468,3 +468,46 @@ round_think()
 		level notify( "between_round_over" );
 	}
 }
+
+ai_calculate_health( round_number )
+{
+	// Insta rounds starting between 99-69 depends lobby size and occur on odd rounds
+	if (round_number % 2 == 1)
+	{
+		if (level.players_playing == 1 && round_number >= 99)			// Solo
+		{
+			level.zombie_health = 150;
+			return;
+		}
+		else if (level.players_playing == 2 && round_number >= 89)		// 2p
+		{
+			level.zombie_health = 150;
+			return;
+		}
+		else if (level.players_playing == 3 && round_number >= 79)		// 3p
+		{
+			level.zombie_health = 150;
+			return;
+		}
+		else if (level.players_playing == 4 && round_number >= 69)		// 4p
+		{
+			level.zombie_health = 150;
+			return;
+		}
+	}
+
+	level.zombie_health = level.zombie_vars["zombie_health_start"];
+	for ( i=2; i<=round_number; i++ )
+	{
+		// After round 10, get exponentially harder
+		if( i >= 10 )
+		{
+			level.zombie_health += Int( level.zombie_health * level.zombie_vars["zombie_health_increase_multiplier"] );
+		}
+		else
+		{
+			level.zombie_health = Int( level.zombie_health + level.zombie_vars["zombie_health_increase"] );
+		}
+	}
+}
+
