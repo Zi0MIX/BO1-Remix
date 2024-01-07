@@ -51,13 +51,29 @@ remix_post_all_players_connected()
 
 	for (p = 0; p < players.size; p++)
 	{
-		players[p].score = 555;
-		players[p].score_total = players[p].score;
-		players[p].old_score = players[p].score;
+		players[p] thread override_score();
+		players[p] thread remix_on_player_spawned();
 		players[p] thread client_remix_coop_pause_watcher();
 		players[p] thread maps\_remix_hud::remix_player_hud_initialize();
 	}
 }
+
+remix_on_player_spawned()
+{
+	while (true)
+	{
+		self waittill("spawned_player");
+	}
+}
+
+override_score()
+{
+	wait 0.05;
+	self.score = 555;
+	self.score_total = 555;
+	self.old_score = 555;
+}
+
 set_initial_blackscreen_passed()
 {
 	level waittill("fade_in_complete");
