@@ -166,8 +166,13 @@ get_client_dvar(dvar)
 is_coop_pause_allowed()
 {
     players = get_players();
+	/* Coop pause not allowed on solo */
     if (players.size < 2)
         return false;
+
+	/* Coop pause not allowed on NML */
+	if (isdefined(level.on_the_moon) && !level.on_the_moon)
+		return false;
 
     return true;
 }
@@ -183,4 +188,11 @@ num_of_players_with_coop_pause()
 	}
 
 	return num_of_players;
+}
+
+retrieve_actual_gametime()
+{
+	if (!isDefined(level.time_paused) || !isDefined(level.timer.beginning))
+		return 0;
+	return int(getTime() / 100) - level.time_paused - level.timer.beginning;
 }

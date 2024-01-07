@@ -1,3 +1,13 @@
+director_coop_pause()
+{
+	if (isDefined(level.zombie_director) && !is_true(level.zombie_director.ignoreall))
+	{
+		level.zombie_director.ignoreall = true;
+		level waittill("coop_pause_disabled");
+		level.zombie_director.ignoreall = false;
+	}
+}
+
 director_zombie_spawn()
 {
 	self.script_moveoverride = true;

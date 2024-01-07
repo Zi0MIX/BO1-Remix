@@ -12,7 +12,9 @@ remix_main()
 
     level.global_print_hud_color = (1, 1, 1);
 
-	level.total_pause_time = 0;
+	/* Initialize level var tracking amount of time spent in coop pause */
+	level.time_paused = 0;
+
 	level.last_special_round = -1;	// Set to negative to not mess with hud
 
     init_hud_dvars();
@@ -26,7 +28,7 @@ remix_main()
 		level waittill("start_of_round");
 
 		/* Stop the game if coop pause has been initiated, otherwise do nothing */
-		server_coop_pause();
+		level.time_paused += server_coop_pause();
 	}
 }
 
@@ -46,10 +48,22 @@ remix_post_all_players_connected()
 		players[p] thread client_remix_coop_pause_watcher();
 server_coop_pause()
 {
+	// TODO notify player if coop pause has been denied
 	if (!maps\_remix_zombiemode_utility::is_coop_pause_allowed() || !maps\_remix_zombiemode_utility::num_of_players_with_coop_pause())
-		return;
+	{
+		return 0;
+	}
 
 	flag_set("coop_pause");
+	level notify("coop_pause_enabled");
+	pause_begun = int(getTime() / 1000);
+
+	level thread maps\_remix_hud::coop_pause_hud();
+	setDvar("ai_disableSpawn", "1");
+	if (isDefined(level.additional_coop_pause_func))
+		level thread [[level.additional_coop_pause_func]]();
+	level.timer thread maps\_remix_hud::freeze_timer(maps\_remix_zombiemode_utility::retrieve_actual_gametime(), "coop_pause_disabled");
+	level.round_timer thread maps\_remix_hud::freeze_timer(0, "coop_pause_disabled");
 
 	while (true)
 	{
@@ -59,6 +73,10 @@ server_coop_pause()
 	}
 
 	flag_clear("coop_pause");
+	level notify("coop_pause_disabled");
+	setDvar("ai_disableSpawn", "0");
+
+	return int(getTime() / 1000) - pause_begun;
 }
 
 client_remix_coop_pause_watcher()
