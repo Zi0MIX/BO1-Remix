@@ -834,7 +834,7 @@ init_function_overrides()
 	level.global_damage_func_ads	= maps\_zombiemode_spawner::zombie_damage_ads;
 	level.overridePlayerKilled		= ::player_killed_override;
 	level.overridePlayerDamage		= maps\_remix_zombiemode::player_damage_override; //_cheat;
-	level.overrideActorKilled		= ::actor_killed_override;
+	level.overrideActorKilled		= maps\_remix_zombiemode::actor_killed_override;
 	level.overrideActorDamage		= maps\_remix_zombiemode::actor_damage_override;
 	level.melee_miss_func			= ::zombiemode_melee_miss;
 	level.player_becomes_zombie		= ::zombify_player;
@@ -4986,15 +4986,6 @@ actor_killed_override(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDi
 	if ( game["state"] == "postgame" )
 		return;
 
-	self SetPlayerCollision(0); // zombies lose collision right as they die
-
-
-	// force ran over shunk zombies not to drop powerups
-	if(sMeansOfDeath == "MOD_UNKNOWN" && (sWeapon == "shrink_ray_zm" || sWeapon == "shrink_ray_upgraded_zm"))
-	{
-		self.no_powerups = true;
-	}
-
 	if( isai(attacker) && isDefined( attacker.script_owner ) )
 	{
 		// if the person who called the dogs in switched teams make sure they don't
@@ -5016,7 +5007,7 @@ actor_killed_override(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDi
 	if ( isdefined( attacker ) && isplayer( attacker ) )
 	{
 		multiplier = 1;
-		if( maps\_remix_zombiemode::is_headshot( sWeapon, sHitLoc, sMeansOfDeath ) )
+		if( is_headshot( sWeapon, sHitLoc, sMeansOfDeath ) )
 		{
 			multiplier = 1.5;
 		}

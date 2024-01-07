@@ -1331,3 +1331,86 @@ is_headshot( sWeapon, sHitLoc, sMeansOfDeath )
 {
 	return (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && sMeansOfDeath != "MOD_MELEE" && sMeansOfDeath != "MOD_BAYONET" && sMeansOfDeath != "MOD_IMPACT";
 }
+
+actor_killed_override(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime)
+{
+	if ( game["state"] == "postgame" )
+		return;
+
+	self SetPlayerCollision(0); // zombies lose collision right as they die
+
+
+	// force ran over shunk zombies not to drop powerups
+	if(sMeansOfDeath == "MOD_UNKNOWN" && (sWeapon == "shrink_ray_zm" || sWeapon == "shrink_ray_upgraded_zm"))
+	{
+		self.no_powerups = true;
+	}
+
+	if( isai(attacker) && isDefined( attacker.script_owner ) )
+	{
+		// if the person who called the dogs in switched teams make sure they don't
+		// get penalized for the kill
+		if ( attacker.script_owner.team != self.aiteam )
+			attacker = attacker.script_owner;
+	}
+
+	if( attacker.classname == "script_vehicle" && isDefined( attacker.owner ) )
+		attacker = attacker.owner;
+
+	if( IsPlayer( level.monkey_bolt_holder ) && sMeansOfDeath == "MOD_GRENADE_SPLASH"
+			&& ( sWeapon == "crossbow_explosive_upgraded_zm" || sWeapon == "explosive_bolt_upgraded_zm" ) ) //
+	{
+		level._bolt_on_back = level._bolt_on_back + 1;
+	}
+
+
+	if ( isdefined( attacker ) && isplayer( attacker ) )
+	{
+		multiplier = 1;
+		if( maps\_remix_zombiemode::is_headshot( sWeapon, sHitLoc, sMeansOfDeath ) )
+		{
+			multiplier = 1.5;
+		}
+
+		type = undefined;
+
+		//MM (3/18/10) no animname check
+		if ( IsDefined(self.animname) )
+		{
+			switch( self.animname )
+			{
+			case "quad_zombie":
+				type = "quadkill";
+				break;
+			case "ape_zombie":
+				type = "apekill";
+				break;
+			case "zombie":
+				type = "zombiekill";
+				break;
+			case "zombie_dog":
+				type = "dogkill";
+				break;
+			}
+		}
+		//if( isDefined( type ) )
+		//{
+		//	value = maps\_zombiemode_rank::getScoreInfoValue( type );
+		//	self process_assist( type, attacker );
+
+		//	value = int( value * multiplier );
+		//	attacker thread maps\_zombiemode_rank::giveRankXP( type, value, false, false );
+		//}
+	}
+
+	if(is_true(self.is_ziplining))
+	{
+		self.deathanim = undefined;
+	}
+
+	if ( IsDefined( self.actor_killed_override ) )
+	{
+		self [[ self.actor_killed_override ]]( eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime );
+	}
+
+}
