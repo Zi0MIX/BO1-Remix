@@ -515,3 +515,254 @@ can_revive( reviver )
 {
 	return true;
 }
+
+player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime )
+{
+	iDamage = self check_player_damage_callbacks( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime );
+	if ( !iDamage )
+	{
+		return 0;
+	}
+
+	// turret doesn't damage players
+	if ( isDefined( eInflictor ) )
+	{
+		if(sMeansOfDeath == "MOD_RIFLE_BULLET" && sWeapon == "zombie_bullet_crouch")
+		{
+			return 0;
+		}
+	}
+
+	// WW (8/14/10) - If a player is hit by the crossbow bolt then set them as the holder of the monkey shot
+	if( sWeapon == "crossbow_explosive_upgraded_zm" && sMeansOfDeath == "MOD_IMPACT" )
+	{
+		level.monkey_bolt_holder = self;
+	}
+
+	// Raven - snigl - Notify of blow gun hit
+	if( GetSubStr(sWeapon, 0, 8 ) == "blow_gun" && sMeansOfDeath == "MOD_IMPACT" )
+	{
+		eAttacker notify( "blow_gun_hit", self, eInflictor );
+	}
+
+	// WW (8/20/10) - Sledgehammer fix for Issue 43492. This should stop the player from taking any damage while in laststand
+	if( self maps\_laststand::player_is_in_laststand() )
+	{
+		return 0;
+	}
+
+	if ( isDefined( eInflictor ) )
+	{
+		if ( is_true( eInflictor.water_damage ) )
+		{
+			return 0;
+		}
+	}
+
+	if( isDefined( eAttacker ) )
+	{
+
+		//tracking player damage
+		if(is_true(eAttacker.is_zombie))
+		{
+			self.stats["damage_taken"] += iDamage;
+		}
+
+		if( isDefined( self.ignoreAttacker ) && self.ignoreAttacker == eAttacker )
+		{
+			return 0;
+		}
+
+		if( (isDefined( eAttacker.is_zombie ) && eAttacker.is_zombie) || level.mutators["mutator_friendlyFire"] )
+		{
+			self.ignoreAttacker = eAttacker;
+			self thread remove_ignore_attacker();
+
+			if ( isdefined( eAttacker.custom_damage_func ) )
+			{
+				iDamage = eAttacker [[ eAttacker.custom_damage_func ]]( self );
+			}
+			else if ( isdefined( eAttacker.meleeDamage ) )
+			{
+				iDamage = eAttacker.meleeDamage;
+			}
+			else
+			{
+				iDamage = 50;		// 45
+			}
+		}
+
+		eAttacker notify( "hit_player" );
+
+
+		if( is_true(eattacker.is_zombie) && eattacker.animname == "director_zombie" )
+		{
+			 self PlaySound( "zmb_director_light_hit" );
+			 if(RandomIntRange(0,1) == 0 )
+		    {
+		        self thread maps\_zombiemode_audio::create_and_play_dialog( "general", "hitmed" );
+		    }
+		    else
+		    {
+		        self thread maps\_zombiemode_audio::create_and_play_dialog( "general", "hitlrg" );
+		    }
+		}
+		else if( sMeansOfDeath != "MOD_FALLING" )
+		{
+		    self PlaySound( "evt_player_swiped" );
+		    if(RandomIntRange(0,1) == 0 )
+		    {
+		        self thread maps\_zombiemode_audio::create_and_play_dialog( "general", "hitmed" );
+		    }
+		    else
+		    {
+		        self thread maps\_zombiemode_audio::create_and_play_dialog( "general", "hitlrg" );
+		    }
+		}
+	}
+	finalDamage = iDamage;
+
+	// claymores and freezegun shatters, like bouncing betties, harm no players
+	if ( is_placeable_mine( sWeapon ) || sWeapon == "freezegun_zm" || sWeapon == "freezegun_upgraded_zm" || sWeapon == "tesla_gun_upgraded_zm" || sWeapon == "telsa_gun_zm" )
+	{
+		return 0;
+	}
+
+	if ( isDefined( self.player_damage_override ) )
+	{
+		self thread [[ self.player_damage_override ]]( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime );
+	}
+
+	if( sMeansOfDeath == "MOD_FALLING" )
+	{
+		if ( self HasPerk( "specialty_flakjacket" ) && isdefined( self.divetoprone ) && self.divetoprone == 1 )
+		{
+			if ( IsDefined( level.zombiemode_divetonuke_perk_func ) )
+			{
+				[[ level.zombiemode_divetonuke_perk_func ]]( self, self.origin );
+			}
+
+			return 0;
+		}
+	}
+
+	if( sMeansOfDeath == "MOD_PROJECTILE" || sMeansOfDeath == "MOD_PROJECTILE_SPLASH" || sMeansOfDeath == "MOD_GRENADE" || sMeansOfDeath == "MOD_GRENADE_SPLASH" )
+	{
+		// check for reduced damage from flak jacket perk
+		if ( self HasPerk( "specialty_flakjacket" ) )
+		{
+			return 0;
+		}
+
+		if( self.health > 75 )
+		{
+			// MM (08/10/09)
+			return 75;
+		}
+	}
+
+	if( iDamage < self.health )
+	{
+		if ( IsDefined( eAttacker ) )
+		{
+			eAttacker.sound_damage_player = self;
+
+			if( IsDefined( eAttacker.has_legs ) && !eAttacker.has_legs )
+			{
+			    self maps\_zombiemode_audio::create_and_play_dialog( "general", "crawl_hit" );
+			}
+			else if( IsDefined( eAttacker.animname ) && ( eAttacker.animname == "monkey_zombie" ) )
+			{
+			    self maps\_zombiemode_audio::create_and_play_dialog( "general", "monkey_hit" );
+			}
+		}
+
+		// MM (08/10/09)
+		return finalDamage;
+	}
+	if( level.intermission )
+	{
+		level waittill( "forever" );
+	}
+
+	players = get_players();
+	count = 0;
+	for( i = 0; i < players.size; i++ )
+	{
+		if( players[i] == self || players[i].is_zombie || players[i] maps\_laststand::player_is_in_laststand() || players[i].sessionstate == "spectator" )
+		{
+			count++;
+		}
+	}
+	if( count < players.size )
+	{
+		// MM (08/10/09)
+		return finalDamage;
+	}
+
+	//if ( maps\_zombiemode_solo::solo_has_lives() )
+	//{
+	//	SetDvar( "player_lastStandBleedoutTime", "3" );
+	//}
+	//else
+	//{
+	if ( players.size == 1 && flag( "solo_game" ) )
+	{
+		if ( self.lives == 0 )
+		{
+			self.intermission = true;
+		}
+	}
+	//}
+
+	// WW (01/05/11): When a two players enter a system link game and the client drops the host will be treated as if it was a solo game
+	// when it wasn't. This led to SREs about undefined and int being compared on death (self.lives was never defined on the host). While
+	// adding the check for the solo game flag we found that we would have to create a complex OR inside of the if check below. By breaking
+	// the conditions out in to their own variables we keep the complexity without making it look like a mess.
+	solo_death = ( players.size == 1 && flag( "solo_game" ) && self.lives == 0 ); // there is only one player AND the flag is set AND self.lives equals 0
+	non_solo_death = ( players.size > 1 || ( players.size == 1 && !flag( "solo_game" ) ) ); // the player size is greater than one OR ( players.size equals 1 AND solo flag isn't set )
+
+	if ( solo_death || non_solo_death ) // if only one player on their last life or any game that started with more than one player
+	{
+		self thread maps\_laststand::PlayerLastStand( eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime );
+		self player_fake_death();
+	}
+
+	if( count == players.size )
+	{
+		//if ( !maps\_zombiemode_solo::solo_has_lives() )
+		//{
+
+		if ( players.size == 1 && flag( "solo_game" ) )
+		{
+			if ( self.lives == 0 ) // && !self maps\_laststand::player_is_in_laststand()
+			{
+
+				level notify("pre_end_game");
+				wait_network_frame();
+
+				level notify( "end_game" );
+			}
+			else
+			{
+				self thread wait_and_revive();
+				return finalDamage;
+			}
+		}
+		else
+		{
+			level notify("pre_end_game");
+			wait_network_frame();
+
+			level notify( "end_game" );
+		}
+		//}
+
+		return 0;	// MM (09/16/09) Need to return something
+	}
+	else
+	{
+		// MM (08/10/09)
+		return finalDamage;
+	}
+}

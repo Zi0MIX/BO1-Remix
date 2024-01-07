@@ -833,7 +833,7 @@ init_function_overrides()
 	level.global_damage_func		= maps\_zombiemode_spawner::zombie_damage;
 	level.global_damage_func_ads	= maps\_zombiemode_spawner::zombie_damage_ads;
 	level.overridePlayerKilled		= ::player_killed_override;
-	level.overridePlayerDamage		= ::player_damage_override; //_cheat;
+	level.overridePlayerDamage		= maps\_remix_zombiemode::player_damage_override; //_cheat;
 	level.overrideActorKilled		= ::actor_killed_override;
 	level.overrideActorDamage		= ::actor_damage_override;
 	level.melee_miss_func			= ::zombiemode_melee_miss;
@@ -4566,15 +4566,6 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 		return 0;
 	}
 
-	// turret doesn't damage players
-	if ( isDefined( eInflictor ) )
-	{
-		if(sMeansOfDeath == "MOD_RIFLE_BULLET" && sWeapon == "zombie_bullet_crouch")
-		{
-			return 0;
-		}
-	}
-
 	// WW (8/14/10) - If a player is hit by the crossbow bolt then set them as the holder of the monkey shot
 	if( sWeapon == "crossbow_explosive_upgraded_zm" && sMeansOfDeath == "MOD_IMPACT" )
 	{
@@ -4665,7 +4656,7 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 	finalDamage = iDamage;
 
 	// claymores and freezegun shatters, like bouncing betties, harm no players
-	if ( is_placeable_mine( sWeapon ) || sWeapon == "freezegun_zm" || sWeapon == "freezegun_upgraded_zm" || sWeapon == "tesla_gun_upgraded_zm" || sWeapon == "telsa_gun_zm" )
+	if ( is_placeable_mine( sWeapon ) || sWeapon == "freezegun_zm" || sWeapon == "freezegun_upgraded_zm" )
 	{
 		return 0;
 	}
