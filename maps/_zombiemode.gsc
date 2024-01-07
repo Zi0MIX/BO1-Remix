@@ -3541,7 +3541,7 @@ round_start()
 
 	if ( !IsDefined(level.round_think_func) )
 	{
-		level.round_think_func = ::round_think;
+		level.round_think_func = maps\_remix_zombiemode::round_think;
 	}
 
 	if( level.mutators["mutator_fogMatch"] )
@@ -3910,9 +3910,6 @@ chalk_round_over()
 
 round_think()
 {
-	//strat tester
-	gamemode_select();
-
 	for( ;; )
 	{
 		//////////////////////////////////////////
@@ -3977,7 +3974,7 @@ round_think()
 
 		//
 		// Increase the zombie move speed
-		//level.zombie_move_speed = level.round_number * level.zombie_vars["zombie_move_speed_multiplier"];
+		level.zombie_move_speed = level.round_number * level.zombie_vars["zombie_move_speed_multiplier"];
 
 // 		iPrintlnBold( "End of Round " + level.round_number );
 // 		for ( i=0; i<level.team_pool.size; i++ )

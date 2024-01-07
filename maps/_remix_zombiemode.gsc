@@ -382,3 +382,89 @@ onPlayerConnect_clientDvars()
 	// double tap 2.0
 	self SetClientDvar( "perk_weapRateEnhanced", 1 );
 }
+
+round_think()
+{
+	for( ;; )
+	{
+		//////////////////////////////////////////
+		//designed by prod DT#36173
+		maxreward = 50 * level.round_number;
+		if ( maxreward > 500 )
+			maxreward = 500;
+		level.zombie_vars["rebuild_barrier_cap_per_round"] = maxreward;
+		//////////////////////////////////////////
+
+		level.pro_tips_start_time = GetTime();
+		level.zombie_last_run_time = GetTime();	// Resets the last time a zombie ran
+
+        level thread maps\_zombiemode_audio::change_zombie_music( "round_start" );
+		chalk_one_up();
+		//		round_text( &"ZOMBIE_ROUND_BEGIN" );
+
+		maps\_zombiemode_powerups::powerup_round_start();
+
+		players = get_players();
+		array_thread( players, maps\_zombiemode_blockers::rebuild_barrier_reward_reset );
+
+		//array_thread( players, maps\_zombiemode_ability::giveHardpointItems );
+
+		level thread award_grenades_for_survivors();
+
+		bbPrint( "zombie_rounds: round %d player_count %d", level.round_number, players.size );
+
+		level.round_start_time = GetTime();
+		level thread [[level.round_spawn_func]]();
+
+		level notify( "start_of_round" );
+
+		[[level.round_wait_func]]();
+
+		level.first_round = false;
+		level notify( "end_of_round" );
+
+		level thread maps\_zombiemode_audio::change_zombie_music( "round_end" );
+
+		UploadStats();
+
+		if ( 1 != players.size )
+		{
+			level thread spectators_respawn();
+			//level thread last_stand_revive();
+		}
+
+		//		round_text( &"ZOMBIE_ROUND_END" );
+		level chalk_round_over();
+
+		// here's the difficulty increase over time area
+		timer = level.zombie_vars["zombie_spawn_delay"];
+		if ( timer > 0.08 )
+		{
+			level.zombie_vars["zombie_spawn_delay"] = timer * 0.95;
+		}
+		else if ( timer < 0.08 )
+		{
+			level.zombie_vars["zombie_spawn_delay"] = 0.08;
+		}
+
+		//
+		// Increase the zombie move speed
+		//level.zombie_move_speed = level.round_number * level.zombie_vars["zombie_move_speed_multiplier"];
+
+// 		iPrintlnBold( "End of Round " + level.round_number );
+// 		for ( i=0; i<level.team_pool.size; i++ )
+// 		{
+// 			iPrintlnBold( "Team Pool "+(i+1)+" score: ", level.team_pool[i].score_total );
+// 		}
+//
+// 		players = get_players();
+// 		for ( p=0; p<players.size; p++ )
+// 		{
+// 			iPrintlnBold( "Total Player "+(p+1)+" score : "+ players[p].score_total );
+// 		}
+
+		level.round_number++;
+
+		level notify( "between_round_over" );
+	}
+}
