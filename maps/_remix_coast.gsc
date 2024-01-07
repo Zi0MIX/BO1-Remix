@@ -10,8 +10,8 @@ remix_main()
 
     // Change to disable or enable knifing while having waffe
     level.fix_wunderwaffe = true;
-	// For tracking director rounds
-	level.last_director_round = 0;
+	// Director manager for coop pause
+	level.additional_coop_pause_func = maps\_remix_zombiemode_ai_director::director_coop_pause;
 	flag_init("director_alive");
 	flag_init("potential_director");
 }
