@@ -1,5 +1,23 @@
 remix_main()
 {
+	precachemenu("clientdvar");
+
+	// limited betties/claymores on the map
+	level.max_mines = 10;
+
+	// added win con
+	level.win_game = false;
+
+	//level.start_time = GetTime();
+
+    level.global_print_hud_color = (1, 1, 1);
+
+	level.total_pause_time = 0;
+	level.last_special_round = -1;	// Set to negative to not mess with hud
+
+    init_hud_dvars();
+
+	//isClientPluto("com_useConfig", "");
 
 	level thread remix_post_all_players_connected();
 }

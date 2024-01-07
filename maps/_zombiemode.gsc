@@ -13,14 +13,6 @@
 
 main()
 {
-	// limited betties/claymores on the map
-	level.max_mines = 10;
-
-	// added win con
-	level.win_game = false;
-
-	//level.start_time = GetTime();
-
 	// level.player_too_many_weapons_monitor = true;
 	// level.player_too_many_weapons_monitor_func = ::player_too_many_weapons_monitor;
 	level._dontInitNotifyMessage = 1;
@@ -49,10 +41,6 @@ main()
 	level.zombie_breadcrumb_failed = 0;
 
 	level.zombie_visionset = "zombie_neutral";
-	level.global_print_hud_color = (1, 1, 1);
-
-	level.total_pause_time = 0;
-	level.last_special_round = -1;	// Set to negative to not mess with hud
 
 	if(GetDvar("anim_intro") == "1")
 	{
@@ -62,9 +50,6 @@ main()
 	{
 		level.zombie_anim_intro = 0;
 	}
-
-	// progress bar
-	//precacheShader( "white" );
 
 	precache_shaders();
 	precache_models();
@@ -1523,7 +1508,6 @@ watchTakenDamage()
 
 onPlayerConnect()
 {
-	id = 0;
 	for( ;; )
 	{
 		level waittill( "connecting", player );
@@ -1554,7 +1538,6 @@ onPlayerConnect()
 
 		// DCS 090910: now that player can destroy some barricades before set.
 		player thread maps\_zombiemode_blockers::rebuild_barrier_reward_reset();
-		id++;
 	}
 }
 
