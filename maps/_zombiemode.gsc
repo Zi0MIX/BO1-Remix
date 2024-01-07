@@ -1725,15 +1725,11 @@ onPlayerSpawned()
 			}
 		}
 
-		if( isdefined( self.initialized ) && self.initialized )
-		{
-			if( level.script == "zombie_cod5_factory" && flag( "power_on" ) )
-			{
-				self GiveWeapon( "bowie_knife_zm" );
 			}
 		}
 	}
 }
+
 
 spawn_life_brush( origin, radius, height )
 {

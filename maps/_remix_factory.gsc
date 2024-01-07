@@ -10,6 +10,10 @@ remix_main()
         wait 0.05;
 
     level thread curbs_fix();
+
+	players = get_players();
+	for (i = 0; i < players.size; i++)
+		players[i] thread factory_always_bowie();
 }
 
 curbs_fix()
@@ -59,15 +63,28 @@ disable_doors()
     }
 }
 
-give_bowie_knife()
+factory_always_bowie()
 {
-	players = get_players();
-	for(i=0; i < players.size; i++)
+	while (true)
 	{
-		gun = players[i] maps\_zombiemode_bowie::do_bowie_flourish_begin();
-		players[i] maps\_zombiemode_audio::create_and_play_dialog( "weapon_pickup", "bowie" );
-		players[i] waittill_any( "fake_death", "death", "player_downed", "weapon_change_complete" );
-		players[i] maps\_zombiemode_bowie::do_bowie_flourish_end( gun );
+		self waittill( "spawned_player" );
+
+		while (!is_true(self.initialized))
+			wait 0.05;
+
+		if (!is_true(self.bowie_given))
+		{
+			gun = self maps\_zombiemode_bowie::do_bowie_flourish_begin();
+			self maps\_zombiemode_audio::create_and_play_dialog( "weapon_pickup", "bowie" );
+			self waittill_any( "fake_death", "death", "player_downed", "weapon_change_complete" );
+			self maps\_zombiemode_bowie::do_bowie_flourish_end( gun );
+
+			self.bowie_given = true;
+		}
+		else
+		{
+			self GiveWeapon( "bowie_knife_zm" );
+		}
 	}
 }
 
