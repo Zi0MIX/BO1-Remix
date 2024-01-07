@@ -20,6 +20,14 @@ remix_main()
 	//isClientPluto("com_useConfig", "");
 
 	level thread remix_post_all_players_connected();
+
+	while (true)
+	{
+		level waittill("start_of_round");
+
+		/* Stop the game if coop pause has been initiated, otherwise do nothing */
+		server_coop_pause();
+	}
 }
 
 remix_post_all_players_connected()
@@ -35,6 +43,34 @@ remix_post_all_players_connected()
 		players[p].score = 555;
 		players[p].score_total = players[p].score;
 		players[p].old_score = players[p].score;
+		players[p] thread client_remix_coop_pause_watcher();
+server_coop_pause()
+{
+	if (!maps\_remix_zombiemode_utility::is_coop_pause_allowed() || !maps\_remix_zombiemode_utility::num_of_players_with_coop_pause())
+		return;
+
+	flag_set("coop_pause");
+
+	while (true)
+	{
+		wait_network_frame();
+		if (!maps\_remix_zombiemode_utility::num_of_players_with_coop_pause())
+			break;
+	}
+
+	flag_clear("coop_pause");
+}
+
+client_remix_coop_pause_watcher()
+{
+	while (true)
+	{
+		if (!is_true(self.coop_pause) && self maps\_remix_zombiemode_utility::get_client_dvar("coop_pause") == "1")
+			self.coop_pause = true;
+		else if (is_true(self.coop_pause) && self maps\_remix_zombiemode_utility::get_client_dvar("coop_pause") != "1")
+			self.coop_pause = false;
+
+		wait 0.05;
 	}
 }
 

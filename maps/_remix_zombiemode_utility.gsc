@@ -162,3 +162,25 @@ getClientdvar(dvar)
             return response;
     }
 }
+
+is_coop_pause_allowed()
+{
+    players = get_players();
+    if (players.size < 2)
+        return false;
+
+    return true;
+}
+
+num_of_players_with_coop_pause()
+{
+	players = get_players();
+	num_of_players = 0;
+	for (i = 0; i < players.size; i++)
+	{
+		if (is_true(players[i].coop_pause))
+			num_of_players++;
+	}
+
+	return num_of_players;
+}
