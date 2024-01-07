@@ -1850,7 +1850,7 @@ player_out_of_playable_area_monitor()
 }
 
 
-/*get_player_too_many_weapons_monitor_wait_time()
+get_player_too_many_weapons_monitor_wait_time()
 {
 	return 3;
 }
@@ -1954,10 +1954,10 @@ player_too_many_weapons_monitor()
 #/
 
 		primary_weapons_to_take = [];
-		weapon_limit = 3;
+		weapon_limit = 2;
 		if ( self HasPerk( "specialty_additionalprimaryweapon" ) )
 		{
-			weapon_limit = 4;
+			weapon_limit = 3;
 		}
 
 		primaryWeapons = self GetWeaponsListPrimaries();
@@ -1981,7 +1981,7 @@ player_too_many_weapons_monitor()
 		wait( get_player_too_many_weapons_monitor_wait_time() );
 	}
 }
-*/
+
 
 player_monitor_travel_dist()
 {
@@ -2116,6 +2116,37 @@ remove_deadshot_bottle()
 
 take_additionalprimaryweapon()
 {
+	/*
+	weapon_to_take = undefined;
+
+	if ( is_true( self._retain_perks ) )
+	{
+		return weapon_to_take;
+	}
+
+	primary_weapons_that_can_be_taken = [];
+
+	primaryWeapons = self GetWeaponsListPrimaries();
+	for ( i = 0; i < primaryWeapons.size; i++ )
+	{
+		if ( maps\_zombiemode_weapons::is_weapon_included( primaryWeapons[i] ) || maps\_zombiemode_weapons::is_weapon_upgraded( primaryWeapons[i] ) )
+		{
+			primary_weapons_that_can_be_taken[primary_weapons_that_can_be_taken.size] = primaryWeapons[i];
+		}
+	}
+
+	if ( primary_weapons_that_can_be_taken.size >= 3 )
+	{
+		weapon_to_take = primary_weapons_that_can_be_taken[primary_weapons_that_can_be_taken.size - 1];
+		if ( weapon_to_take == self GetCurrentWeapon() )
+		{
+			self SwitchToWeapon( primary_weapons_that_can_be_taken[0] );
+		}
+		self TakeWeapon( weapon_to_take );
+	}
+
+	return weapon_to_take;
+	*/
 }
 
 player_laststand( eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime, deathAnimDuration )
