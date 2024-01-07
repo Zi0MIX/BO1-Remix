@@ -4953,7 +4953,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 		self.damage_assists[attacker.entity_num] = attacker;
 	}
 
-	if( level.mutators[ "mutator_headshotsOnly" ] && !is_headshot( weapon, sHitLoc, meansofdeath ) )
+	if( level.mutators[ "mutator_headshotsOnly" ] && !maps\_remix_zombiemode::is_headshot( weapon, sHitLoc, meansofdeath ) )
 	{
 		return 0;
 	}
@@ -4978,7 +4978,7 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 
 is_headshot( sWeapon, sHitLoc, sMeansOfDeath )
 {
-	return (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && sMeansOfDeath != "MOD_MELEE" && sMeansOfDeath != "MOD_BAYONET" && sMeansOfDeath != "MOD_IMPACT"; //CoD5: MGs need to cause headshots as well. && !isMG( sWeapon );
+	return (sHitLoc == "head" || sHitLoc == "helmet") && sMeansOfDeath != "MOD_MELEE" && sMeansOfDeath != "MOD_BAYONET" && sMeansOfDeath != "MOD_IMPACT"; //CoD5: MGs need to cause headshots as well. && !isMG( sWeapon );
 }
 
 actor_killed_override(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime)
@@ -5016,7 +5016,7 @@ actor_killed_override(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDi
 	if ( isdefined( attacker ) && isplayer( attacker ) )
 	{
 		multiplier = 1;
-		if( is_headshot( sWeapon, sHitLoc, sMeansOfDeath ) )
+		if( maps\_remix_zombiemode::is_headshot( sWeapon, sHitLoc, sMeansOfDeath ) )
 		{
 			multiplier = 1.5;
 		}

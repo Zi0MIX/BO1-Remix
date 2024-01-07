@@ -1326,3 +1326,8 @@ actor_damage_override( inflictor, attacker, damage, flags, meansofdeath, weapon,
 	return int( final_damage );
 
 }
+
+is_headshot( sWeapon, sHitLoc, sMeansOfDeath )
+{
+	return (sHitLoc == "head" || sHitLoc == "helmet" || sHitLoc == "neck") && sMeansOfDeath != "MOD_MELEE" && sMeansOfDeath != "MOD_BAYONET" && sMeansOfDeath != "MOD_IMPACT";
+}
