@@ -841,7 +841,7 @@ init_function_overrides()
 	// Function pointers
 	level.custom_introscreen		= ::zombie_intro_screen;
 	level.custom_intermission		= ::player_intermission;
-	level.reset_clientdvars			= ::onPlayerConnect_clientDvars;
+	level.reset_clientdvars			= maps\_remix_zombiemode::onPlayerConnect_clientDvars;
 	// Sets up function pointers for animscripts to refer to
 	level.playerlaststand_func		= ::player_laststand;
 	//	level.global_kill_func		= maps\_zombiemode_spawner::zombie_death;
@@ -1645,7 +1645,8 @@ onPlayerSpawned()
 		self PlayerKnockback( false );
 
 		self SetClientDvars( "cg_thirdPerson", "0",
-			"cg_thirdPersonAngle", "0");
+			// "cg_fov", "65",
+			"cg_thirdPersonAngle", "0" );
 
 		self SetDepthOfField( 0, 0, 512, 4000, 4, 0 );
 
