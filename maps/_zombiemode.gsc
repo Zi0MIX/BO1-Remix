@@ -839,7 +839,7 @@ init_function_overrides()
 	level.melee_miss_func			= ::zombiemode_melee_miss;
 	level.player_becomes_zombie		= ::zombify_player;
 	level.is_friendly_fire_on		= ::is_friendly_fire_on;
-	level.can_revive				= ::can_revive;
+	level.can_revive				= maps\_remix_zombiemode::can_revive;
 	level.zombie_last_stand 		= ::last_stand_pistol_swap;
 	level.zombie_last_stand_pistol_memory = ::last_stand_save_pistol_ammo;
 	level.zombie_last_stand_ammo_return		= ::last_stand_restore_pistol_ammo;
@@ -4192,10 +4192,10 @@ is_friendly_fire_on()
 
 can_revive( reviver )
 {
-	// if( self has_powerup_weapon() )
-	// {
-	// 	return false;
-	// }
+	if( self has_powerup_weapon() )
+	{
+		return false;
+	}
 
 	return true;
 }

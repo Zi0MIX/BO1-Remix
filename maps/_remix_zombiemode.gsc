@@ -511,3 +511,7 @@ ai_calculate_health( round_number )
 	}
 }
 
+can_revive( reviver )
+{
+	return true;
+}
