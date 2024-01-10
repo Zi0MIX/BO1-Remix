@@ -30,8 +30,12 @@ remix_main()
 	while (true)
 	{
 		level waittill("start_of_round");
-		level.round_timer setTimer(0);
-		level.round_timer.beginning = int(getTime() / 1000);
+		if (isDefined(level.round_timer))
+		{
+			level.round_timer setTimerUp(0);
+			level.round_timer.beginning = int(getTime() / 1000);
+		}
+
 		if (is_true(flag("dog_round")) || is_true(flag("thief_round")) || is_true(flag("monkey_round")))
 			level.last_special_round = level.round_number;
 
