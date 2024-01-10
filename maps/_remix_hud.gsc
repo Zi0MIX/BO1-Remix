@@ -7,7 +7,6 @@ remix_hud_initialize()
 	level thread timer_hud();
 	level thread round_timer_hud();
 	level thread time_summary_hud();
-	level thread hud_trade_header();
 
 	// level thread display_sph();
 	// level thread hud_color_watcher();	// For later
@@ -32,29 +31,19 @@ remix_player_hud_initialize()
 	//self thread set_move_speed();
 }
 
-hud_level_wait()
+hud_fade(alpha, duration)
 {
-	flag_wait("all_players_spawned");
-	wait 3.15;
-}
-
-hud_wait()
-{
-	flag_wait("all_players_spawned");
-	wait 2;
-}
-
-hud_fade( hud, alpha, duration )
-{
-	hud fadeOverTime(duration);
-	hud.alpha = alpha;
-}
-
-toggled_hud_fade(hud, alpha)
-{
-    duration = 0.1;
-	hud fadeOverTime(duration);
-	hud.alpha = alpha;
+	if (!isDefined(alpha)) 
+	{
+		if (self.alpha = 0)
+			alpha = 1;
+		else
+			alpha = 0;
+	}
+	if (!isDefined(duration))
+		duration = 0.1;
+	self fadeOverTime(duration);
+	self.alpha = alpha;
 }
 
 timer_hud()
