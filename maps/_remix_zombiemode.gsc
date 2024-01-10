@@ -15,7 +15,8 @@ remix_main()
 	/* Initialize level var tracking amount of time spent in coop pause */
 	level.time_paused = 0;
 
-	level.last_special_round = -1;	// Set to negative to not mess with hud
+	/* Initialize level var tracking last special round */
+	level.last_special_round = -1;
 
     init_hud_dvars();
 
@@ -31,6 +32,8 @@ remix_main()
 		level waittill("start_of_round");
 		level.round_timer setTimer(0);
 		level.round_timer.beginning = int(getTime() / 1000);
+		if (is_true(flag("dog_round")) || is_true(flag("thief_round")) || is_true(flag("monkey_round")))
+			level.last_special_round = level.round_number;
 
 		/* Stop the game if coop pause has been initiated, otherwise do nothing */
 		level.time_paused += server_coop_pause();
