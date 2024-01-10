@@ -52,6 +52,9 @@ remix_main()
 			level waittill("end_of_round"); //end actual round
 		}
 
+		round_time = int(getTime() / 1000) - level.round_timer.beginning;
+		level.round_timer thread maps\_remix_hud::freeze_timer(round_time, "start_of_round");
+		wait 1;
 		if (level.round_number >= 56 && level.round_number != level.last_special_round + 1)
 			maps\_remix_hud::add_to_info_hud_queue("split", maps\_remix_zombiemode_utility::get_last_round_sph());
 	}
