@@ -81,8 +81,8 @@ round_timer_hud()
 	flag_wait("initial_blackscreen_passed");
 
 	/* Do not initialize round timer until players left no man's land */
-	while (level.script == "zombie_moon" && !isDefined(level.left_nomans_land))
-		wait 0.05;
+	if (level.script == "zombie_moon" && !isDefined(level.left_nomans_land))
+		level waittill("kill_hud_end");		// TODO actually trigger it
 
 	y_pos = 17;
 	if (maps\_remix_zombiemode_utility::is_plutonium())
