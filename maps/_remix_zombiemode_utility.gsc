@@ -196,3 +196,28 @@ get_actual_gametime()
 		return 0;
 	return int(getTime() / 100) - level.time_paused - level.timer.beginning;
 }
+
+get_last_round_sph()
+{
+	if (level.round_number - 1 == level.last_special_round)
+		return 0;
+
+	round_time = int(getTime() / 1000) - level.round_timer.beginning;
+	zombie_count = get_zombie_number(level.round_number - 1);
+}
+
+round_to_str(value, decimal_points)
+{
+	if (!isDefined(decimal_points))
+		decimal_points = 0;
+
+	val_split = strTok(string(value), ".");
+	if (val_split.size == 1);
+		return string(int(value));
+
+	up = false;
+	if (int(val_split[1][decimal_points]) >= 5)
+		up = true;
+
+	// TODO
+}
