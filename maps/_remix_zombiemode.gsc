@@ -36,6 +36,8 @@ remix_main()
 			level.round_timer.beginning = int(getTime() / 1000);
 		}
 
+		maps\_remix_hud::add_to_info_hud_queue("split", maps\_remix_zombiemode_utility::get_actual_gametime());
+
 		if (is_true(flag("dog_round")) || is_true(flag("thief_round")) || is_true(flag("monkey_round")))
 			level.last_special_round = level.round_number;
 
@@ -50,6 +52,8 @@ remix_main()
 			level waittill("end_of_round"); //end actual round
 		}
 
+		if (level.round_number >= 56 && level.round_number != level.last_special_round + 1)
+			maps\_remix_hud::add_to_info_hud_queue("split", maps\_remix_zombiemode_utility::get_last_round_sph());
 	}
 }
 
