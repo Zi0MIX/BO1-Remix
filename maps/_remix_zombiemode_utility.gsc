@@ -190,9 +190,9 @@ num_of_players_with_coop_pause()
 	return num_of_players;
 }
 
-retrieve_actual_gametime()
+get_actual_gametime()
 {
-	if (!isDefined(level.time_paused) || !isDefined(level.timer.beginning))
+	if (!isDefined(level.timer.beginning))
 		return 0;
 	return int(getTime() / 100) - level.time_paused - level.timer.beginning;
 }

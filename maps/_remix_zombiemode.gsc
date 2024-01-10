@@ -96,7 +96,7 @@ server_coop_pause()
 	setDvar("ai_disableSpawn", "1");
 	if (isDefined(level.additional_coop_pause_func))
 		level thread [[level.additional_coop_pause_func]]();
-	level.timer thread maps\_remix_hud::freeze_timer(maps\_remix_zombiemode_utility::retrieve_actual_gametime(), "coop_pause_disabled");
+	level.timer thread maps\_remix_hud::freeze_timer(maps\_remix_zombiemode_utility::get_actual_gametime(), "coop_pause_disabled");
 	level.round_timer thread maps\_remix_hud::freeze_timer(0, "coop_pause_disabled");
 
 	while (true)

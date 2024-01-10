@@ -106,15 +106,58 @@ round_timer_hud()
 	// TODO toggling hud
 }
 
-time_summary_hud()
+info_row_hud()
 {
-	level endon("disconnect");
 	level endon("end_game");
 
-	hud_wait();
+	flag_wait("initial_blackscreen_passed");
 
-	// Settings
-	settings_splits = array(30, 50, 70, 100);	// For later
+	y_pos = 32;
+	if (maps\_remix_zombiemode_utility::is_plutonium())
+		y_pos = 47;
+
+	info_row_hud = NewHudElem();
+	info_row_hud.horzAlign = "right";
+	info_row_hud.vertAlign = "top";
+	info_row_hud.alignX = "right";
+	info_row_hud.alignY = "top";
+	info_row_hud.x = -4;
+	info_row_hud.y = y_pos;
+	info_row_hud.fontScale = 1.3;
+	info_row_hud.alpha = 0;
+	info_row_hud.color = (1, 1, 1);
+
+	level.info_row_queue = [];
+
+	while (true)
+	{
+		wait 0.05;
+
+		if (level.info_row_queue.size == 0)
+			continue;
+
+		// TODO add dvar condition to if statements to skip showing element if hud is disabled
+		if (level.info_row_queue[0]["event"] == "split")
+		{
+			info_row_hud.label = &"Total time: ";			// TODO docstring
+			info_row_hud setTimer(level.info_row_queue[0]["value"]);
+			info_row_hud freeze_timer(level.info_row_queue[0]["value"], "end_total_time_summary");
+			info_row_hud hud_fade();
+			wait 6;
+			info_row_hud hud_fade();
+			level notify("end_total_time_summary");
+		}
+		else if (level.info_row_queue[0]["event"] == "sph")
+		{
+			info_row_hud.label = &"SPH: ";	// TODO docstring
+			info_row_hud setValue(level.info_row_queue[0]["value"]);
+			info_row_hud hud_fade();
+			wait 6;
+			info_row_hud hud_fade();
+		}
+
+		array_remove(level.info_row_queue, level.info_row_queue[0]);
+	}
 
 	// Initialize vars
 	level.displaying_time_summary = 0;
@@ -198,6 +241,14 @@ time_summary_hud()
 		
 		level thread display_time_summary();
 	}
+}
+
+add_to_info_hud_queue(key, value)
+{
+	index = level.info_row_queue.size;
+	level.info_row_queue[index] = [];
+	level.info_row_queue[index]["event"] = key;
+	level.info_row_queue[index]["value"] = value;
 }
 
 display_time_summary()
