@@ -43,9 +43,13 @@ remix_main()
 		level.time_paused += server_coop_pause();
 
 		level waittill("end_of_round");
+		// NML Handle
+		if (is_true(flag("enter_nml")))
+		{
+			level waittill("end_of_round"); //end no man's land
+			level waittill("end_of_round"); //end actual round
+		}
 
-		// TODO need additional logic for nml
-		level.round_timer thread maps\_remix_hud::freeze_timer(int(getTime() / 1000) - level.round_timer.beginning, "start_of_round");
 	}
 }
 
