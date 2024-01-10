@@ -23,6 +23,7 @@ remix_main()
 
 	level thread remix_post_all_players_connected();
 	level thread set_initial_blackscreen_passed();	// Allow for bo2 style hud initialization
+	level thread remix_reset();
 
 	/* Remix main loop */
 	while (true)
@@ -78,6 +79,24 @@ set_initial_blackscreen_passed()
 {
 	level waittill("fade_in_complete");
 	flag_set("initial_blackscreen_passed");
+}
+
+remix_reset()
+{
+	if (getDvar("remix_reset") == "0")
+		return;
+
+	while (true)
+	{
+		wait 0.05;
+		if (!isDefined(level.timer.beginning))
+			continue;
+
+		if (maps\_remix_zombiemode_utility::get_actual_gametime() >= 43200)
+			break;
+	}
+	level.win_game = true;
+	level notify("end_game");
 }
 
 server_coop_pause()
