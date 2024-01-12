@@ -1,7 +1,5 @@
 remix_main()
 {
-    while (!isDefined(level.ai_astro_explode))
-        wait 0.05;
 	level thread launch_rockets();
 	level thread override_custom_playvox();
 }
