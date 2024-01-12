@@ -179,58 +179,6 @@
 		rect				0 0 0 0 HORIZONTAL_ALIGN_USER_LEFT VERTICAL_ALIGN_USER_TOP //x-pos y-pos width height horizontal_alignment vertical_alignmnet
 		fullscreen			0
 		visible				when( DEFAULT_VISIBILITY );
-
-		itemDef
-		{
-			name				"zombie_counter"
-			type				ITEM_TYPE_TEXT
-			rect 				4 UNI_Y_POS 0 0			
-			forecolor			1 1 1 1
-			textscale			TEXTSIZE_DEFAULT
-			textstyle			ITEM_TEXTSTYLE_SHADOWED
-			textfont			UI_FONT_NORMAL
-			textalign			ITEM_ALIGN_TOP_LEFT
-			exp text			(locString("@HUD_HUD_ZOMBIES_REMAINING") + dvarString("hud_remaining_number"))	
-			visible				1
-			decoration
-
-			FADE_STATES
-		}
-
-		itemDef
-		{
-			name				"zombie_kill"
-			type				ITEM_TYPE_TEXT
-			rect 				4 UNI_Y_POS 0 0			
-			forecolor			1 1 1 1
-			textscale			TEXTSIZE_DEFAULT
-			textstyle			ITEM_TEXTSTYLE_SHADOWED
-			textfont			UI_FONT_NORMAL
-			textalign			ITEM_ALIGN_TOP_LEFT
-			exp text			(locString("@HUD_HUD_ZOMBIES_KILL") + dvarString("hud_kills_value"))	
-			// Base it on the hud_remaining dvar
-			visible				when(dvarInt(show_nml_kill_tracker) == 1)
-			decoration
-
-			FADE_STATES
-		}
-
-		itemDef
-		{
-			name				"zombie_drops"
-			type				ITEM_TYPE_TEXT
-			rect 				4 (UNI_Y_POS + NEXT_LINE_OFFSET) 0 0			
-			forecolor			1 1 1 1
-			textscale			TEXTSIZE_DEFAULT
-			textstyle			ITEM_TEXTSTYLE_SHADOWED
-			textfont			UI_FONT_NORMAL
-			textalign			ITEM_ALIGN_TOP_LEFT
-			exp text			(locString("@HUD_HUD_ZOMBIES_DROPS") + dvarString("hud_drops_number"))	
-			visible				1
-			decoration
-
-			FADE_STATES
-		}
 	}
 
 	menuDef
@@ -266,23 +214,6 @@
 
 			FADE_STATES
 		}
-
-		itemDef
-		{
-			name				"zombie_excavator"
-			type				ITEM_TYPE_TEXT
-			rect 				-4 MOON_HUD_GAP 0 0			
-			forecolor			1 1 1 0		//Keep alpha on 0 here
-			textscale			TEXTSIZE_SMALL
-			textstyle			ITEM_TEXTSTYLE_SHADOWED
-			textfont			UI_FONT_NORMAL
-			textalign			ITEM_ALIGN_TOP_RIGHT
-			exp text			(locString("@HUD_HUD_ZOMBIES_MOON_EXCAVATOR") + dvarString("excavator_name") + ": " + dvarString("excavator_time_value"))	
-			visible				when(dvarString("mapname") == "zombie_moon")
-			decoration
-
-			FADE_STATES
-		}
 	}
 
 	menuDef
@@ -290,7 +221,7 @@
 		name				"middle_hud"
 		rect				0 0 0 0 HORIZONTAL_ALIGN_USER_CENTER VERTICAL_ALIGN_USER_CENTER //x-pos y-pos width height horizontal_alignment vertical_alignmnet
 		fullscreen			0
-		visible				1;
+		visible				when( DEFAULT_VISIBILITY );
 	}
 
 	menuDef
@@ -299,72 +230,5 @@
 		rect				0 0 0 0 HORIZONTAL_ALIGN_USER_CENTER VERTICAL_ALIGN_USER_BOTTOM //x-pos y-pos width height horizontal_alignment vertical_alignmnet
 		fullscreen			0
 		visible				when( DEFAULT_VISIBILITY );
-
-		#define GEORGE_BAR_W	250
-		#define GEORGE_BAR_H	8
-
-		itemDef
-		{
-			name				"george_health"
-			type				ITEM_TYPE_TEXT
-			rect 				0 -10 0 0 HORIZONTAL_ALIGN_USER_CENTER VERTICAL_ALIGN_USER_BOTTOM		
-			forecolor			1 1 1 0
-			textscale			TEXTSIZE_DEFAULT
-			textstyle			ITEM_TEXTSTYLE_SHADOWED
-			textfont			UI_FONT_NORMAL
-			textalign			ITEM_ALIGN_CENTER
-			exp text			(dvarString("george_bar_health"))	
-			visible				when(dvarString("mapname") == "zombie_coast")
-			decoration
-
-			FADE_STATES
-		}
-
-		itemDef
-		{
-			name				"george_health_background"
-			type				ITEM_TYPE_IMAGE
-			style				WINDOW_STYLE_SHADER
-			rect				(-(GEORGE_BAR_W / 2) - 2) -11 (GEORGE_BAR_W + 4) (GEORGE_BAR_H + 2) HORIZONTAL_ALIGN_USER_CENTER VERTICAL_ALIGN_USER_BOTTOM
-			foreColor			0 0 0 0
-			background			"black"
-			visible				when(dvarString("mapname") == "zombie_coast")
-			decoration
-
-			state
-			{
-				name			"fadein"
-				forecolor 		1 1 1 0.55
-			}							
-			state						
-			{							
-				name 			"fadeout"
-				forecolor 		1 1 1 0	
-			}
-		}
-
-		itemDef
-		{
-			name				"george_health_bar"
-			type				ITEM_TYPE_IMAGE
-			style				WINDOW_STYLE_SHADER
-			rect				(-GEORGE_BAR_W / 2) -10 GEORGE_BAR_W GEORGE_BAR_H HORIZONTAL_ALIGN_USER_CENTER VERTICAL_ALIGN_USER_BOTTOM
-			exp					rect W(dvarInt("george_bar_ratio"))
-			foreColor			1 1 1 0
-			background			"white"
-			visible				when(dvarString("mapname") == "zombie_coast")
-			decoration
-
-			state
-			{
-				name			"fadein"
-				forecolor 		1 1 1 0.85
-			}							
-			state						
-			{							
-				name 			"fadeout"
-				forecolor 		1 1 1 0	
-			}
-		}
 	}
 }
