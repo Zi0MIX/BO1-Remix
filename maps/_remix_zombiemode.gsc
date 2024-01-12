@@ -430,7 +430,8 @@ onPlayerConnect_clientDvars()
 		"cg_friendlyNameFadeOut", "1",
 		"player_backSpeedScale", "1",
 		"player_strafeSpeedScale", "1",
-		"player_sprintStrafeSpeedScale", "1"
+		"player_sprintStrafeSpeedScale", "1",
+		"cg_fov_enable", "1",
 	);
 
 	self SetDepthOfField( 0, 0, 512, 4000, 4, 0 );

@@ -1,0 +1,144 @@
+#include "ui/menudef.h"
+#include "ui_mp/common_macro.inc"
+#define OPTIONS_STYLE			1
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+#include "ui/framestyle.inc"
+#include "ui/frame.inc"
+
+#undef CHOICE_BUTTON_NAME
+#define CHOICE_BUTTON_NAME		"options_remix_server_"
+#undef MENUDEF_NAME
+#define MENUDEF_NAME			options_remix_server
+
+#undef	OPTIONS_GAME_HEIGHT
+#undef	OPTIONS_GAME_WIDTH
+#define OPTIONS_GAME_HEIGHT		332
+#define OPTIONS_GAME_WIDTH		OPTIONS_GAME_HEIGHT * FRAME_ASPECT_RATIO
+
+{
+	menuDef 
+	{
+		name			options_remix_server
+		fullScreen		0
+		rect			0 0 640 480
+		focusColor		COLOR_FOCUSED
+		soundloop		""
+
+		onOpen
+		{	
+			if(dvarString(hud_timer) == "")
+			{
+				setDvar hud_timer 0;
+			}
+
+			if(dvarString(hud_round_timer) == "")
+			{
+				setDvar hud_round_timer 0;
+			}
+
+			if(dvarString(hud_zone_name_on) == "")
+			{
+				setDvar hud_zone_name_on 0;
+			}
+
+			LOCAL_CLOSE_ALL_BUT( options_remix_server )
+			
+			setLocalVarBool ui_hideBack 1;
+
+			uiScript getLanguage;
+			
+			if (IsInGame())
+			{
+				showMenu "pausedbkgnd";
+			}			
+			else
+			{
+				activateBlur;
+			}
+		}
+		onClose
+		{
+			setLocalVarBool ui_hideBack 0;
+			
+			if (IsInGame())
+			{
+				hideMenu "pausedbkgnd";
+			}			
+			else
+			{
+				deactivateBlur;
+			}
+		}
+		onESC
+		{ 
+			close self;
+			open options_new_pc;
+		}
+		PC_TAB_SWITCH_ACTIONS( options_new_pc, options_controls_new_pc, options_controls_new_pc )
+
+		#include "ui_mp/leftside_options.inc"
+
+		#undef	CHOICE_X_START
+		#undef	CHOICE_Y_START
+		#undef	CHOICE_HORIZONTAL_ALIGN
+		#undef	CHOICE_VERTICAL_ALIGN
+		#undef	CHOICE_DVAR_EXTRA_WIDTH
+		#undef	CHOICE_TEXT_OFFSET_X
+
+		#define CHOICE_HORIZONTAL_ALIGN		HORIZONTAL_ALIGN_CENTER
+		#define CHOICE_VERTICAL_ALIGN		VERTICAL_ALIGN_CENTER
+		#define CHOICE_X_START				((-OPTIONS_GAME_WIDTH/2) - 75)
+		#define CHOICE_Y_START				((-OPTIONS_GAME_HEIGHT/2) + 32)
+		#define CHOICE_DVAR_EXTRA_WIDTH		120
+		#define CHOICE_TEXT_OFFSET_X		-10
+
+		#undef CHOICE_TEXTSTYLE
+		#undef CHOICE_TEXTSIZE
+		#define CHOICE_TEXTSTYLE		ITEM_TEXTSTYLE_NORMAL
+		#define CHOICE_TEXTSIZE			TEXTSIZE_DEFAULT
+
+		#undef	CHOICE_TEXT_COLOR_NO_HL
+		#undef	CHOICE_TEXT_COLOR_HL
+		#undef	CHOICE_CAPTION_TEXT_COLOR_NO_HL
+		#undef	CHOICE_CAPTION_TEXT_COLOR_HL
+
+		#define	CHOICE_TEXT_COLOR_NO_HL			CHOICE_TEXTCOLOR
+		#define	CHOICE_TEXT_COLOR_HL			1 1 1 1
+		#define	CHOICE_CAPTION_TEXT_COLOR_NO_HL	CHOICE_TEXTCOLOR
+		#define	CHOICE_CAPTION_TEXT_COLOR_HL	0 0 0 1
+
+		FRAME_CHOICE_SECTION_TITLE( 21, "@PATCH_GAME_CAPS" )
+		
+		//ZM custom
+		FRAME_CHOICE_SECTION_TITLE( 26, "@MOD_HUD" )
+
+		//FRAME_CHOICE_DVARYESNO_VIS( 27, "@MOD_HUD_ROUND_TIMER", hud_round_timer, ;, 1)
+		//FRAME_CHOICE_DVARYESNO_VIS( 28, "@MOD_HUD_REMAINING", hud_remaining, ;, 1)
+		//FRAME_CHOICE_DVARYESNO_VIS( 29, "@MOD_HUD_DROPS", hud_drops, ;, 1)
+		//FRAME_CHOICE_DVARYESNO_VIS( 30, "@MOD_ZONE_NAME", hud_zone_name_on, ;, 1)
+		//FRAME_CHOICE_DVARYESNO_VIS( 31, "@MOD_HUD_HEALTH_BAR", hud_health_bar, ;, 1)
+		//FRAME_CHOICE_DVARSTRINGLIST_VIS( 32, "@MOD_HUD_BUTTON",	hud_button, { "TAB"; "tab"; "CAPSLOCK"; "CAPSLOCK"; "SELECT(CONTROLLER)"; "BUTTON_BACK";  "OFF"; "off"; }, ;, 1 )
+
+		FRAME_CHOICE_SECTION_TITLE( 33, "@MOD_HOST_ONLY" )
+
+		//FRAME_CHOICE_DVARSTRINGLIST_VIS( 34, "@MOD_GAMEMODE", gamemode, { "SURVIVAL"; "survival"; "STRAT TESTER"; "strat_tester"; }, ;, 1 )
+		//FRAME_CHOICE_DVARFLOATLIST_VIS( 35, "@MENU_MATURE_CAPS", cg_mature, { "@MENU_MATURE_UNRESTRICTED_CAPS" 1 "@MENU_MATURE_REDUCED_CAPS" 0 }, setdvar cg_blood "0", ( dvarString( "cg_mature" ) == "1" ) )
+   		//FRAME_CHOICE_DVARFLOATLIST_VIS( 35, "@MENU_MATURE_CAPS", cg_mature, { "@MENU_MATURE_UNRESTRICTED_CAPS" 1 "@MENU_MATURE_REDUCED_CAPS" 0 }, setdvar cg_blood "1", ( dvarString( "cg_mature" ) == "0" ) )	
+	}
+	
+#undef	CHOICE_TEXT_COLOR_NO_HL
+#undef	CHOICE_TEXT_COLOR_HL
+#undef	CHOICE_CAPTION_TEXT_COLOR_NO_HL
+#undef	CHOICE_CAPTION_TEXT_COLOR_HL
+
+#define CHOICE_TEXT_COLOR_NO_HL			1 1 1 1
+#define CHOICE_TEXT_COLOR_HL			0 0 0 1
+#define CHOICE_CAPTION_TEXT_COLOR_NO_HL 1 1 1 1
+#define CHOICE_CAPTION_TEXT_COLOR_HL	0 0 0 1
+
+#include "ui_mp/popupstyle.inc"	
+#include "ui/choices_setup_popmenu.menu"
+}
+
+

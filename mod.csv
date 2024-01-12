@@ -174,13 +174,17 @@ localize,reimagined
 localize,mod
 localize,hud
 
-//MENU
+//MENU DEFINITIONS
+menufile,ui/hud_zombie.txt
+menufile,ui/menus.txt
+
+//MENU FILES
 menufile,ui/objective_info.menu
-menufile,ui/options_game_pc.menu
-menufile,ui/options_shoot_pc.menu
+menufile,ui/options_remix_client.menu
+menufile,ui/options_remix_server.menu
 menufile,ui/hud_zombie.menu
 menufile,ui/hud_remix.menu
-menufile,ui/hud_zombie.txt
+menufile,ui_mp/leftside_options.inc
 
 //SOUNDS
 sound,dev
