@@ -47,6 +47,11 @@
 				setDvar remix_info_hud 0;
 			}
 
+			if(dvarString(remix_remaining_hud) == "")
+			{
+				setDvar remix_remaining_hud 0;
+			}
+
 			LOCAL_CLOSE_ALL_BUT( options_remix_server )
 			
 			setLocalVarBool ui_hideBack 1;
@@ -123,7 +128,7 @@
 		FRAME_CHOICE_DVARYESNO_VIS( 27, "@REMIX_HUD_GAME_TIME", remix_timer, ;, 1)
 		FRAME_CHOICE_DVARYESNO_VIS( 28, "@REMIX_HUD_ROUND_TIME", remix_round_timer, ;, 1)
 		FRAME_CHOICE_DVARYESNO_VIS( 29, "@REMIX_HUD_INFO", remix_info_hud, ;, 1)
-		//FRAME_CHOICE_DVARYESNO_VIS( 30, "@MOD_ZONE_NAME", hud_zone_name_on, ;, 1)
+		FRAME_CHOICE_DVARYESNO_VIS( 30, "@REMIX_HUD_REMAINING", remix_remaining_hud, ;, 1)
 		//FRAME_CHOICE_DVARYESNO_VIS( 31, "@MOD_HUD_HEALTH_BAR", hud_health_bar, ;, 1)
 		//FRAME_CHOICE_DVARSTRINGLIST_VIS( 32, "@MOD_HUD_BUTTON",	hud_button, { "TAB"; "tab"; "CAPSLOCK"; "CAPSLOCK"; "SELECT(CONTROLLER)"; "BUTTON_BACK";  "OFF"; "off"; }, ;, 1 )
 

@@ -244,6 +244,65 @@ coop_pause_hud()
 	paused_hud destroy_hud();
 }
 
+remaining_hud()
+{
+	level endon("end_game");
+
+	flag_wait("initial_blackscreen_passed");
+
+	remaining_hud = NewHudElem();
+	remaining_hud.horzAlign = "right";
+	remaining_hud.vertAlign = "top";
+	remaining_hud.alignX = "right";
+	remaining_hud.alignY = "top";
+	remaining_hud.x = -4;
+	remaining_hud.y = y_pos;
+	remaining_hud.fontScale = 1.3;
+	remaining_hud.alpha = 1;
+	remaining_hud.color = (1, 1, 1);
+	remaining_hud.label = &"Remaining: ";	// TODO locstring
+	if (level.script == "zombie_moon")
+	{
+		remaining_hud.label = &"Kills: ";	// TODO locstring
+	}
+
+	remaining_hud setValue(0);
+
+	remaining_hud thread hud_toggle_watcher("remix_remaining_hud");
+
+	/* We do this to controll kill hud, we then manually break out and enter the proper remaining hud */
+	while (level.script == "zombie_moon")
+	{
+		if (isDefined(level.left_nomans_land) && level.left_nomans_land > 0)
+		{
+			level notify("kill_hud_end");
+			remaining_hud.label = &"Remaining: ";	// TODO locstring
+			break;
+		}
+
+		players = get_players();
+		current_nml_kills = 0;
+		for (i = 0; i < players.size; i++)
+			current_nml_kills += players[i].kills;
+
+		remaining_hud setValue(current_nml_kills);
+
+		wait 0.05;
+	}
+
+	while (true)
+	{
+		zombie_count = level.zombie_total + get_enemy_count();
+		/* For Der Riese when dogs fuck with enemy array */
+		if (zombie_count < 0)
+			zombie_count = 0;
+
+		remaining_hud setValue(zombie_count);
+		
+		wait 0.05;
+	}
+}
+
 instakill_timer_hud()
 {
     self.vr_timer = NewClientHudElem( self );
