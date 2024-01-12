@@ -54,7 +54,7 @@ digger_init_flags()
 digger_init()
 {
 	//digger_init_flags();
-	level thread maps\_remix_moon_diggers::setup_diggers();
+	level thread setup_diggers();
 }
 
 //the diggers in each area	
@@ -75,7 +75,7 @@ setup_diggers()
 	
 	//sets up their movement
 	diggers = GetEntArray("digger_body","targetname");
-	array_thread(diggers,::digger_think_move);
+	array_thread(diggers, ::digger_think_move);
 	level thread waitfor_smash();
 	wait(.5);
 	flag_clear("init_diggers");
@@ -188,7 +188,7 @@ digger_activate(force_digger)
 		wait(1);
 		
 		level notify(force_digger + "_vox_timer_stop");
-		level thread play_timer_vox( force_digger );
+		level thread maps\_remix_moon_digger::play_timer_vox( force_digger );
 		return;
 	}
 	
@@ -212,7 +212,7 @@ digger_activate(force_digger)
 		level thread play_digger_start_vox( digger_to_activate );
 		wait(1);
 		
-		level thread play_timer_vox( digger_to_activate );
+		level thread maps\_remix_moon_digger::play_timer_vox( digger_to_activate );
 	}
 }
 
@@ -363,7 +363,7 @@ wait_for_digger_hack_digging(arm,blade_center,tracks)
 	tracks digger_follow_path(self,true,arm);
 	flag_clear(self.hacked_flag);
 	flag_clear(self.start_flag);
-	self thread maps\_remix_moon_digger::digger_think_move();
+	self thread ::digger_think_move();
 	
 }
 
@@ -379,7 +379,7 @@ wait_for_digger_hack_moving(arm,blade_center,tracks)
 			flag_clear(self.hacked_flag);
 			flag_clear(self.start_flag);	
 			self notify("stop_monitor");	
-			self thread digger_think_move();
+			self thread ::digger_think_move();
 			break;
 		}
 	}
@@ -768,7 +768,7 @@ set_hint_on_digger_trig(start_flag,hacked_flag,struct)
 		
 		if(flag(start_flag) && !flag(hacked_flag))
 		{
-			maps\_zombiemode_equip_hacker::register_pooled_hackable_struct(struct, maps\_remix_moon_digger::digger_hack_func, ::digger_hack_qualifer);
+			maps\_zombiemode_equip_hacker::register_pooled_hackable_struct(struct, ::digger_hack_func, ::digger_hack_qualifer);
 			self sethintstring(&"ZOMBIE_MOON_SYSTEM_ONLINE");
 			//turn on the lights
 			switch(struct.digger_name)

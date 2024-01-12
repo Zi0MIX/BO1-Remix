@@ -171,37 +171,6 @@ health_bar_hud()
 	}
 } 
 
-drop_tracker_hud()
-{
-	self endon("disconnect");
-	level endon("end_game");
-
-	dvar_state = -1;
-	tab_state = -1;
-
-	while (true)
-	{
-		wait 0.05;
-		if (isDefined(level.drop_tracker_index))
-			tracked_drops = level.drop_tracker_index;
-		else
-			tracked_drops = 0;
-
-		self setClientDvar("hud_drops_number", tracked_drops);
-
-		if (dvar_state == getDvarInt("hud_drops") && tab_state == getDvarInt("hud_tab"))
-			continue;
-
-		if (getDvarInt("hud_drops") || (!getDvarInt("hud_drops") && getDvarInt("hud_tab")))
-			self send_message_to_csc("hud_anim_handler", "hud_drops_in");
-		else
-			self send_message_to_csc("hud_anim_handler", "hud_drops_out");
-
-		dvar_state = getDvarInt("hud_drops");
-		tab_state = getDvarInt("hud_tab");
-	}
-}
-
 oxygen_hud()
 {
 	level endon("end_game");
@@ -249,92 +218,6 @@ oxygen_hud_watcher()
 			self send_message_to_csc("hud_anim_handler", "hud_oxygen_out");
 
 			while (!getDvarInt("oxygen_time_show"))
-				wait 0.05;
-		}
-
-		wait 0.05;
-	}
-}
-
-excavator_hud()
-{
-	level endon("end_game");
-
-	self thread excavator_hud_watcher();
-
-	current_excavator = "null";
-	saved_excavator = "null";
-	excavator_area = "null";
-
-    while (true)
-    {		
-		if (isDefined(level.digger_time_left) && isDefined(level.digger_to_activate))
-		{
-			// iPrintLn(level.excavator_timer);
-			switch (level.digger_to_activate) 
-			{
-			case "teleporter":
-				current_excavator = "Pi";
-				// excavator_area = "Tunnel 6";
-				break;
-			case "hangar":
-				current_excavator = "Omicron";
-				// excavator_area = "Tunnel 11";
-				break;
-			case "biodome":
-				current_excavator = "Epsilon";
-				// excavator_area = "Biodome";
-				break;
-			default:
-				current_excavator = "null";
-			}
-
-			if (current_excavator != "null")
-			{
-				self setClientDvar("excavator_name", current_excavator);
-
-				if (getDvarInt("hud_excavator_timer") || (!getDvarInt("hud_excavator_timer") && getDvarInt("hud_tab")))
-				{
-					if(level.digger_to_activate != "null")
-						self setClientDvar("excavator_time_show", 1);
-					else if(level.digger_to_activate == "null")
-						self setClientDvar("excavator_time_show", 0);
-				}
-
-				else
-					self setClientDvar("excavator_time_show", 0);
-
-				self setClientDvar("excavator_time_value", maps\_remix_zombiemode_utility::to_mins_short(int(level.digger_time_left)));
-			}
-			else
-			{
-				self setClientDvar("excavator_time_show", 0);
-
-				while (current_excavator == "null")
-					wait 0.05;
-			}
-		}
-		wait 0.5;
-    }
-}
-
-excavator_hud_watcher()
-{
-	dvar_state = -1;
-	while (true)
-	{
-		if (getDvarInt("excavator_time_show"))
-		{
-			self send_message_to_csc("hud_anim_handler", "hud_excavator_in");
-
-			while (getDvarInt("excavator_time_show"))
-				wait 0.05;
-		}
-		else
-		{
-			self send_message_to_csc("hud_anim_handler", "hud_excavator_out");
-
-			while (!getDvarInt("excavator_time_show"))
 				wait 0.05;
 		}
 
