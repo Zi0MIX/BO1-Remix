@@ -27,6 +27,11 @@
 
 		onOpen
 		{	
+			if(dvarString(player_quotes) == "")
+			{
+				setDvar player_quotes 0;
+			}
+			
 			if(dvarString(remix_timer) == "")
 			{
 				setDvar remix_timer 0;
@@ -108,9 +113,11 @@
 		#define	CHOICE_CAPTION_TEXT_COLOR_NO_HL	CHOICE_TEXTCOLOR
 		#define	CHOICE_CAPTION_TEXT_COLOR_HL	0 0 0 1
 
-		FRAME_CHOICE_SECTION_TITLE( 21, "@PATCH_GAME_CAPS" )
-
 		//ZM custom
+		FRAME_CHOICE_SECTION_TITLE( 21, "@REMIX_GAME_SERVER_LABEL" )
+
+		FRAME_CHOICE_DVARYESNO_VIS( 22, "@REMIX_GAME_DISABLE_QUOTES", player_quotes, ;, 1)
+
 		FRAME_CHOICE_SECTION_TITLE( 26, "@REMIX_HUD_SERVER_LABEL" )
 
 		FRAME_CHOICE_DVARYESNO_VIS( 27, "@REMIX_HUD_GAME_TIME", remix_timer, ;, 1)
