@@ -251,12 +251,12 @@ remaining_hud()
 	flag_wait("initial_blackscreen_passed");
 
 	remaining_hud = NewHudElem();
-	remaining_hud.horzAlign = "right";
+	remaining_hud.horzAlign = "left";
 	remaining_hud.vertAlign = "top";
-	remaining_hud.alignX = "right";
+	remaining_hud.alignX = "left";
 	remaining_hud.alignY = "top";
-	remaining_hud.x = -4;
-	remaining_hud.y = y_pos;
+	remaining_hud.x = 4;
+	remaining_hud.y = 2;
 	remaining_hud.fontScale = 1.3;
 	remaining_hud.alpha = 1;
 	remaining_hud.color = (1, 1, 1);
