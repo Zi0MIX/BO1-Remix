@@ -13,7 +13,7 @@
 	itemDef {
 		name "my_cool_item_def"
 		rect x-pos y-pos width height x-alignment y-alignment
-		fullsceen (bool (expression)))
+		fullsceen (bool (expression))
 		visible (bool or boolean expression)
 		forecolor r g b a ?
 		textscale (float)

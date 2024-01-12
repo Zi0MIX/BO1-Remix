@@ -31,6 +31,47 @@ remix_player_hud_initialize()
 	//self thread set_move_speed();
 }
 
+/* Call these util functions on hud element */
+freeze_timer(freeze_value, end)
+{
+	level endon("end_game");
+	level endon(end);
+
+	while (true)
+	{
+		self setTimer(freeze_value - 0.1);
+		wait 0.25;
+	}
+}
+
+hud_toggle_watcher(hud_dvar, hud_alpha, hud_flag)
+{
+	if (!isDefined(hud_alpha))
+		hud_alpha = 1;
+	if (isDefined(hud_flag))
+		flag_init(hud_flag);
+
+	while (true)
+	{
+		if (getDvar(hud_dvar) == "1")
+		{
+			if (!self.alpha)
+				self.alpha = hud_alpha;
+			if (isDefined(hud_flag))
+				flag_set(hud_flag);
+		}
+		else
+		{
+			if (self.alpha > 0)
+				self.alpha = 0;
+			if (isDefined(hud_flag))
+				flag_clear(hud_flag);
+		}
+
+		wait 0.05;
+	}
+}
+
 hud_fade(alpha, duration)
 {
 	if (!isDefined(alpha)) 
@@ -45,6 +86,8 @@ hud_fade(alpha, duration)
 	self fadeOverTime(duration);
 	self.alpha = alpha;
 }
+
+/* Actual huds */
 
 timer_hud()
 {
@@ -229,45 +272,4 @@ instakill_timer_hud()
         self.vr_timer setTimer(insta_time - 0.1);
         wait 0.05;
     }
-}
-
-/* Call on hud element */
-freeze_timer(freeze_value, end)
-{
-	level endon("end_game");
-	level endon(end);
-
-	while (true)
-	{
-		self setTimer(freeze_value - 0.1);
-		wait 0.25;
-	}
-}
-
-hud_toggle_watcher(hud_dvar, hud_alpha, hud_flag)
-{
-	if (!isDefined(hud_alpha))
-		hud_alpha = 1;
-	if (isDefined(hud_flag))
-		flag_init(hud_flag);
-
-	while (true)
-	{
-		if (getDvar(hud_dvar) == "1")
-		{
-			if (!self.alpha)
-				self.alpha = hud_alpha;
-			if (isDefined(hud_flag))
-				flag_set(hud_flag);
-		}
-		else
-		{
-			if (self.alpha > 0)
-				self.alpha = 0;
-			if (isDefined(hud_flag))
-				flag_clear(hud_flag);
-		}
-
-		wait 0.05;
-	}
 }
