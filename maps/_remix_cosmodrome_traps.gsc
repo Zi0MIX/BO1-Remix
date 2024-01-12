@@ -1,3 +1,8 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\_zombiemode_traps;
+#include maps\_zombiemode_utility;
+
 centrifuge_random()
 {
 	// objects

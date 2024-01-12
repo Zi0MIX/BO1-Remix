@@ -1,3 +1,8 @@
+#include maps\_utility;
+#include common_scripts\utility;
+#include maps\_zombiemode_utility;
+#include animscripts\zombie_Utility;
+
 director_coop_pause()
 {
 	if (isDefined(level.zombie_director) && !is_true(level.zombie_director.ignoreall))

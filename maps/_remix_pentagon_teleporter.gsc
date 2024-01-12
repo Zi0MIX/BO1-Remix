@@ -1,3 +1,8 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\_zombiemode_utility;
+#include maps\_zombiemode_zone_manager;
+
 teleport_player(user)
 {
 	prone_offset = (0, 0, 49);

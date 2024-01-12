@@ -1,3 +1,9 @@
+#include maps\_utility; 
+#include common_scripts\utility;
+#include maps\_zombiemode_utility;
+#include maps\_zombiemode_net;
+#include maps\_music; 
+
 dog_round_tracker()
 {	
 	level.dog_round_count = 1;

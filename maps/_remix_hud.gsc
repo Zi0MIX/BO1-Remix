@@ -176,8 +176,7 @@ coop_pause_hud()
 	black_hud SetShader("black", 640, 480);
 	black_hud.alpha = 0;
 
-	black_hud FadeOverTime(1.0);
-	black_hud.alpha = 0.65;
+	black_hud hud_fade(0.65);
 
 	paused_hud = newhudelem();
 	paused_hud.horzAlign = "center";
@@ -190,15 +189,12 @@ coop_pause_hud()
 	paused_hud.alpha = 0;
 	paused_hud.color = (1.0, 1.0, 1.0);
 
-	paused_hud FadeOverTime(1.0);
-	paused_hud.alpha = 0.8;
+	paused_hud hud_fade(0.8);
 
 	level waittill_any("coop_pause_disabled", "end_game");
 
-	black_hud FadeOverTime(1.0);
-	black_hud.alpha = 0;
-	paused_hud FadeOverTime(1.0);
-	paused_hud.alpha = 0;
+	black_hud hud_fade();
+	paused_hud hud_fade();
 	black_hud destroy_hud();
 	paused_hud destroy_hud();
 }

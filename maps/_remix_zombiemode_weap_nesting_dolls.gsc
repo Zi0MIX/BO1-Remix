@@ -1,3 +1,8 @@
+#include maps\_utility;
+#include common_scripts\utility;
+#include maps\_zombiemode_utility;
+#include animscripts\zombie_Utility;
+
 player_give_nesting_dolls()
 {
 	// create our randomized index arrays here so we can pass the appropriate first cammo

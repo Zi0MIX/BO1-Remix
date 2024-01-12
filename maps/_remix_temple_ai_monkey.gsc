@@ -1,3 +1,7 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\_zombiemode_utility;
+
 _watch_for_powerups()
 {
 	if ( !IsDefined(level.monkey_zombie_spawners) || level.monkey_zombie_spawners.size == 0 )

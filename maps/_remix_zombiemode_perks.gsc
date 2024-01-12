@@ -1,3 +1,7 @@
+#include maps\_utility;
+#include common_scripts\utility;
+#include maps\_zombiemode_utility;
+
 place_perk_machines()
 {	
 	if(level.script == "zombie_cosmodrome")

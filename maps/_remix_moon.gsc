@@ -1,3 +1,11 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\_zombiemode_utility;
+#include maps\_zombiemode_zone_manager;
+#include maps\zombie_moon_utility;
+#include maps\zombie_moon_wasteland;
+#include maps\zombie_moon_teleporter;
+
 remix_main()
 {
 	level thread launch_rockets();

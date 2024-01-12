@@ -1,3 +1,7 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\_zombiemode_utility;
+
 summon_box_thread(hacker)
 {
 	self.chest.last_hacked_round = level.round_number + 5; //RandomIntRange(2,5);

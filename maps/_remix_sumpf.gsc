@@ -1,3 +1,13 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\_music;
+#include maps\zombie_cod5_sumpf_perks;
+#include maps\zombie_cod5_sumpf_magic_box;
+#include maps\zombie_cod5_sumpf_trap_pendulum;
+#include maps\zombie_cod5_sumpf_zipline;
+#include maps\zombie_cod5_sumpf_trap_perk_electric;
+#include maps\_zombiemode_utility;
+
 remix_main()
 {
     // pap clip

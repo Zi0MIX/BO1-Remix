@@ -1,3 +1,7 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\_zombiemode_utility;
+
 post_init()
 {
 	level.elec_trap_cooldown_time = 25;

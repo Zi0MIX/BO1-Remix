@@ -1,3 +1,7 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\_zombiemode_utility;
+
 post_init()
 {
     maps\_weaponobjects::create_retrievable_hint("mine_bouncing_betty", "Hold ^3[{+activate}]^7 to pick up betty");

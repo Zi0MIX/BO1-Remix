@@ -1,3 +1,8 @@
+#include maps\_utility;
+#include common_scripts\utility;
+#include maps\_zombiemode_utility;
+#include animscripts\zombie_Utility;
+
 ape_round_tracker()
 {
 	level.ape_save_spawn_func = level.round_spawn_func;

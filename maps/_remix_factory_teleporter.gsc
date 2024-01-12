@@ -1,3 +1,7 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\_zombiemode_utility;
+
 init_pack_door()
 {
 	//DCS: create collision blocker till door in place at load.

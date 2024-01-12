@@ -1,3 +1,9 @@
+#include maps\_utility;
+#include common_scripts\utility;
+#include maps\_zombiemode_utility;
+#include animscripts\zombie_Utility;
+#include maps\_ambientpackage;
+
 play_pentagon_announcer_vox( alias, defcon_level )
 {
 	if( !IsDefined( alias ) )

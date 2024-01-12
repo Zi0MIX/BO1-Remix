@@ -1,3 +1,7 @@
+#include maps\_utility;
+#include common_scripts\utility;
+#include maps\_zombiemode_utility;
+
 #using_animtree( "zombie_cymbal_monkey" );
 player_handle_cymbal_monkey()
 {

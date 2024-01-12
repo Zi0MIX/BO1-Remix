@@ -1,3 +1,9 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\_zombiemode_utility;
+#include maps\_zombiemode_zone_manager;
+#include maps\_music;
+
 remix_main()
 {
     level endon("end_game");

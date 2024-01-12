@@ -1,3 +1,6 @@
+#include common_scripts\utility;
+#include maps\_utility;
+
 create_base_watchers()
 {
 	//Check for die on respawn weapons
@@ -10,7 +13,7 @@ create_base_watchers()
 			watcherName = GetSubStr( watcherName, 0, watcherName.size - 3 );// the - 3 removes the _sp from the weapon name
 		}
 
-		self create_weapon_object_watcher( watcherName, level.watcherWeaponNames[i], self.team );
+		self maps\_weaponobjects::create_weapon_object_watcher( watcherName, level.watcherWeaponNames[i], self.team );
 	}
 
 	//Check for retrievable weapons
@@ -23,7 +26,7 @@ create_base_watchers()
 			watcherName = GetSubStr( watcherName, 0, watcherName.size - 3 );// the - 3 removes the _sp from the weapon name
 		}
 
-		self create_weapon_object_watcher( watcherName, level.retrievableWeapons[i], self.team );
+		self maps\_weaponobjects::create_weapon_object_watcher( watcherName, level.retrievableWeapons[i], self.team );
 	}
 }
 

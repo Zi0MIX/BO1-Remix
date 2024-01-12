@@ -1,3 +1,8 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\_zombiemode_utility;
+#include maps\_zombiemode_zone_manager;
+
 remix_main()
 {
     while (!isDefined(level.has_pack_a_punch))

@@ -1,3 +1,10 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\_zombiemode_utility;
+#include maps\_zombiemode_zone_manager;
+#include maps\zombie_cod5_factory_teleporter;
+#include maps\_music;
+
 remix_main()
 {
 	// curb fixs
@@ -189,8 +196,8 @@ bridge_init()
 	warehouse_bridge_clip = getent( "warehouse_bridge_clip", "targetname" );
 	warehouse_bridge_clip delete();
 
-	maps\_zombiemode_zone_manager::connect_zones( "wnuen_bridge_zone", "bridge_zone" );
-	maps\_zombiemode_zone_manager::connect_zones( "bridge_zone", "warehouse_top_zone" );
+	connect_zones( "wnuen_bridge_zone", "bridge_zone" );
+	connect_zones( "bridge_zone", "warehouse_top_zone" );
 }
 
 jump_from_bridge()
@@ -198,8 +205,8 @@ jump_from_bridge()
 	trig = GetEnt( "trig_outside_south_zone", "targetname" );
 	trig waittill( "trigger" );
 
-	maps\_zombiemode_zone_manager::connect_zones( "outside_south_zone", "bridge_zone", true );
-	//maps\_zombiemode_zone_manager::connect_zones( "outside_south_zone", "wnuen_bridge_zone", true );
+	connect_zones( "outside_south_zone", "bridge_zone", true );
+	//connect_zones( "outside_south_zone", "wnuen_bridge_zone", true );
 }
 
 include_weapons()
@@ -439,8 +446,8 @@ power_electric_switch()
 	playfx(level._effect["switch_sparks"] ,getstruct("power_switch_fx","targetname").origin);
 
 	// Don't want east or west to spawn when in south zone, but vice versa is okay
-	maps\_zombiemode_zone_manager::connect_zones( "outside_east_zone", "outside_south_zone", true );
-	maps\_zombiemode_zone_manager::connect_zones( "outside_west_zone", "outside_south_zone", true );
+	connect_zones( "outside_east_zone", "outside_south_zone", true );
+	connect_zones( "outside_west_zone", "outside_south_zone", true );
 }
 
 player_elec_damage()

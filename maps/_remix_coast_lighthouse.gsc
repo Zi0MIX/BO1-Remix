@@ -1,3 +1,8 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\_zombiemode_utility;
+
+
 lighthouse_wait_for_power()
 {
 	level waittill( "power_on" );

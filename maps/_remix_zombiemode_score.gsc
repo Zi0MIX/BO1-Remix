@@ -1,3 +1,7 @@
+#include maps\_utility; 
+#include common_scripts\utility;
+#include maps\_zombiemode_utility;
+
 player_add_points( event, mod, hit_location ,is_dog)
 {
 	if( level.intermission )

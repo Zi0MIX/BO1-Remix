@@ -1,3 +1,7 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\_zombiemode_utility;
+
 get_doors_nearby()
 {
 	flag_wait( "all_players_spawned" );

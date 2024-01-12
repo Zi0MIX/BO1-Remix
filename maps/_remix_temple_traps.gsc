@@ -1,3 +1,7 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\_zombiemode_utility;
+
 spear_trap_think()
 {
 	if( isdefined(self.enable_flag) && !flag(self.enable_flag) )

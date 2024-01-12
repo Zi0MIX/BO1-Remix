@@ -1,3 +1,7 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\_zombiemode_utility;
+
 powerup_hack(hacker)
 {
 	self.powerup notify("hacked");

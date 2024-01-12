@@ -1,3 +1,12 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\_zombiemode_utility;
+#include maps\_zombiemode_zone_manager;
+#include maps\zombie_theater_magic_box;
+#include maps\zombie_theater_movie_screen;
+#include maps\zombie_theater_quad;
+#include maps\zombie_theater_teleporter;
+
 remix_main()
 {
     level thread maps\_remix_zombiemode_utility::special_round_watcher();
@@ -87,7 +96,7 @@ wait_for_power()
 	master_switch playsound("zmb_turn_on");
 
 	//get the teleporter ready
-	maps\zombie_theater_teleporter::teleporter_init();
+	teleporter_init();
 	wait_network_frame();
 	// Set Perk Machine Notifys
 	level notify("revive_on");
@@ -108,10 +117,6 @@ wait_for_power()
 
 	level notify("quad_round_can_end");
 	level.delay_spawners = undefined;
-
-	//maps\zombie_theater_quad::begin_quad_introduction("theater_round");
-	//level.round_spawn_func = maps\zombie_theater_quad::Intro_Quad_Spawn;;
-	//maps\zombie_theater_quad::Theater_Quad_Round();
 
 	// DCS: start check for potential quad waves after power turns on.
     // Disable redundant check for quad wave

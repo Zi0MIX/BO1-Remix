@@ -1,3 +1,8 @@
+#include maps\_utility;
+#include common_scripts\utility;
+#include maps\_zombiemode_utility;
+#include animscripts\zombie_Utility;
+
 #using_animtree( "zombie_cymbal_monkey" ); // WW: A new animtree or should we just use generic human's throw?
 player_handle_black_hole_bomb()
 {

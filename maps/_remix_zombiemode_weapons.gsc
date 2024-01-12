@@ -1,3 +1,8 @@
+#include maps\_utility;
+#include common_scripts\utility;
+#include maps\_zombiemode_utility;
+#include maps\_zombiemode_audio;
+
 add_remix_weapons()
 {
 	// Custom weapons

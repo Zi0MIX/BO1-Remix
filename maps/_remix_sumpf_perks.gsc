@@ -1,3 +1,7 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\_zombiemode_utility;
+
 activate_vending_machine(machine, origin, entity)
 {
 	//activate perks-a-cola

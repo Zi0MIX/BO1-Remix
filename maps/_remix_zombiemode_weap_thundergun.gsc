@@ -1,3 +1,8 @@
+#include maps\_utility;
+#include common_scripts\utility;
+#include maps\_zombiemode_utility;
+#include maps\_zombiemode_net;
+
 post_init()
 {
     level._effect["thundergun_knockdown_ground"]    = loadfx( "weapon/thunder_gun/fx_thundergun_knockback_ground" );

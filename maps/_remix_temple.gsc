@@ -1,3 +1,14 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\_zombiemode_utility;
+#include maps\_zombiemode_utility_raven;
+#include maps\_zombiemode_zone_manager;
+#include maps\zombie_temple_elevators;
+#include maps\zombie_temple_traps;
+#include maps\zombie_temple_power;
+#include maps\zombie_temple_spawning;
+#include maps\zombie_temple_pack_a_punch;
+
 remix_main()
 {
     level thread night_mode_watcher();

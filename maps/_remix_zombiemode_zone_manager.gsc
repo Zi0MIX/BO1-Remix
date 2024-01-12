@@ -1,3 +1,6 @@
+#include common_scripts\utility;
+#include maps\_utility;
+
 zios_spawn_printer()
 {
 	while (1)

@@ -1,3 +1,8 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\_zombiemode_utility;
+#include maps\zombie_moon_teleporter;
+
 zombie_moon_start_init()
 {
 	flag_wait( "begin_spawning" );

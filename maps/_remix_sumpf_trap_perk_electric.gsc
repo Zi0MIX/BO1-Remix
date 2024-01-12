@@ -1,3 +1,7 @@
+#include common_scripts\utility; 
+#include maps\_utility;
+#include maps\_zombiemode_utility;
+
 electric_trap_think()
 {	
 	self sethintstring(&"WAW_ZOMBIE_BUTTON_NORTH_FLAMES");
