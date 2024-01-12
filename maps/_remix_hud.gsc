@@ -303,6 +303,40 @@ remaining_hud()
 	}
 }
 
+drop_hud()
+{
+	level endon("end_game");
+
+	flag_wait("initial_blackscreen_passed");
+
+	drop_hud = NewHudElem();
+	drop_hud.horzAlign = "left";
+	drop_hud.vertAlign = "top";
+	drop_hud.alignX = "left";
+	drop_hud.alignY = "top";
+	drop_hud.x = 4;
+	drop_hud.y = 17;
+	drop_hud.fontScale = 1.3;
+	drop_hud.alpha = 1;
+	drop_hud.color = (1, 1, 1);
+	drop_hud.label = &"Drops: ";	// TODO locstring
+
+	drop_hud setValue(0);
+
+	drop_hud thread hud_toggle_watcher("remix_drop_hud");
+
+	while (true)
+	{
+		tracked_drops = 0;
+		if (isDefined(level.drop_tracker_index))
+			tracked_drops = level.drop_tracker_index;
+
+		drop_hud setValue(tracked_drops);
+
+		wait 0.05;
+	}
+}
+
 instakill_timer_hud()
 {
     self.vr_timer = NewClientHudElem( self );

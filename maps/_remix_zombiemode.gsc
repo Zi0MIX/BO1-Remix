@@ -209,6 +209,7 @@ init_dvars()
     maps\_remix_zombiemode_utility::init_dvar("remix_round_timer", 0);
     maps\_remix_zombiemode_utility::init_dvar("remix_info_hud", 0);
     maps\_remix_zombiemode_utility::init_dvar("remix_remaining_hud", 0);
+    maps\_remix_zombiemode_utility::init_dvar("remix_drop_hud", 0);
 
 	// HACK: To avoid IK crash in zombiemode: MikeA 9/18/2009
 	//setDvar( "ik_enable", "0" );
