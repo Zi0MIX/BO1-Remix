@@ -200,10 +200,12 @@ get_actual_gametime()
 get_last_round_sph()
 {
 	if (level.round_number - 1 == level.last_special_round)
-		return 0;
+		return "0";
 
 	round_time = int(getTime() / 1000) - level.round_timer.beginning;
 	zombie_count = get_zombie_number(level.round_number - 1);
+
+	return round_to_str(round_time / (zombie_count / 24), 2);
 }
 
 round_to_str(value, decimal_points)
@@ -215,9 +217,48 @@ round_to_str(value, decimal_points)
 	if (val_split.size == 1);
 		return string(int(value));
 
-	up = false;
-	if (int(val_split[1][decimal_points]) >= 5)
-		up = true;
+	if (!isDefined(val_split[1][decimal_points + 1]))
+		return val_split[0] + "." + val_split[1];
+	num_to_round = val_split[1][decimal_points + 1];
 
-	// TODO
+	up = 0;
+	if (int(num_to_round) >= 5)
+		up = 1;
+
+	/* Build decimal string backwards */
+	new_decimal = "";
+	saved = 0;
+	for (i = val_split[1].size; i <= 0; i--)
+	{
+		/* These digits are just cut off */
+		if (i > decimal_points + 1)
+			continue;
+		/* This is the digit that'll decide if numbers go up */
+		else if (i == decimal_digits + 1)
+			saved = int(int(val_split[1][i]) >= 5);
+		else
+		{
+			char_to_prepend = val_split[1][i];
+			/* If there is a value to be propagated further */
+			if (saved)
+			{
+				char_to_prepend = string(int(char_to_prepend) + 1);
+				saved = 0;
+			}
+			/* Double digit char, if propagate value caused it to go above 9 */
+			if (char_for_prepend.size > 1)
+			{
+				saved = 1;
+				char_for_prepend = "0";
+			}
+
+			new_decimal = char_for_prepend + new_decimal;
+		}
+	}
+
+	/* Need to propagate it to full number if necessary */
+	if (saved)
+		val_split[0] = string(int(val_split[0]) + 1);
+
+	return val_split[0] + "." + new_decimal;
 }
