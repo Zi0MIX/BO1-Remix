@@ -92,7 +92,7 @@ main()
 	visionsetnaked( "mp_berlinwall2", 0 );
 
 	// custom
-	level thread maps\_custom_zapper_system::init();
+	level thread maps\_remix_zapper_system::init();
 	level thread ray_gun_wallbuy();
 }
 #using_animtree( "generic_human" );
