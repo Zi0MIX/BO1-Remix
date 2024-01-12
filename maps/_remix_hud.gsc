@@ -71,7 +71,7 @@ timer_hud()
 	/* Attach info about game start */
 	level.timer.beginning = int(getTime() / 1000);
 
-	// TODO toggling hud
+	level.timer thread hud_toggle_watcher("remix_timer");
 }
 
 round_timer_hud()
@@ -103,7 +103,7 @@ round_timer_hud()
 	level.round_timer.beginning = int(getTime() / 1000);
 	level.round_timer thread freeze_timer(0, "start_of_round");
 
-	// TODO toggling hud
+	level.round_timer thread hud_toggle_watcher("remix_round_timer");
 }
 
 info_row_hud()
@@ -129,6 +129,8 @@ info_row_hud()
 
 	level.info_row_queue = [];
 
+	info_row_hud thread hud_toggle_watcher("remix_info_hud", 1, "remix_info_hud");
+
 	while (true)
 	{
 		wait 0.05;
@@ -137,7 +139,7 @@ info_row_hud()
 			continue;
 
 		// TODO add dvar condition to if statements to skip showing element if hud is disabled
-		if (level.info_row_queue[0]["event"] == "split")
+		if (is_true(flag("remix_info_hud")) && level.info_row_queue[0]["event"] == "split")
 		{
 			info_row_hud.label = &"Total time: ";			// TODO locstring
 			info_row_hud setTimer(level.info_row_queue[0]["value"]);
@@ -147,7 +149,7 @@ info_row_hud()
 			info_row_hud hud_fade();
 			level notify("end_total_time_summary");
 		}
-		else if (level.info_row_queue[0]["event"] == "sph")
+		else if (is_true(flag("remix_info_hud")) && level.info_row_queue[0]["event"] == "sph")
 		{
 			info_row_hud.label = &"SPH: ";					// TODO locstring
 			info_row_hud setValue(level.info_row_queue[0]["value"]);
@@ -239,5 +241,33 @@ freeze_timer(freeze_value, end)
 	{
 		self setTimer(freeze_value - 0.1);
 		wait 0.25;
+	}
+}
+
+hud_toggle_watcher(hud_dvar, hud_alpha, hud_flag)
+{
+	if (!isDefined(hud_alpha))
+		hud_alpha = 1;
+	if (isDefined(hud_flag))
+		flag_init(hud_flag);
+
+	while (true)
+	{
+		if (getDvar(hud_dvar) == "1")
+		{
+			if (!self.alpha)
+				self.alpha = hud_alpha;
+			if (isDefined(hud_flag))
+				flag_set(hud_flag);
+		}
+		else
+		{
+			if (self.alpha > 0)
+				self.alpha = 0;
+			if (isDefined(hud_flag))
+				flag_clear(hud_flag);
+		}
+
+		wait 0.05;
 	}
 }

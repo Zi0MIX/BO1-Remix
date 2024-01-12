@@ -27,19 +27,19 @@
 
 		onOpen
 		{	
-			if(dvarString(hud_timer) == "")
+			if(dvarString(remix_timer) == "")
 			{
-				setDvar hud_timer 0;
+				setDvar remix_timer 0;
 			}
 
-			if(dvarString(hud_round_timer) == "")
+			if(dvarString(remix_round_timer) == "")
 			{
-				setDvar hud_round_timer 0;
+				setDvar remix_round_timer 0;
 			}
 
-			if(dvarString(hud_zone_name_on) == "")
+			if(dvarString(remix_info_hud) == "")
 			{
-				setDvar hud_zone_name_on 0;
+				setDvar remix_info_hud 0;
 			}
 
 			LOCAL_CLOSE_ALL_BUT( options_remix_server )
@@ -109,13 +109,13 @@
 		#define	CHOICE_CAPTION_TEXT_COLOR_HL	0 0 0 1
 
 		FRAME_CHOICE_SECTION_TITLE( 21, "@PATCH_GAME_CAPS" )
-		
-		//ZM custom
-		FRAME_CHOICE_SECTION_TITLE( 26, "@MOD_HUD" )
 
-		//FRAME_CHOICE_DVARYESNO_VIS( 27, "@MOD_HUD_ROUND_TIMER", hud_round_timer, ;, 1)
-		//FRAME_CHOICE_DVARYESNO_VIS( 28, "@MOD_HUD_REMAINING", hud_remaining, ;, 1)
-		//FRAME_CHOICE_DVARYESNO_VIS( 29, "@MOD_HUD_DROPS", hud_drops, ;, 1)
+		//ZM custom
+		FRAME_CHOICE_SECTION_TITLE( 26, "@REMIX_HUD_SERVER_LABEL" )
+
+		FRAME_CHOICE_DVARYESNO_VIS( 27, "@REMIX_HUD_GAME_TIME", remix_timer, ;, 1)
+		FRAME_CHOICE_DVARYESNO_VIS( 28, "@REMIX_HUD_ROUND_TIME", remix_round_timer, ;, 1)
+		FRAME_CHOICE_DVARYESNO_VIS( 29, "@REMIX_HUD_INFO", remix_info_hud, ;, 1)
 		//FRAME_CHOICE_DVARYESNO_VIS( 30, "@MOD_ZONE_NAME", hud_zone_name_on, ;, 1)
 		//FRAME_CHOICE_DVARYESNO_VIS( 31, "@MOD_HUD_HEALTH_BAR", hud_health_bar, ;, 1)
 		//FRAME_CHOICE_DVARSTRINGLIST_VIS( 32, "@MOD_HUD_BUTTON",	hud_button, { "TAB"; "tab"; "CAPSLOCK"; "CAPSLOCK"; "SELECT(CONTROLLER)"; "BUTTON_BACK";  "OFF"; "off"; }, ;, 1 )
