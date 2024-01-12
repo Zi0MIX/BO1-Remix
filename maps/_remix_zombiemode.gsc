@@ -47,6 +47,8 @@ remix_main()
 		if (is_true(flag("dog_round")) || is_true(flag("thief_round")) || is_true(flag("monkey_round")))
 			level.last_special_round = level.round_number;
 
+		cache_spawnrates = level.zombie_vars["zombie_spawn_delay"];
+
 		/* Stop the game if coop pause has been initiated, otherwise do nothing */
 		level.time_paused += server_coop_pause();
 
@@ -61,7 +63,8 @@ remix_main()
 		round_time = int(getTime() / 1000) - level.round_timer.beginning;
 		level.round_timer thread maps\_remix_hud::freeze_timer(round_time, "start_of_round");
 		wait 1;
-		if (level.round_number >= 56 && level.round_number != level.last_special_round + 1)
+		/* Spawn delay value after which max spawns occur */
+		if (cache_spawnrates < 0.125 && level.round_number != level.last_special_round + 1)
 			maps\_remix_hud::add_to_info_hud_queue("split", maps\_remix_zombiemode_utility::get_last_round_sph());
 	}
 }
