@@ -436,88 +436,37 @@ onPlayerConnect_clientDvars()
 
 		/* Remix stuff */
 		"cg_friendlyNameFadeOut", "1",
+		// Backspeed
 		"player_backSpeedScale", "1",
 		"player_strafeSpeedScale", "1",
 		"player_sprintStrafeSpeedScale", "1",
+		// FOV
 		"cg_fov_enable", "1",
+		// Misc
+		"cg_drawFriendlyFireCrosshair", "1",
+		"aim_lockon_pitch_strength", "0.0",
+		// allows shooting while looking at players
+		"g_friendlyFireDist", "0",
+		// disable melee lunge
+		"aim_automelee_enabled", "0",
+		// ammo on HUD never fades away
+		"hud_fade_ammodisplay", "0",
+		// make sure zombies are spawning
+		"ai_disableSpawn", "0",
 	);
 
 	self SetDepthOfField( 0, 0, 512, 4000, 4, 0 );
 
-	// Health Bar	
-	if(getDvarInt("hud_health_bar") == 1)
-		self setClientDvar("hud_health_bar", 1);
-	else
-		self setClientDvar("hud_health_bar", 0);
-
-	// Drops counter
-	if(getDvarInt("hud_drops") == 1)
-		self setClientDvar("hud_drops", 1);
-	else
-		self setClientDvar("hud_drops", 0);
-
-	// Zombie counter
-	if(getDvarInt("hud_remaining") == 1)
-		self setClientDvar("hud_remaining", 1);
-	else
-		self setClientDvar("hud_remaining", 0);
-
-	// George Health Bar
-	if(getDvarInt("hud_george_bar") == 1)
-		self setClientDvar("hud_george_bar", 1);
-	else
-		self setClientDvar("hud_george_bar", 0);
-
-	// Static round timer
-	if(getDvarInt("hud_round_timer") == 1)
-		self setClientDvar("hud_round_timer", 1);
-	else
-		self setClientDvar("hud_round_timer", 0);
-
-	// Moon oxygen timer
-	if(getDvarInt("hud_oxygen_timer") == 1)
-		self setClientDvar("hud_oxygen_timer", 1);
-	else
-		self setClientDvar("hud_oxygen_timer", 0);
-
-	// Moon excavator timer
-	if(getDvarInt("hud_excavator_timer") == 1)
-		self setClientDvar("hud_excavator_timer", 1);
-	else
-		self setClientDvar("hud_excavator_timer", 0);
-
-	// Zone HUD
-	if(getDvarInt("hud_zone_name_on") == 1)
-		self setClientDvar("hud_zone_name_on", 1);
-	else
-		self setClientDvar("hud_zone_name_on", 0);
-
-	self setClientDvar("cg_drawFriendlyFireCrosshair", "1");
-
-	self setClientDvar("aim_lockon_pitch_strength", 0.0 );
-
-	// makes FPS area in corner smaller
-	self SetClientDvar("cg_drawFPSLabels", 0);
-
-	// allows shooting while looking at players
-	self SetClientDvar("g_friendlyFireDist", 0);
-
-	// disable melee lunge
-	self setClientDvar("aim_automelee_enabled", 0 );
-
-	// ammo on HUD never fades away
-	self SetClientDvar("hud_fade_ammodisplay", 0);
+	if (self maps\_remix_zombiemode_utility::get_client_dvar("hud_health_bar") == "")
+		self setClientDvar("hud_health_bar", "0");
+	if (self maps\_remix_zombiemode_utility::get_client_dvar("hud_zone_name_on") == "")
+		self setClientDvar("hud_zone_name_on", "0");
 
 	// dtp buffs
 	self SetClientDvars("dtp_post_move_pause", 0,
 		"dtp_exhaustion_window", 100,
-		"dtp_startup_delay", 100);
-
-	// make sure zombies are spawning
-	self SetClientDvar( "ai_disableSpawn", "0");
-
-	// double tap 2.0
-	self SetClientDvar( "perk_weapRateEnhanced", 1 );
+		"dtp_startup_delay", 100
+	);
 }
 
 round_think()
