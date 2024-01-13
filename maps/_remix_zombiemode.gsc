@@ -457,8 +457,8 @@ onPlayerConnect_clientDvars()
 
 	self SetDepthOfField( 0, 0, 512, 4000, 4, 0 );
 
-	if (self maps\_remix_zombiemode_utility::get_client_dvar("hud_health_bar") == "")
-		self setClientDvar("hud_health_bar", "0");
+	if (self maps\_remix_zombiemode_utility::get_client_dvar("remix_health_bar") == "")
+		self setClientDvar("remix_health_bar", "0");
 	if (self maps\_remix_zombiemode_utility::get_client_dvar("remix_oxygen") == "")
 		self setClientDvar("remix_oxygen", "0");
 	if (self maps\_remix_zombiemode_utility::get_client_dvar("hud_zone_name_on") == "")

@@ -150,24 +150,38 @@ health_bar_hud()
 	self endon("end_game");
 
 	health_bar_width_max = 111;
+	hud_state = -1;
 
 	while (true)
 	{
-		wait 0.05;
+		if (self maps\_remix_zombiemode_utility::get_client_dvar("remix_health_bar") == "1" && hud_state != 1)
+		{
+			self send_message_to_csc("hud_anim_handler", "hud_healthbar_background_in");
+			self send_message_to_csc("hud_anim_handler", "hud_healthbar_image_in");
+			self send_message_to_csc("hud_anim_handler", "hud_healthbar_value_in");
+			hud_state = 1;
+		}
+		else if (hud_state != 0)
+		{
+			self send_message_to_csc("hud_anim_handler", "hud_healthbar_background_out");
+			self send_message_to_csc("hud_anim_handler", "hud_healthbar_image_out");
+			self send_message_to_csc("hud_anim_handler", "hud_healthbar_value_out");
+			hud_state = 0;
+		}
 
-		health_ratio = self.health / self.maxhealth;
-
-		// There is a conflict while trying to import _laststand
-		if (isDefined(self.revivetrigger) || (isDefined(level.intermission) && level.intermission))
+		if (!isDefined(self.health) || !isDefined(self.maxhealth) || isDefined(self.revivetrigger) || is_true(level.intermission))
 		{
 			self SetClientDvar("health_bar_value_hud", 0);
 			self SetClientDvar("health_bar_width_hud", 0);
 		}
 		else
 		{
+			health_ratio = self.health / self.maxhealth;
 			self SetClientDvar("health_bar_value_hud", self.health);
 			self SetClientDvar("health_bar_width_hud", health_bar_width_max * health_ratio);
 		}
+
+		wait 0.05;
 	}
 } 
 
