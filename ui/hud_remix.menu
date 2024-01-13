@@ -209,7 +209,7 @@
 			textfont			UI_FONT_NORMAL
 			textalign			ITEM_ALIGN_TOP_RIGHT
 			exp text			(locString("@HUD_HUD_ZOMBIES_MOON_OXYGEN") + dvarString("current_oxygen_time"))	
-			visible				when(DEFAULT_VISIBILITY && dvarString("mapname") == "zombie_moon" && dvarString("current_oxygen_time") != "" && dvarInt("remix_oxygen") == 1)
+			visible				when(DEFAULT_VISIBILITY && dvarString("mapname") == "zombie_moon")
 			decoration
 
 			FADE_STATES

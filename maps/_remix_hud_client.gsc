@@ -190,7 +190,7 @@ oxygen_hud()
 	level endon("end_game");
 
 	self.oxygen_timer = undefined;
-	hud_state = false;
+	hud_state = -1;
 
 	while (true)
 	{
@@ -199,15 +199,15 @@ oxygen_hud()
 		else if (isDefined(self.oxygen_timer))
 			self.oxygen_timer = undefined;
 
-		if (isDefined(self.oxygen_timer) && !hud_state)
+		if (self maps\_remix_zombiemode_utility::get_client_dvar("remix_oxygen") == "1" && isDefined(self.oxygen_timer) && hud_state != 1)
 		{
 			self send_message_to_csc("hud_anim_handler", "hud_oxygen_in");
-			hud_state = true;
+			hud_state = 1;
 		}
-		else if (!isDefined(self.oxygen_timer) && hud_state)
+		else if (!isDefined(self.oxygen_timer) && hud_state != 0)
 		{
 			self send_message_to_csc("hud_anim_handler", "hud_oxygen_out");
-			hud_state = false;
+			hud_state = 0;
 		}
 
 		if (!isDefined(self.oxygen_timer))
