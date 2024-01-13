@@ -27,11 +27,6 @@
 
 		onOpen
 		{	
-			if(dvarString(hud_zone_name_on) == "")
-			{
-				setDvar hud_zone_name_on 0;
-			}
-
 			if(dvarString(com_maxfps) == "")
 			{
 				setDvar com_maxfps 125;
@@ -45,6 +40,16 @@
 			if(dvarString(cg_fovScale_settings) == "")
 			{
 				setDvar cg_fovScale_settings 1;
+			}
+
+			if(dvarString(remix_health_bar) == "")
+			{
+				setDvar remix_health_bar 1;
+			}
+
+			if(dvarString(remix_oxygen) == "")
+			{
+				setDvar remix_oxygen 1;
 			}
 
 			LOCAL_CLOSE_ALL_BUT( options_remix_client )
