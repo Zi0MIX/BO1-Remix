@@ -175,53 +175,33 @@ oxygen_hud()
 {
 	level endon("end_game");
 
-	self thread oxygen_hud_watcher();
+	self.oxygen_timer = undefined;
+	hud_state = false;
 
-    while (true)
-    {
-		if (isDefined(self.time_in_low_gravity) && isDefined(self.time_to_death))
-		{
-			oxygen_time = (self.time_to_death - self.time_in_low_gravity) / 1000;
-			oxygen_left = maps\_remix_zombiemode_utility::to_mins_short(oxygen_time);
-			self setClientDvar("oxygen_time_value", oxygen_left);
-
-			if (getDvarInt("hud_oxygen_timer") || (!getDvarInt("hud_oxygen_timer") && getDvarInt("hud_tab")))
-			{
-				if(self.time_in_low_gravity > 0 && !self maps\_laststand::player_is_in_laststand() && isAlive(self))
-					self setClientDvar("oxygen_time_show", 1);
-				else
-					self setClientDvar("oxygen_time_show", 0);
-			}
-
-			else
-				self setClientDvar("oxygen_time_show", 0);
-		}
-    
-        wait 0.5;
-    }
-}
-
-oxygen_hud_watcher()
-{
-	dvar_state = -1;
 	while (true)
 	{
-		if (getDvarInt("oxygen_time_show"))
+		if (isDefined(self.time_in_low_gravity) && isDefined(self.time_to_death))
+			self.oxygen_timer = (self.time_to_death - self.time_in_low_gravity) / 1000;
+		else if (isDefined(self.oxygen_timer))
+			self.oxygen_timer = undefined;
+
+		if (isDefined(self.oxygen_timer) && !hud_state)
 		{
 			self send_message_to_csc("hud_anim_handler", "hud_oxygen_in");
-
-			while (getDvarInt("oxygen_time_show"))
-				wait 0.05;
+			hud_state = true;
 		}
-		else
+		else if (!isDefined(self.oxygen_timer) && hud_state)
 		{
 			self send_message_to_csc("hud_anim_handler", "hud_oxygen_out");
-
-			while (!getDvarInt("oxygen_time_show"))
-				wait 0.05;
+			hud_state = false;
 		}
 
-		wait 0.05;
+		if (!isDefined(self.oxygen_timer))
+			self setClientDvar("current_oxygen_time", "");
+		else
+			self SetClientDvar("current_oxygen_time", maps\_remix_zombiemode_utility::to_mins_short(self.oxygen_timer));
+
+		wait 0.1;
 	}
 }
 

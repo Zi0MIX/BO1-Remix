@@ -459,6 +459,8 @@ onPlayerConnect_clientDvars()
 
 	if (self maps\_remix_zombiemode_utility::get_client_dvar("hud_health_bar") == "")
 		self setClientDvar("hud_health_bar", "0");
+	if (self maps\_remix_zombiemode_utility::get_client_dvar("remix_oxygen") == "")
+		self setClientDvar("remix_oxygen", "0");
 	if (self maps\_remix_zombiemode_utility::get_client_dvar("hud_zone_name_on") == "")
 		self setClientDvar("hud_zone_name_on", "0");
 
