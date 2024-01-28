@@ -217,7 +217,7 @@ round_to_str(value, decimal_points)
 		decimal_points = 0;
 
 	val_split = strTok(string(value), ".");
-	if (val_split.size == 1);
+	if (val_split.size == 1)
 		return string(int(value));
 
 	if (!isDefined(val_split[1][decimal_points + 1]))
@@ -237,7 +237,7 @@ round_to_str(value, decimal_points)
 		if (i > decimal_points + 1)
 			continue;
 		/* This is the digit that'll decide if numbers go up */
-		else if (i == decimal_digits + 1)
+		else if (i == decimal_points + 1)
 			saved = int(int(val_split[1][i]) >= 5);
 		else
 		{
@@ -249,13 +249,13 @@ round_to_str(value, decimal_points)
 				saved = 0;
 			}
 			/* Double digit char, if propagate value caused it to go above 9 */
-			if (char_for_prepend.size > 1)
+			if (char_to_prepend.size > 1)
 			{
 				saved = 1;
-				char_for_prepend = "0";
+				char_to_prepend = "0";
 			}
 
-			new_decimal = char_for_prepend + new_decimal;
+			new_decimal = char_to_prepend + new_decimal;
 		}
 	}
 

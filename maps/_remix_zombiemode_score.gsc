@@ -16,13 +16,13 @@ player_add_points( event, mod, hit_location ,is_dog)
 
 	player_points = 0;
 	team_points = 0;
-	multiplier = get_points_multiplier();
+	multiplier = maps\_zombiemode_score::get_points_multiplier();
 
 	switch( event )
 	{
 		case "death":
-			player_points	= get_zombie_death_player_points();
-			team_points		= get_zombie_death_team_points();
+			player_points	= maps\_zombiemode_score::get_zombie_death_player_points();
+			team_points		= maps\_zombiemode_score::get_zombie_death_team_points();
 			points = player_add_points_kill_bonus( mod, hit_location );
 			if( level.zombie_vars["zombie_powerup_insta_kill_on"] == 1 && mod == "MOD_UNKNOWN" )
 			{
@@ -51,7 +51,7 @@ player_add_points( event, mod, hit_location ,is_dog)
 			break; 
 	
 		case "ballistic_knife_death":
-			player_points = get_zombie_death_player_points() + level.zombie_vars["zombie_score_bonus_melee"];
+			player_points = maps\_zombiemode_score::get_zombie_death_player_points() + level.zombie_vars["zombie_score_bonus_melee"];
 
 			if(IsDefined(self.kill_tracker))
 			{
@@ -119,16 +119,16 @@ player_add_points( event, mod, hit_location ,is_dog)
 	if ( isdefined( self.point_split_receiver ) && (event == "death" || event == "ballistic_knife_death") )
 	{
 		split_player_points = player_points - round_up_score( (player_points * self.point_split_keep_percent), 10 );
-		self.point_split_receiver add_to_player_score( split_player_points );
+		self.point_split_receiver maps\_zombiemode_score::add_to_player_score( split_player_points );
 		player_points = player_points - split_player_points;
 	}
 
 	// Add the points
-	self add_to_player_score( player_points );
+	self maps\_zombiemode_score::add_to_player_score( player_points );
 	players = get_players();
 	if ( players.size > 1 )
 	{
-		self add_to_team_score( team_points );
+		self maps\_zombiemode_score::add_to_team_score( team_points );
 	}
 
 	//stat tracking

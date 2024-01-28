@@ -139,7 +139,7 @@ do_monkey_sound( model, info )
 	}
 	else
 	{
-		thread play_sam_furnace();
+		thread maps\_zombiemode_weap_cymbal_monkey::play_sam_furnace();
 	}
 
 	level notify("attractor_positions_generated");

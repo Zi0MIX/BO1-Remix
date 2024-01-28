@@ -98,7 +98,7 @@ do_player_playvox( prefix, index, sound_to_play, waittime, category, type, overr
 	        }
 			else
 			{
-			    level thread setup_response_line( self, index, category, type ); 
+			    level thread maps\_zombiemode_audio::setup_response_line( self, index, category, type ); 
 			}
 		}
 	}
