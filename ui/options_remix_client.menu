@@ -44,12 +44,12 @@
 
 			if(dvarString(remix_health_bar) == "")
 			{
-				setDvar remix_health_bar 1;
+				setDvar remix_health_bar 0;
 			}
 
 			if(dvarString(remix_oxygen) == "")
 			{
-				setDvar remix_oxygen 1;
+				setDvar remix_oxygen 0;
 			}
 
 			LOCAL_CLOSE_ALL_BUT( options_remix_client )
