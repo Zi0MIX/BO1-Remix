@@ -120,7 +120,7 @@ buy_bouncing_betties()
 
 	level thread set_betty_visible();
 	//self.placeable_mine_name = "mine_bouncing_betty";
-	//self thread maps\_zombiemode_weapons::decide_hide_show_hint();
+	//self thread maps\_remix_zombiemode_weapons::decide_hide_show_hint();
 	self.betties_triggered = false;
 
 	while(1)

@@ -11,7 +11,7 @@ check_player_gravity()
 	for ( i = 0; i < players.size; i++ )
 	{
 		players[i] thread low_gravity_watch();
-		players[i] thread maps\_custom_hud_menu::oxygen_hud();
+		players[i] thread maps\_remix_hud_client::oxygen_hud();
 	}
 }
 

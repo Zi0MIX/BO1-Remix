@@ -8,10 +8,6 @@ zombie_moon_start_init()
 	flag_wait( "begin_spawning" );
 
 	players = get_players();
-	for(i = 0; i < players.size; i++)
-	{
-		players[i] thread maps\_custom_hud_menu::kill_hud();
-	}
 
 	level thread nml_dogs_init();
 

@@ -161,64 +161,64 @@ init_powerups()
 	}
 
 	// Random Drops
-	add_zombie_powerup( "double_points","zombie_x2_icon",	&"ZOMBIE_POWERUP_DOUBLE_POINTS", false, false, false );
-	add_zombie_powerup( "nuke", 		"zombie_bomb",		&"ZOMBIE_POWERUP_NUKE", false, false, false, 			"misc/fx_zombie_mini_nuke" );
-//	add_zombie_powerup( "nuke", 		"zombie_bomb",		&"ZOMBIE_POWERUP_NUKE", false, false, false, 			"misc/fx_zombie_mini_nuke_hotness" );
-	add_zombie_powerup( "insta_kill", 	"zombie_skull",		&"ZOMBIE_POWERUP_INSTA_KILL", false, false, false );
-	add_zombie_powerup( "full_ammo",  	"zombie_ammocan",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
+	maps\_zombiemode_powerups::add_zombie_powerup( "double_points","zombie_x2_icon",	&"ZOMBIE_POWERUP_DOUBLE_POINTS", false, false, false );
+	maps\_zombiemode_powerups::add_zombie_powerup( "nuke", 		"zombie_bomb",		&"ZOMBIE_POWERUP_NUKE", false, false, false, 			"misc/fx_zombie_mini_nuke" );
+//	maps\_zombiemode_powerups::add_zombie_powerup( "nuke", 		"zombie_bomb",		&"ZOMBIE_POWERUP_NUKE", false, false, false, 			"misc/fx_zombie_mini_nuke_hotness" );
+	maps\_zombiemode_powerups::add_zombie_powerup( "insta_kill", 	"zombie_skull",		&"ZOMBIE_POWERUP_INSTA_KILL", false, false, false );
+	maps\_zombiemode_powerups::add_zombie_powerup( "full_ammo",  	"zombie_ammocan",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 
 	if( !level.mutators["mutator_noBoards"] )
 	{
-		add_zombie_powerup( "carpenter",  	"zombie_carpenter",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
+		maps\_zombiemode_powerups::add_zombie_powerup( "carpenter",  	"zombie_carpenter",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 	}
 
 	//GZheng - Temp VO
 	//add the correct VO for firesale in the 3rd parameter of this function.
 	if( !level.mutators["mutator_noMagicBox"] )
 	{
-		add_zombie_powerup( "fire_sale",  	"zombie_firesale",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
+		maps\_zombiemode_powerups::add_zombie_powerup( "fire_sale",  	"zombie_firesale",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 	}
 
-	add_zombie_powerup( "bonfire_sale",  	"zombie_pickup_bonfire",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
+	maps\_zombiemode_powerups::add_zombie_powerup( "bonfire_sale",  	"zombie_pickup_bonfire",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 
 	//PI ESM - Temp VO
 	//TODO add the correct VO for revive all in the 3rd parameter of this function.
-	add_zombie_powerup( "all_revive",  	"zombie_revive",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
+	maps\_zombiemode_powerups::add_zombie_powerup( "all_revive",  	"zombie_revive",	&"ZOMBIE_POWERUP_MAX_AMMO", false, false, false );
 
 	//	add_zombie_special_powerup( "monkey" );
 
 	// additional special "drops"
-//	add_zombie_special_drop( "nothing" );
-	add_zombie_special_drop( "dog" );
+//	maps\_zombiemode_powerups::add_zombie_special_drop( "nothing" );
+	maps\_zombiemode_powerups::add_zombie_special_drop( "dog" );
 
 	// minigun
-	add_zombie_powerup( "minigun",	"zombie_pickup_minigun", &"ZOMBIE_POWERUP_MINIGUN", true, false, false );
+	maps\_zombiemode_powerups::add_zombie_powerup( "minigun",	"zombie_pickup_minigun", &"ZOMBIE_POWERUP_MINIGUN", true, false, false );
 
 	// free perk
-	add_zombie_powerup( "free_perk", "zombie_pickup_perk_bottle", &"ZOMBIE_POWERUP_FREE_PERK", false, false, false );
+	maps\_zombiemode_powerups::add_zombie_powerup( "free_perk", "zombie_pickup_perk_bottle", &"ZOMBIE_POWERUP_FREE_PERK", false, false, false );
 
 	// tesla
-	add_zombie_powerup( "tesla", "lightning_bolt", &"ZOMBIE_POWERUP_MINIGUN", true, false, false );
+	maps\_zombiemode_powerups::add_zombie_powerup( "tesla", "lightning_bolt", &"ZOMBIE_POWERUP_MINIGUN", true, false, false );
 
 	// random weapon
-	add_zombie_powerup( "random_weapon", "zombie_pickup_minigun", &"ZOMBIE_POWERUP_MAX_AMMO", true, false, false );
+	maps\_zombiemode_powerups::add_zombie_powerup( "random_weapon", "zombie_pickup_minigun", &"ZOMBIE_POWERUP_MAX_AMMO", true, false, false );
 
 	// bonus points
-	add_zombie_powerup( "bonus_points_player", "zombie_z_money_icon", &"ZOMBIE_POWERUP_BONUS_POINTS", true, false, false );
-	add_zombie_powerup( "bonus_points_team", "zombie_z_money_icon", &"ZOMBIE_POWERUP_BONUS_POINTS", false, false, false );
-	add_zombie_powerup( "lose_points_team", "zombie_z_money_icon", &"ZOMBIE_POWERUP_LOSE_POINTS", false, false, true );
+	maps\_zombiemode_powerups::add_zombie_powerup( "bonus_points_player", "zombie_z_money_icon", &"ZOMBIE_POWERUP_BONUS_POINTS", true, false, false );
+	maps\_zombiemode_powerups::add_zombie_powerup( "bonus_points_team", "zombie_z_money_icon", &"ZOMBIE_POWERUP_BONUS_POINTS", false, false, false );
+	maps\_zombiemode_powerups::add_zombie_powerup( "lose_points_team", "zombie_z_money_icon", &"ZOMBIE_POWERUP_LOSE_POINTS", false, false, true );
 
 	// lose perk
-	add_zombie_powerup( "lose_perk", "zombie_pickup_perk_bottle", &"ZOMBIE_POWERUP_MAX_AMMO", false, false, true );
+	maps\_zombiemode_powerups::add_zombie_powerup( "lose_perk", "zombie_pickup_perk_bottle", &"ZOMBIE_POWERUP_MAX_AMMO", false, false, true );
 
 	// empty clip
-	add_zombie_powerup( "empty_clip", "zombie_ammocan", &"ZOMBIE_POWERUP_MAX_AMMO", false, false, true );
+	maps\_zombiemode_powerups::add_zombie_powerup( "empty_clip", "zombie_ammocan", &"ZOMBIE_POWERUP_MAX_AMMO", false, false, true );
 
 	// Randomize the order
-	//randomize_powerups();
+	//maps\_zombiemode_powerups::randomize_powerups();
 	level.zombie_powerup_index = 0;
 	level.drop_tracker_index = 0;
-	//randomize_powerups();
+	//maps\_zombiemode_powerups::randomize_powerups();
 
 	// Rare powerups
 	level.rare_powerups_active = 0;
@@ -231,10 +231,10 @@ init_powerups()
 
 	if ( isdefined( level.quantum_bomb_register_result_func ) )
 	{
-		[[level.quantum_bomb_register_result_func]]( "random_powerup", ::quantum_bomb_random_powerup_result, 5, level.quantum_bomb_in_playable_area_validation_func );
-		[[level.quantum_bomb_register_result_func]]( "random_zombie_grab_powerup", ::quantum_bomb_random_zombie_grab_powerup_result, 5, level.quantum_bomb_in_playable_area_validation_func );
-		[[level.quantum_bomb_register_result_func]]( "random_weapon_powerup", ::quantum_bomb_random_weapon_powerup_result, 60, level.quantum_bomb_in_playable_area_validation_func );
-		[[level.quantum_bomb_register_result_func]]( "random_bonus_or_lose_points_powerup", ::quantum_bomb_random_bonus_or_lose_points_powerup_result, 25, level.quantum_bomb_in_playable_area_validation_func );
+		[[level.quantum_bomb_register_result_func]]( "random_powerup", maps\_zombiemode_powerups::quantum_bomb_random_powerup_result, 5, level.quantum_bomb_in_playable_area_validation_func );
+		[[level.quantum_bomb_register_result_func]]( "random_zombie_grab_powerup", maps\_zombiemode_powerups::quantum_bomb_random_zombie_grab_powerup_result, 5, level.quantum_bomb_in_playable_area_validation_func );
+		[[level.quantum_bomb_register_result_func]]( "random_weapon_powerup", maps\_zombiemode_powerups::quantum_bomb_random_weapon_powerup_result, 60, level.quantum_bomb_in_playable_area_validation_func );
+		[[level.quantum_bomb_register_result_func]]( "random_bonus_or_lose_points_powerup", maps\_zombiemode_powerups::quantum_bomb_random_bonus_or_lose_points_powerup_result, 25, level.quantum_bomb_in_playable_area_validation_func );
 	}
 }
 
@@ -272,10 +272,10 @@ powerup_hud_overlay()
 		level.powerup_hud[i].alpha = 0.8;
 	}
 
-	level thread Power_up_hud( "specialty_doublepoints_zombies", level.powerup_hud[0], -44, "zombie_powerup_point_doubler_time", "zombie_powerup_point_doubler_on" );
-	level thread Power_up_hud( "specialty_instakill_zombies", level.powerup_hud[1], -04, "zombie_powerup_insta_kill_time", "zombie_powerup_insta_kill_on" );
-	level thread Power_up_hud( "specialty_firesale_zombies", level.powerup_hud[2], 36, "zombie_powerup_fire_sale_time", "zombie_powerup_fire_sale_on" );
-	level thread Power_up_hud( "zom_icon_bonfire", level.powerup_hud[3], 116, "zombie_powerup_bonfire_sale_time", "zombie_powerup_bonfire_sale_on" );
+	level thread maps\_zombiemode_powerups::Power_up_hud( "specialty_doublepoints_zombies", level.powerup_hud[0], -44, "zombie_powerup_point_doubler_time", "zombie_powerup_point_doubler_on" );
+	level thread maps\_zombiemode_powerups::Power_up_hud( "specialty_instakill_zombies", level.powerup_hud[1], -04, "zombie_powerup_insta_kill_time", "zombie_powerup_insta_kill_on" );
+	level thread maps\_zombiemode_powerups::Power_up_hud( "specialty_firesale_zombies", level.powerup_hud[2], 36, "zombie_powerup_fire_sale_time", "zombie_powerup_fire_sale_on" );
+	level thread maps\_zombiemode_powerups::Power_up_hud( "zom_icon_bonfire", level.powerup_hud[3], 116, "zombie_powerup_bonfire_sale_time", "zombie_powerup_bonfire_sale_on" );
 
 }
 
@@ -311,9 +311,9 @@ solo_powerup_hud_overlay()
 			players[p].solo_powerup_hud[i].alpha = 0.8;
 		}
 
-		players[p] thread solo_power_up_hud( "zom_icon_minigun", players[p].solo_powerup_hud[0], 76, "zombie_powerup_minigun_time", "zombie_powerup_minigun_on" );
+		players[p] thread maps\_zombiemode_powerups::solo_power_up_hud( "zom_icon_minigun", players[p].solo_powerup_hud[0], 76, "zombie_powerup_minigun_time", "zombie_powerup_minigun_on" );
 		// the weapon powerups are mutually exclusive, so we use the same screen position
-		players[p] thread solo_power_up_hud( "specialty_lightningbolt_zombies", players[p].solo_powerup_hud[1], 76, "zombie_powerup_tesla_time", "zombie_powerup_tesla_on" );
+		players[p] thread maps\_zombiemode_powerups::solo_power_up_hud( "specialty_lightningbolt_zombies", players[p].solo_powerup_hud[1], 76, "zombie_powerup_tesla_time", "zombie_powerup_tesla_on" );
 	}
 }
 
@@ -333,7 +333,7 @@ get_next_powerup()
 		{
 			level.drop_tracker_index = 0;
 			level.zombie_powerup_index = 0;
-			randomize_powerups();
+			maps\_zombiemode_powerups::randomize_powerups();
 			level.last_powerup = true;
 		}
 
@@ -487,7 +487,7 @@ powerup_drop(drop_point)
 	if( valid_drop && level.rare_powerups_active )
 	{
 		pos = ( drop_point[0], drop_point[1], drop_point[2] + 42 );
-		if( check_for_rare_drop_override( pos ) )
+		if( maps\_zombiemode_powerups::check_for_rare_drop_override( pos ) )
 		{
 			level.zombie_vars["zombie_drop_item"] = 0;
 			valid_drop = 0;
@@ -504,7 +504,7 @@ powerup_drop(drop_point)
 
 	powerup powerup_setup();
 
-	print_powerup_drop( powerup.powerup_name, debug );
+	maps\_zombiemode_powerups::print_powerup_drop( powerup.powerup_name, debug );
 
 	if(level.last_powerup)
 	{
@@ -523,8 +523,8 @@ powerup_drop(drop_point)
 		level.last_powerup = false;
 	}
 
-	powerup thread powerup_timeout();
-	powerup thread powerup_wobble();
+	powerup thread maps\_zombiemode_powerups::powerup_timeout();
+	powerup thread maps\_zombiemode_powerups::powerup_wobble();
 	powerup thread powerup_grab();
 
 	level.zombie_vars["zombie_drop_item"] = 0;
@@ -576,7 +576,7 @@ powerup_setup( powerup_override )
 			level.random_weapon_powerups = [];
 		}
 		level.random_weapon_powerups[level.random_weapon_powerups.size] = self;
-		self thread cleanup_random_weapon_list();
+		self thread maps\_zombiemode_powerups::cleanup_random_weapon_list();
 
 		if ( IsDefined( level.zombie_weapons[self.weapon].upgrade_name ) && !RandomInt( 4 ) ) // 25% chance
 		{
@@ -631,7 +631,7 @@ powerup_grab()
 {
 	if ( isdefined( self ) && self.zombie_grabbable )
 	{
-		self thread powerup_zombie_grab();
+		self thread maps\_zombiemode_powerups::powerup_zombie_grab();
 		return;
 	}
 
@@ -668,7 +668,7 @@ powerup_grab()
 						level thread nuke_powerup( self );
 
 						//chrisp - adding powerup VO sounds
-						players[i] thread powerup_vo("nuke");
+						players[i] thread maps\_zombiemode_powerups::powerup_vo("nuke");
 						zombies = getaiarray("axis");
 						players[i].zombie_nuked = get_array_of_closest( self.origin, zombies );
 						players[i] notify("nuke_triggered");
@@ -676,15 +676,15 @@ powerup_grab()
 						break;
 					case "full_ammo":
 						level thread full_ammo_powerup( self );
-						players[i] thread powerup_vo("full_ammo");
+						players[i] thread maps\_zombiemode_powerups::powerup_vo("full_ammo");
 						break;
 					case "double_points":
 						level thread double_points_powerup( self );
-						players[i] thread powerup_vo("double_points");
+						players[i] thread maps\_zombiemode_powerups::powerup_vo("double_points");
 						break;
 					case "insta_kill":
 						level thread insta_kill_powerup( self );
-						players[i] thread powerup_vo("insta_kill");
+						players[i] thread maps\_zombiemode_powerups::powerup_vo("insta_kill");
 						break;
 					case "carpenter":
 						if(isDefined(level.use_new_carpenter_func))
@@ -693,58 +693,58 @@ powerup_grab()
 						}
 						else
 						{
-							level thread start_carpenter( self.origin );
+							level thread maps\_zombiemode_powerups::start_carpenter( self.origin );
 						}
-						players[i] thread powerup_vo("carpenter");
+						players[i] thread maps\_zombiemode_powerups::powerup_vo("carpenter");
 						break;
 
 					case "fire_sale":
-						level thread start_fire_sale( self );
-						players[i] thread powerup_vo("firesale");
+						level thread maps\_zombiemode_powerups::start_fire_sale( self );
+						players[i] thread maps\_zombiemode_powerups::powerup_vo("firesale");
 						break;
 
 					case "bonfire_sale":
-						level thread start_bonfire_sale( self );
-						players[i] thread powerup_vo("firesale");
+						level thread maps\_zombiemode_powerups::start_bonfire_sale( self );
+						players[i] thread maps\_zombiemode_powerups::powerup_vo("firesale");
 						break;
 
 					case "minigun":
 						level thread minigun_weapon_powerup( players[i] );
-						players[i] thread powerup_vo( "minigun" );
+						players[i] thread maps\_zombiemode_powerups::powerup_vo( "minigun" );
 						break;
 
 					case "free_perk":
-						level thread free_perk_powerup( self );
-						//players[i] thread powerup_vo( "insta_kill" );
+						level thread maps\_zombiemode_powerups::free_perk_powerup( self );
+						//players[i] thread maps\_zombiemode_powerups::powerup_vo( "insta_kill" );
 						break;
 
 					case "all_revive":
-						level thread start_revive_all( self );
-						players[i] thread powerup_vo("revive");
+						level thread maps\_zombiemode_powerups::start_revive_all( self );
+						players[i] thread maps\_zombiemode_powerups::powerup_vo("revive");
 						break;
 
 					case "tesla":
 						level thread tesla_weapon_powerup( players[i] );
 						level thread tesla_melee_watcher(players[i]);
-						players[i] thread powerup_vo( "tesla" ); // TODO: Audio should uncomment this once the sounds have been set up
+						players[i] thread maps\_zombiemode_powerups::powerup_vo( "tesla" ); // TODO: Audio should uncomment this once the sounds have been set up
 						break;
 
 					case "random_weapon":
-						if ( !level random_weapon_powerup( self, players[i] ) )
+						if ( !level maps\_zombiemode_powerups::random_weapon_powerup( self, players[i] ) )
 						{
 							continue;
 						}
-						// players[i] thread powerup_vo( "random_weapon" ); // TODO: Audio should uncomment this once the sounds have been set up
+						// players[i] thread maps\_zombiemode_powerups::powerup_vo( "random_weapon" ); // TODO: Audio should uncomment this once the sounds have been set up
 						break;
 
 					case "bonus_points_player":
-						level thread bonus_points_player_powerup( self, players[i] );
-						players[i] thread powerup_vo( "bonus_points_solo" ); // TODO: Audio should uncomment this once the sounds have been set up
+						level thread maps\_zombiemode_powerups::bonus_points_player_powerup( self, players[i] );
+						players[i] thread maps\_zombiemode_powerups::powerup_vo( "bonus_points_solo" ); // TODO: Audio should uncomment this once the sounds have been set up
 						break;
 
 					case "bonus_points_team":
-						level thread bonus_points_team_powerup( self );
-						players[i] thread powerup_vo( "bonus_points_team" ); // TODO: Audio should uncomment this once the sounds have been set up
+						level thread maps\_zombiemode_powerups::bonus_points_team_powerup( self );
+						players[i] thread maps\_zombiemode_powerups::powerup_vo( "bonus_points_team" ); // TODO: Audio should uncomment this once the sounds have been set up
 						break;
 
 					default:
@@ -820,7 +820,7 @@ nuke_powerup( drop_item )
 	location = drop_item.origin;
 
 	PlayFx( drop_item.fx, location );
-	level thread nuke_flash();
+	level thread maps\_zombiemode_powerups::nuke_flash();
 
 	wait( 0.5 );
 
@@ -911,22 +911,6 @@ double_points_powerup( drop_item )
 	level.zombie_vars["zombie_point_scalar"] = 1;
 }
 
-double_points_powerup( drop_item )
-{
-	level notify ("powerup points scaled");
-	level endon ("powerup points scaled");
-
-	//	players = get_players();
-	//	array_thread(level,::point_doubler_on_hud, drop_item);
-	level thread point_doubler_on_hud( drop_item );
-
-	level.zombie_vars["zombie_point_scalar"] = 2;
-
-	wait self.zombie_vars["zombie_powerup_point_doubler_time"];
-
-	level.zombie_vars["zombie_point_scalar"] = 1;
-}
-
 full_ammo_powerup( drop_item )
 {
 	players = get_players();
@@ -979,8 +963,8 @@ full_ammo_powerup( drop_item )
 			}
 		}
 	}
-	//	array_thread (players, ::full_ammo_on_hud, drop_item);
-	level thread full_ammo_on_hud( drop_item );
+	//	array_thread (players, maps\_zombiemode_powerups::full_ammo_on_hud, drop_item);
+	level thread maps\_zombiemode_powerups::full_ammo_on_hud( drop_item );
 }
 
 insta_kill_powerup( drop_item )
@@ -1244,8 +1228,8 @@ minigun_weapon_powerup( ent_player, time )
 
 	ent_player.zombie_vars[ "zombie_powerup_minigun_on" ] = true;
 
-	level thread minigun_weapon_powerup_countdown( ent_player, "minigun_time_over", time );
-	level thread minigun_weapon_powerup_replace( ent_player, "minigun_time_over" );
+	level thread maps\_zombiemode_powerups::minigun_weapon_powerup_countdown( ent_player, "minigun_time_over", time );
+	level thread maps\_zombiemode_powerups::minigun_weapon_powerup_replace( ent_player, "minigun_time_over" );
 	level thread minigun_weapon_powerup_weapon_change( ent_player, "minigun_time_over" );
 }
 
@@ -1367,7 +1351,7 @@ tesla_weapon_powerup( ent_player, time )
 	ent_player._show_solo_hud = true;
 
 	// make sure weapons are replaced properly if the player is downed
-	level._zombie_tesla_powerup_last_stand_func = ::tesla_watch_gunner_downed;
+	level._zombie_tesla_powerup_last_stand_func = maps\_zombiemode_powerups::tesla_watch_gunner_downed;
 	ent_player.has_tesla = true;
 	ent_player.has_powerup_weapon = true;
 
@@ -1381,9 +1365,9 @@ tesla_weapon_powerup( ent_player, time )
 
 	ent_player.zombie_vars[ "zombie_powerup_tesla_on" ] = true;
 
-	level thread tesla_weapon_powerup_countdown( ent_player, "tesla_time_over", time );
-	level thread tesla_weapon_powerup_replace( ent_player, "tesla_time_over" );
-	level thread tesla_weapon_powerup_weapon_change( ent_player, "tesla_time_over" );
+	level thread maps\_zombiemode_powerups::tesla_weapon_powerup_countdown( ent_player, "tesla_time_over", time );
+	level thread maps\_zombiemode_powerups::tesla_weapon_powerup_replace( ent_player, "tesla_time_over" );
+	level thread maps\_zombiemode_powerups::tesla_weapon_powerup_weapon_change( ent_player, "tesla_time_over" );
 }
 
 tesla_weapon_powerup_weapon_change( ent_player, str_gun_return_notify )
@@ -1433,5 +1417,44 @@ tesla_weapon_powerup_weapon_change( ent_player, str_gun_return_notify )
 	if (isDefined(flag("tesla_init")))
 		flag_clear("tesla_init");
 
-    level thread tesla_weapon_powerup_remove( ent_player, str_gun_return_notify, false );
+    level thread maps\_zombiemode_powerups::tesla_weapon_powerup_remove( ent_player, str_gun_return_notify, false );
+}
+
+watch_for_drop()
+{
+	flag_wait( "begin_spawning" );
+
+	players = get_players();
+	score_to_drop = ( players.size * level.zombie_vars["zombie_score_start_"+players.size+"p"] ) + level.zombie_vars["zombie_powerup_drop_increment"];
+
+	while (1)
+	{
+		flag_wait( "zombie_drop_powerups" );
+
+		players = get_players();
+
+		curr_total_score = 0;
+
+		for (i = 0; i < players.size; i++)
+		{
+			curr_total_score += players[i].score_total;
+		}
+
+		if (curr_total_score > score_to_drop )
+		{
+			if(level.zombie_vars["zombie_powerup_drop_increment"] < 50000)
+			{
+				level.zombie_vars["zombie_powerup_drop_increment"] *= 1.16; //1.14
+			}
+			else
+			{
+				level.zombie_vars["zombie_powerup_drop_increment"] = 50000;
+			}
+			score_to_drop = curr_total_score + level.zombie_vars["zombie_powerup_drop_increment"];
+			level.zombie_vars["zombie_drop_item"] = 1;
+			//iprintln(level.zombie_vars["zombie_powerup_drop_increment"]); // testing
+		}
+
+		wait( 0.5 );
+	}
 }

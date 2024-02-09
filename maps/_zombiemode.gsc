@@ -5,9 +5,6 @@
 #include maps\_music;
 #include maps\_zombiemode_utility;
 #include maps\_busing;
-#include maps\_custom_hud;
-#include maps\_custom_hud_menu;
-#include maps\_custom_hud_stats;
 
 #using_animtree( "generic_human" );
 

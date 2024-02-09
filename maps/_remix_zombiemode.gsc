@@ -24,7 +24,7 @@ remix_main()
 	/* Initialize level var tracking last special round */
 	level.last_special_round = -1;
 
-    init_hud_dvars();
+    maps\_remix_hud_client::init_hud_dvars();
 
 	//isClientPluto("com_useConfig", "");
 
@@ -452,7 +452,7 @@ onPlayerConnect_clientDvars()
 		// ammo on HUD never fades away
 		"hud_fade_ammodisplay", "0",
 		// make sure zombies are spawning
-		"ai_disableSpawn", "0",
+		"ai_disableSpawn", "0"
 	);
 
 	self SetDepthOfField( 0, 0, 512, 4000, 4, 0 );
@@ -487,7 +487,7 @@ round_think()
 		level.zombie_last_run_time = GetTime();	// Resets the last time a zombie ran
 
         level thread maps\_zombiemode_audio::change_zombie_music( "round_start" );
-		chalk_one_up();
+		maps\_zombiemode::chalk_one_up();
 		//		round_text( &"ZOMBIE_ROUND_BEGIN" );
 
 		maps\_zombiemode_powerups::powerup_round_start();
@@ -497,7 +497,7 @@ round_think()
 
 		//array_thread( players, maps\_zombiemode_ability::giveHardpointItems );
 
-		level thread award_grenades_for_survivors();
+		level thread maps\_zombiemode::award_grenades_for_survivors();
 
 		bbPrint( "zombie_rounds: round %d player_count %d", level.round_number, players.size );
 
@@ -517,12 +517,12 @@ round_think()
 
 		if ( 1 != players.size )
 		{
-			level thread spectators_respawn();
+			level thread maps\_zombiemode::spectators_respawn();
 			//level thread last_stand_revive();
 		}
 
 		//		round_text( &"ZOMBIE_ROUND_END" );
-		level chalk_round_over();
+		level maps\_zombiemode::chalk_round_over();
 
 		// here's the difficulty increase over time area
 		timer = level.zombie_vars["zombie_spawn_delay"];
@@ -606,7 +606,7 @@ can_revive( reviver )
 
 player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime )
 {
-	iDamage = self check_player_damage_callbacks( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime );
+	iDamage = self maps\_zombiemode::check_player_damage_callbacks( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime );
 	if ( !iDamage )
 	{
 		return 0;
@@ -664,7 +664,7 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 		if( (isDefined( eAttacker.is_zombie ) && eAttacker.is_zombie) || level.mutators["mutator_friendlyFire"] )
 		{
 			self.ignoreAttacker = eAttacker;
-			self thread remove_ignore_attacker();
+			self thread maps\_zombiemode::remove_ignore_attacker();
 
 			if ( isdefined( eAttacker.custom_damage_func ) )
 			{
@@ -813,7 +813,7 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 	if ( solo_death || non_solo_death ) // if only one player on their last life or any game that started with more than one player
 	{
 		self thread maps\_laststand::PlayerLastStand( eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime );
-		self player_fake_death();
+		self maps\_zombiemode::player_fake_death();
 	}
 
 	if( count == players.size )
@@ -833,7 +833,7 @@ player_damage_override( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, 
 			}
 			else
 			{
-				self thread wait_and_revive();
+				self thread maps\_zombiemode::wait_and_revive();
 				return finalDamage;
 			}
 		}
@@ -1533,7 +1533,7 @@ end_game()
 	level.zombie_vars["zombie_powerup_point_doubler_time"] = 0;
 	wait 0.1;
 
-	update_leaderboards();
+	maps\_zombiemode::update_leaderboards();
 
 	game_over = [];
 	survived = [];
@@ -1612,7 +1612,7 @@ end_game()
 		//players[i] maps\_zombiemode_solo::solo_destroy_lives_hud();
 		//players[i] maps\_zombiemode_ability::clear_hud();
 	}
-	destroy_chalk_hud();
+	maps\_zombiemode::destroy_chalk_hud();
 
 	UploadStats();
 
@@ -1620,11 +1620,11 @@ end_game()
 
 	//play_sound_at_pos( "end_of_game", ( 0, 0, 0 ) );
 	wait( 2 );
-	intermission();
+	maps\_zombiemode::intermission();
 	wait( level.zombie_vars["zombie_intermission_time"] );
 
 	level notify( "stop_intermission" );
-	array_thread( get_players(), ::player_exit_level );
+	array_thread( get_players(), maps\_zombiemode::player_exit_level );
 
 	bbPrint( "zombie_epilogs: rounds %d", level.round_number );
 

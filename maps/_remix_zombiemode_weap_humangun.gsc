@@ -14,10 +14,9 @@ humangun_on_player_connect()
 	{
 		level waittill( "connecting", player );
 		player thread wait_for_humangun_fired();
-        player thread maps\_custom_hud::instakill_timer_hud();
+        player thread maps\_remix_hud::instakill_timer_hud();
 	}
 }
-
 
 wait_for_humangun_fired()
 {

@@ -3,13 +3,18 @@
 #include maps\_zombiemode_utility;
 #include maps\_zombiemode_audio;
 
+post_init()
+{
+	
+}
+
 add_remix_weapons()
 {
 	// Custom weapons
-	add_zombie_weapon( "stoner63_zm",				"stoner63_upgraded_zm",					&"ZOMBIE_WEAPON_COMMANDO",				100,	"mg",			"",		undefined );
-	add_zombie_weapon( "ppsh_zm",					"ppsh_upgraded_zm",						&"ZOMBIE_WEAPON_COMMANDO",				100,	"smg",			"",		undefined );
-	add_zombie_weapon( "ak47_zm",					"ak47_ft_upgraded_zm",					&"ZOMBIE_WEAPON_COMMANDO",				100,	"assault",			"",		undefined );
-    add_zombie_weapon( "blundergat_zm",				"blundergat_upgraded_zm",				&"ZOMBIE_WEAPON_BLUNDERGAT",			1500,	"shotgun",			"",		undefined );
+	maps\_zombiemode_weapons::add_zombie_weapon( "stoner63_zm",				"stoner63_upgraded_zm",					&"ZOMBIE_WEAPON_COMMANDO",				100,	"mg",			"",		undefined );
+	maps\_zombiemode_weapons::add_zombie_weapon( "ppsh_zm",					"ppsh_upgraded_zm",						&"ZOMBIE_WEAPON_COMMANDO",				100,	"smg",			"",		undefined );
+	maps\_zombiemode_weapons::add_zombie_weapon( "ak47_zm",					"ak47_ft_upgraded_zm",					&"ZOMBIE_WEAPON_COMMANDO",				100,	"assault",			"",		undefined );
+    maps\_zombiemode_weapons::add_zombie_weapon( "blundergat_zm",				"blundergat_upgraded_zm",				&"ZOMBIE_WEAPON_BLUNDERGAT",			1500,	"shotgun",			"",		undefined );
 }
 
 // sharedbox
@@ -286,8 +291,8 @@ treasure_chest_init()
 		chests = GetEntArray( "treasure_chest_use", "targetname" );
 		for( i=0; i < chests.size; i++ )
 		{
-			chests[i] get_chest_pieces();
-			chests[i] hide_chest();
+			chests[i] maps\_zombiemode_weapons::get_chest_pieces();
+			chests[i] maps\_zombiemode_weapons::hide_chest();
 		}
 		return;
 	}
@@ -303,7 +308,7 @@ treasure_chest_init()
 		level.chests[i].box_hacks = [];
 
 		level.chests[i].orig_origin = level.chests[i].origin;
-		level.chests[i] get_chest_pieces();
+		level.chests[i] maps\_zombiemode_weapons::get_chest_pieces();
 
 		if ( isDefined( level.chests[i].zombie_cost ) )
 		{
@@ -331,20 +336,20 @@ treasure_chest_init()
 				{
 					if(level.chests[i].script_noteworthy == "alleyway_chest")
 					{
-						level.chests[i] hide_rubble();
-						level.chests[i] hide_chest();
+						level.chests[i] maps\_zombiemode_weapons::hide_rubble();
+						level.chests[i] maps\_zombiemode_weapons::hide_chest();
 						level.chests = array_remove_nokeys(level.chests, level.chests[i]);
 					}
 					else if(level.chests[i].script_noteworthy == "control_chest")
 					{
-						level.chests[i] hide_chest();
-						level.chests[i] hide_rubble();
+						level.chests[i] maps\_zombiemode_weapons::hide_chest();
+						level.chests[i] maps\_zombiemode_weapons::hide_rubble();
 						level.chests = array_remove_nokeys(level.chests, level.chests[i]);
 					}
 					else if(level.chests[i].script_noteworthy == "start_chest")
 					{
-						level.chests[i] hide_chest();
-						level.chests[i] hide_rubble();
+						level.chests[i] maps\_zombiemode_weapons::hide_chest();
+						level.chests[i] maps\_zombiemode_weapons::hide_rubble();
 						level.chests = array_remove_nokeys(level.chests, level.chests[i]);
 					}
 				}
@@ -353,20 +358,20 @@ treasure_chest_init()
 				{
 					if(level.chests[i].script_noteworthy == "dressing_chest")
 					{
-						level.chests[i] hide_rubble();
-						level.chests[i] hide_chest();
+						level.chests[i] maps\_zombiemode_weapons::hide_rubble();
+						level.chests[i] maps\_zombiemode_weapons::hide_chest();
 						level.chests = array_remove_nokeys(level.chests, level.chests[i]);
 					}
 					else if(level.chests[i].script_noteworthy == "dining_chest")
 					{
-						level.chests[i] hide_chest();
-						level.chests[i] hide_rubble();
+						level.chests[i] maps\_zombiemode_weapons::hide_chest();
+						level.chests[i] maps\_zombiemode_weapons::hide_rubble();
 						level.chests = array_remove_nokeys(level.chests, level.chests[i]);
 					}
 					else if(level.chests[i].script_noteworthy == "stage_chest")
 					{
-						level.chests[i] hide_chest();
-						level.chests[i] hide_rubble();
+						level.chests[i] maps\_zombiemode_weapons::hide_chest();
+						level.chests[i] maps\_zombiemode_weapons::hide_rubble();
 						level.chests = array_remove_nokeys(level.chests, level.chests[i]);
 					}
 				}
@@ -375,8 +380,8 @@ treasure_chest_init()
 				{
 					if (level.chests[i].script_noteworthy == "theater_chest")
 					{
-						level.chests[i] hide_rubble();
-						level.chests[i] hide_chest();
+						level.chests[i] maps\_zombiemode_weapons::hide_rubble();
+						level.chests[i] maps\_zombiemode_weapons::hide_chest();
 						level.chests = array_remove_nokeys(level.chests, level.chests[i]);
 					}
 				}
@@ -386,8 +391,8 @@ treasure_chest_init()
 			{
 				if(level.chests[i].script_noteworthy == "nw_chest")
 				{
-					level.chests[i] hide_rubble();
-					level.chests[i] hide_chest();
+					level.chests[i] maps\_zombiemode_weapons::hide_rubble();
+					level.chests[i] maps\_zombiemode_weapons::hide_chest();
 					level.chests = array_remove_nokeys(level.chests, level.chests[i]);
 				}
 			}
@@ -396,8 +401,8 @@ treasure_chest_init()
 			{
 				if(level.chests[i].script_noteworthy == "chest3")
 				{
-					level.chests[i] hide_rubble();
-					level.chests[i] hide_chest();
+					level.chests[i] maps\_zombiemode_weapons::hide_rubble();
+					level.chests[i] maps\_zombiemode_weapons::hide_chest();
 					level.chests = array_remove_nokeys(level.chests, level.chests[i]);
 				}
 			}
@@ -431,12 +436,12 @@ init_starting_chest_location()
 			//if(IsSubStr(level.chests[i].script_noteworthy,  "start_chest" ))
 			{
 				level.chest_index = i;
-				level.chests[level.chest_index] hide_rubble();
+				level.chests[level.chest_index] maps\_zombiemode_weapons::hide_rubble();
 				level.chests[level.chest_index].hidden = false;
 			}
 			else
 			{
-				level.chests[i] hide_chest();
+				level.chests[i] maps\_zombiemode_weapons::hide_chest();
 			}
         }
 		else if(level.script == "zombie_theater")
@@ -446,12 +451,12 @@ init_starting_chest_location()
 				if(IsSubStr(level.chests[i].script_noteworthy,  "dining_chest" ))
 				{
 					level.chest_index = i;
-					level.chests[level.chest_index] hide_rubble();
+					level.chests[level.chest_index] maps\_zombiemode_weapons::hide_rubble();
 					level.chests[level.chest_index].hidden = false;
 				}
 				else
 				{
-					level.chests[i] hide_chest();
+					level.chests[i] maps\_zombiemode_weapons::hide_chest();
 				}
 			}
 			// Same starting box for hellroom and no power
@@ -460,12 +465,12 @@ init_starting_chest_location()
 				if(IsSubStr(level.chests[i].script_noteworthy,  "crematorium_chest" ))
 				{
 					level.chest_index = i;
-					level.chests[level.chest_index] hide_rubble();
+					level.chests[level.chest_index] maps\_zombiemode_weapons::hide_rubble();
 					level.chests[level.chest_index].hidden = false;
 				}
 				else
 				{
-					level.chests[i] hide_chest();
+					level.chests[i] maps\_zombiemode_weapons::hide_chest();
 				}
 			}
         }
@@ -474,12 +479,12 @@ init_starting_chest_location()
             if(IsSubStr(level.chests[i].script_noteworthy, "residence_chest" ))
                 {
                     level.chest_index = i;
-                    level.chests[level.chest_index] hide_rubble();
+                    level.chests[level.chest_index] maps\_zombiemode_weapons::hide_rubble();
                     level.chests[level.chest_index].hidden = false;
                 }
                 else
                 {
-                    level.chests[i] hide_chest();
+                    level.chests[i] maps\_zombiemode_weapons::hide_chest();
                 }
         }
         else if(level.script == "zombie_temple")
@@ -487,12 +492,12 @@ init_starting_chest_location()
             if(IsSubStr(level.chests[i].script_noteworthy, "caves1_chest" ))
                 {
                     level.chest_index = i;
-                    level.chests[level.chest_index] hide_rubble();
+                    level.chests[level.chest_index] maps\_zombiemode_weapons::hide_rubble();
                     level.chests[level.chest_index].hidden = false;
                 }
                 else
                 {
-                    level.chests[i] hide_chest();
+                    level.chests[i] maps\_zombiemode_weapons::hide_chest();
                 }
         }
         else if(level.script == "zombie_moon")
@@ -500,12 +505,12 @@ init_starting_chest_location()
             if(IsSubStr(level.chests[i].script_noteworthy, "bridge_chest" ))
                 {
                     level.chest_index = i;
-                    level.chests[level.chest_index] hide_rubble();
+                    level.chests[level.chest_index] maps\_zombiemode_weapons::hide_rubble();
                     level.chests[level.chest_index].hidden = false;
                 }
                 else
                 {
-                    level.chests[i] hide_chest();
+                    level.chests[i] maps\_zombiemode_weapons::hide_chest();
                 }
         }
         else if(level.script == "zombie_ww")
@@ -513,12 +518,12 @@ init_starting_chest_location()
             if(level.chests[i].script_noteworthy == "start_chest")
             {
                 level.chest_index = i;
-                level.chests[level.chest_index] hide_rubble();
+                level.chests[level.chest_index] maps\_zombiemode_weapons::hide_rubble();
                 level.chests[level.chest_index].hidden = false;
             }
             else
             {
-                level.chests[i] hide_chest();
+                level.chests[i] maps\_zombiemode_weapons::hide_chest();
             }
         }
 
@@ -526,12 +531,12 @@ init_starting_chest_location()
         {
             if ( start_chest_found || (IsDefined( level.chests[i].start_exclude ) && level.chests[i].start_exclude == 1) )
             {
-                level.chests[i] hide_chest();
+                level.chests[i] maps\_zombiemode_weapons::hide_chest();
             }
             else
             {
                 level.chest_index = i;
-                level.chests[level.chest_index] hide_rubble();
+                level.chests[level.chest_index] maps\_zombiemode_weapons::hide_rubble();
                 level.chests[level.chest_index].hidden = false;
                 start_chest_found = true;
             }
@@ -544,12 +549,12 @@ init_starting_chest_location()
             // Pick from any box marked as the "start_chest"
             if ( start_chest_found || !IsDefined(level.chests[i].script_noteworthy ) || ( !IsSubStr( level.chests[i].script_noteworthy, "start_chest" ) ) )
             {
-                level.chests[i] hide_chest();
+                level.chests[i] maps\_zombiemode_weapons::hide_chest();
             }
             else
             {
                 level.chest_index = i;
-                level.chests[level.chest_index] hide_rubble();
+                level.chests[level.chest_index] maps\_zombiemode_weapons::hide_rubble();
                 level.chests[level.chest_index].hidden = false;
                 start_chest_found = true;
             }
@@ -566,7 +571,7 @@ init_starting_chest_location()
     // Show the beacon
     if( !isDefined( level.pandora_show_func ) )
     {
-        level.pandora_show_func = ::default_pandora_show_func;
+        level.pandora_show_func = maps\_zombiemode_weapons::default_pandora_show_func;
     }
 
 	// if (isdefined(level.chests[level.chest_index]))
@@ -681,7 +686,7 @@ treasure_chest_think()
 	self.chest_origin thread treasure_chest_weapon_spawn( self, user );
 
 	// the glowfx
-	self.chest_origin thread treasure_chest_glowfx();
+	self.chest_origin thread maps\_zombiemode_weapons::treasure_chest_glowfx();
 
 	// take away usability until model is done randomizing
 	self disable_trigger();
@@ -698,7 +703,7 @@ treasure_chest_think()
 	{
 		//CA AUDIO: 01/12/10 - Changed dialog to use correct function
 		//self.chest_user maps\_zombiemode_audio::create_and_play_dialog( "general", "box_move" );
-		self thread treasure_chest_move( self.chest_user );
+		self thread maps\_zombiemode_weapons::treasure_chest_move( self.chest_user );
 	}
 	else
 	{
@@ -772,7 +777,7 @@ treasure_chest_think()
 				else if( grabber == level )
 				{
 					// it timed out
-					unacquire_weapon_toggle( self.chest_origin.weapon_string );
+					maps\_zombiemode_weapons::unacquire_weapon_toggle( self.chest_origin.weapon_string );
 					self.timedOut = true;
 					if(is_player_valid(user))
 					{
@@ -843,7 +848,7 @@ decide_hide_show_hint( endon_notify )
 
 	if(!IsDefined(level._weapon_show_hint_choke))
 	{
-		level thread weapon_show_hint_choke();
+		level thread maps\_zombiemode_weapons::weapon_show_hint_choke();
 	}
 
 	use_choke = false;
@@ -890,7 +895,7 @@ decide_hide_show_hint( endon_notify )
 						max_ammo = 3;
 					}
 
-					if( players[i] can_buy_weapon() && player_ammo < max_ammo)
+					if( players[i] maps\_zombiemode_weapons::can_buy_weapon() && player_ammo < max_ammo)
 					{	
 						self SetInvisibleToPlayer( players[i], false );
 					}
@@ -907,7 +912,7 @@ decide_hide_show_hint( endon_notify )
 			players = get_players();
 			for( i = 0; i < players.size; i++ )
 			{
-				if( players[i] can_buy_weapon())
+				if( players[i] maps\_zombiemode_weapons::can_buy_weapon())
 				{
 					self SetInvisibleToPlayer( players[i], false );
 				}
@@ -986,7 +991,7 @@ treasure_chest_lid_close( timedOut )
 treasure_chest_weapon_spawn( chest, player, respin )
 {
 	self endon("box_hacked_respin");
-	self thread clean_up_hacked_box();
+	self thread maps\_zombiemode_weapons::clean_up_hacked_box();
 	assert(IsDefined(player));
 	// spawn the model
 //	model = spawn( "script_model", self.origin );
@@ -1029,11 +1034,11 @@ treasure_chest_weapon_spawn( chest, player, respin )
 
 		if( i + 1 < number_cycles )
 		{
-			rand = treasure_chest_ChooseRandomWeapon( player );
+			rand = maps\_zombiemode_weapons::treasure_chest_ChooseRandomWeapon( player );
 		}
 		else
 		{
-			rand = treasure_chest_ChooseWeightedRandomWeapon( player );
+			rand = maps\_zombiemode_weapons::treasure_chest_ChooseWeightedRandomWeapon( player );
 
 /#
 			weapon = GetDvar( #"scr_force_weapon" );
@@ -1064,12 +1069,12 @@ treasure_chest_weapon_spawn( chest, player, respin )
 	self.weapon_model setmodel( modelname );
 	self.weapon_model useweaponhidetags( rand );
 
-	if ( weapon_is_dual_wield(rand))
+	if ( maps\_zombiemode_weapons::weapon_is_dual_wield(rand))
 	{
 		self.weapon_model_dw = spawn( "script_model", self.weapon_model.origin - ( 3, 3, 3 ) ); // extra model for dualwield weapons
 		self.weapon_model_dw.angles = self.angles +( 0, 90, 0 );
 
-		self.weapon_model_dw setmodel( get_left_hand_weapon_model_name( rand ) );
+		self.weapon_model_dw setmodel( maps\_zombiemode_weapons::get_left_hand_weapon_model_name( rand ) );
 		self.weapon_model_dw useweaponhidetags( rand );
 	}
 
@@ -1208,7 +1213,7 @@ treasure_chest_weapon_spawn( chest, player, respin )
 	}
 	else
 	{
-		acquire_weapon_toggle( rand, player );
+		maps\_zombiemode_weapons::acquire_weapon_toggle( rand, player );
 
 		//turn off power weapon, since player just got one
 		if( rand == "tesla_gun_zm" || rand == "ray_gun_zm" || rand == "thundergun_zm" || rand == "humangun_zm" || rand == "sniper_explosive_zm" || rand == "microwavegundw_zm" || rand == "shrink_ray_zm" || rand == "blundergat_zm" )
@@ -1348,7 +1353,7 @@ treasure_chest_give_weapon( weapon_string )
 				}
 
 				self TakeWeapon( current_weapon );
-				unacquire_weapon_toggle( current_weapon );
+				maps\_zombiemode_weapons::unacquire_weapon_toggle( current_weapon );
 				if ( current_weapon == "m1911_zm" )
 				{
 					self.last_pistol_swap = GetTime();
@@ -1368,7 +1373,7 @@ treasure_chest_give_weapon( weapon_string )
 	if( weapon_string == "zombie_cymbal_monkey" )
 	{
 		self maps\_zombiemode_weap_cymbal_monkey::player_give_cymbal_monkey();
-		self play_weapon_vo(weapon_string);
+		self maps\_zombiemode_weapons::play_weapon_vo(weapon_string);
 		return;
 	}
 	else if ( weapon_string == "knife_ballistic_zm" && self HasWeapon( "bowie_knife_zm" ) )
@@ -1388,7 +1393,7 @@ treasure_chest_give_weapon( weapon_string )
 	self GiveStartAmmo( weapon_string );
 	self SwitchToWeapon( weapon_string );
 
-	self play_weapon_vo(weapon_string);
+	self maps\_zombiemode_weapons::play_weapon_vo(weapon_string);
 
 }
 
@@ -1423,7 +1428,7 @@ weapon_give( weapon, is_upgrade )
 					self notify( "zmb_lost_knife" );
 				}
 				self TakeWeapon( current_weapon );
-				unacquire_weapon_toggle( current_weapon );
+				maps\_zombiemode_weapons::unacquire_weapon_toggle( current_weapon );
 				if ( current_weapon == "m1911_zm" )
 				{
 					self.last_pistol_swap = GetTime();
@@ -1443,26 +1448,26 @@ weapon_give( weapon, is_upgrade )
 	if( weapon == "zombie_cymbal_monkey" )
 	{
 		self maps\_zombiemode_weap_cymbal_monkey::player_give_cymbal_monkey();
-		self play_weapon_vo( weapon );
+		self maps\_zombiemode_weapons::play_weapon_vo( weapon );
 		return;
 	}
 
 	self play_sound_on_ent( "purchase" );
 
-	if ( !is_weapon_upgraded( weapon ) )
+	if ( !maps\_zombiemode_weapons::is_weapon_upgraded( weapon ) )
 	{
 		self GiveWeapon( weapon );
 	}
 	else
 	{
-		self GiveWeapon( weapon, 0, self get_pack_a_punch_weapon_options( weapon ) );
+		self GiveWeapon( weapon, 0, self maps\_zombiemode_weapons::get_pack_a_punch_weapon_options( weapon ) );
 	}
 
-	acquire_weapon_toggle( weapon, self );
+	maps\_zombiemode_weapons::acquire_weapon_toggle( weapon, self );
 	self GiveStartAmmo( weapon );
 	self SwitchToWeapon( weapon );
 
-	self play_weapon_vo(weapon);
+	self maps\_zombiemode_weapons::play_weapon_vo(weapon);
 
 	//fix grenade ammo
 	if(is_lethal_grenade(weapon) && self GetWeaponAmmoClip(weapon) > 4)
@@ -1511,7 +1516,7 @@ ammo_give( weapon )
 	else
 	{
 		// Ammo belongs to secondary weapon
-		if( self has_weapon_or_upgrade( weapon ) )
+		if( self maps\_zombiemode_weapons::has_weapon_or_upgrade( weapon ) )
 		{
 			// Check if the player has less than max stock, if no give ammo
 			if( self getammocount( weapon ) < WeaponMaxAmmo( weapon ) )

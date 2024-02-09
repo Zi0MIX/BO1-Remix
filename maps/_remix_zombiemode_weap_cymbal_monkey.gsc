@@ -28,7 +28,7 @@ player_handle_cymbal_monkey()
 		max_attract_dist = 1536;
 	}
 
-	grenade = get_thrown_monkey();
+	grenade = maps\_zombiemode_weap_cymbal_monkey::get_thrown_monkey();
 	self thread player_handle_cymbal_monkey();
 	if( IsDefined( grenade ) )
 	{
@@ -49,7 +49,7 @@ player_handle_cymbal_monkey()
 
 		info = spawnStruct();
 		info.sound_attractors = [];
-		grenade thread monitor_zombie_groans( info );
+		grenade thread maps\_zombiemode_weap_cymbal_monkey::monitor_zombie_groans( info );
 		velocitySq = 10000*10000;
 		oldPos = grenade.origin;
 
@@ -69,7 +69,7 @@ player_handle_cymbal_monkey()
 		if( isDefined( grenade ) )
 		{
 			model SetAnim( %o_monkey_bomb );
-			model thread monkey_cleanup( grenade );
+			model thread maps\_zombiemode_weap_cymbal_monkey::monkey_cleanup( grenade );
 
 			model unlink();
 			model.origin = grenade.origin;
@@ -117,7 +117,7 @@ do_monkey_sound( model, info )
 		self playsound( "zmb_monkey_song" );
 	}
 
-	self thread play_delayed_explode_vox();
+	self thread maps\_zombiemode_weap_cymbal_monkey::play_delayed_explode_vox();
 
 	self waittill( "explode", position );
 	if( isDefined( model ) )

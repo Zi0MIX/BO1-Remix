@@ -60,7 +60,7 @@ buy_claymores()
 
 	//level thread set_claymore_visible();
 	self.placeable_mine_name = "claymore_zm";
-	self thread maps\_zombiemode_weapons::decide_hide_show_hint();
+	self thread maps\_remix_zombiemode_weapons::decide_hide_show_hint();
 	self.claymores_triggered = false;
 
 	while(1)
@@ -85,7 +85,7 @@ buy_claymores()
 				if ( !who is_player_placeable_mine( "claymore_zm" ) )
 				{
 					who maps\_zombiemode_weapons::check_collector_achievement( "claymore_zm" );
-					who thread show_claymore_hint("claymore_purchased");
+					who thread maps\_zombiemode_claymore::show_claymore_hint("claymore_purchased");
 					who thread maps\_zombiemode_audio::create_and_play_dialog( "weapon_pickup", "grenade" );
 
 					who thread claymore_watch();
@@ -129,7 +129,7 @@ claymore_watch()
 			claymore.owner = self;
 			//claymore thread satchel_damage();
 			claymore thread claymore_detonation();
-			claymore thread play_claymore_effects();
+			claymore thread maps\_zombiemode_claymore::play_claymore_effects();
 
 			if(level.gamemode != "survival")
 			{
@@ -231,7 +231,7 @@ claymore_detonation()
 		if( level.gamemode != "survival" && IsPlayer(ent) && ent.vsteam == self.owner.vsteam )
 			continue;
 
-		if ( !ent shouldAffectWeaponObject( self ) )
+		if ( !ent maps\_zombiemode_claymore::shouldAffectWeaponObject( self ) )
 			continue;
 
 		if ( ent damageConeTrace(self.origin, self) > 0 )

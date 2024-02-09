@@ -66,7 +66,7 @@ tesla_damage_init( hit_location, hit_origin, player )
 
 	if( player.tesla_enemies_hit >= 4)
 	{
-		player thread tesla_killstreak_sound();
+		player thread maps\_zombiemode_weap_tesla::tesla_killstreak_sound();
 	}
 
 	player.tesla_enemies_hit = 0;
@@ -79,12 +79,12 @@ tesla_arc_damage( source_enemy, player, arc_num, upgraded )
 
 	debug_print( "TESLA: Evaulating arc damage for arc: " + arc_num + " Current enemies hit: " + player.tesla_enemies_hit );
 
-	tesla_flag_hit( self, true );
+	maps\_zombiemode_weap_tesla::tesla_flag_hit( self, true );
 	wait_network_frame();
 
 	radius_decay = level.zombie_vars["tesla_radius_decay"] * arc_num;
 	enemies = tesla_get_enemies_in_area( self GetCentroid(), level.zombie_vars["tesla_radius_start"] - radius_decay, player );
-	tesla_flag_hit( enemies, true );
+	maps\_zombiemode_weap_tesla::tesla_flag_hit( enemies, true );
 
 	self thread tesla_do_damage( source_enemy, arc_num, player, upgraded );
 
@@ -99,7 +99,7 @@ tesla_arc_damage( source_enemy, player, arc_num, upgraded )
 
 		if ( tesla_end_arc_damage( arc_num + 1, player.tesla_enemies_hit, upgraded ) )
 		{
-			tesla_flag_hit( enemies[i], false );
+			maps\_zombiemode_weap_tesla::tesla_flag_hit( enemies[i], false );
 			continue;
 		}
 
@@ -254,7 +254,7 @@ tesla_do_damage( source_enemy, arc_num, player, upgraded )
 		}
 
 		player.tesla_arc_count++;
-		source_enemy tesla_play_arc_fx( self );
+		source_enemy maps\_zombiemode_weap_tesla::tesla_play_arc_fx( self );
 	}
 
 	/*while ( player.tesla_network_death_choke > level.zombie_vars["tesla_network_death_choke"] )
@@ -272,7 +272,7 @@ tesla_do_damage( source_enemy, arc_num, player, upgraded )
 	player.tesla_network_death_choke++;
 
 	self.tesla_death = true;
-	self tesla_play_death_fx( arc_num );
+	self maps\_zombiemode_weap_tesla::tesla_play_death_fx( arc_num );
 
 	// use the origin of the arc orginator so it pics the correct death direction anim
 	origin = source_enemy.origin;
@@ -349,7 +349,7 @@ tesla_engine_sweets()
 	while(1)
 	{
 		wait(randomintrange(7,15));
-		self play_tesla_sound ("wpn_tesla_sweeps_idle");
+		self maps\_zombiemode_weap_tesla::play_tesla_sound ("wpn_tesla_sweeps_idle");
 	}
 }
 

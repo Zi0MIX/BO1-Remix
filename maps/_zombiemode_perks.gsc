@@ -413,7 +413,7 @@ vending_weapon_upgrade()
 
 	self thread vending_machine_trigger_think();
 
-	self thread maps\_zombiemode_weapons::decide_hide_show_hint();
+	self thread maps\_remix_zombiemode_weapons::decide_hide_show_hint();
 
 	perk_machine playloopsound("zmb_perks_packa_loop");
 

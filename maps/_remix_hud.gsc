@@ -6,7 +6,7 @@ remix_hud_initialize()
 {
 	level thread timer_hud();
 	level thread round_timer_hud();
-	level thread time_summary_hud();
+	// level thread time_summary_hud();
 
 	// level thread display_sph();
 	// level thread hud_color_watcher();	// For later
@@ -14,13 +14,12 @@ remix_hud_initialize()
 
 remix_player_hud_initialize()
 {
-	self thread time_summary_hud();
 	self thread remaining_hud();
-	self thread drop_tracker_hud();
-	self thread health_bar_hud();
-	self thread zone_hud();
+	// self thread drop_tracker_hud();
+	self thread maps\_remix_hud_client::health_bar_hud();
+	self thread maps\_remix_hud_client::zone_hud();
 	if(level.script == "zombie_coast")
-		self thread maps\_custom_hud_menu::george_health_bar();
+		self thread maps\_remix_hud_client::george_health_bar();
 
 	// testing only
 	//self thread get_position();
@@ -76,7 +75,7 @@ hud_fade(alpha, duration)
 {
 	if (!isDefined(alpha)) 
 	{
-		if (self.alpha = 0)
+		if (self.alpha == 0)
 			alpha = 1;
 		else
 			alpha = 0;
@@ -335,6 +334,36 @@ drop_hud()
 
 		wait 0.05;
 	}
+}
+
+george_health()
+{
+	level endon("end_game");
+
+	flag_wait("initial_blackscreen_passed");
+
+	george_health = NewHudElem();
+	george_health.x = self.origin[0];
+	george_health.y = self.origin[1];
+	george_health.z = self.origin[2] + 40;
+	george_health.fontScale = 1;
+	george_health.alpha = 1;
+	george_health.color = (1, 1, 1);
+	george_health.hidewheninmenu = 1;
+	george_health.label = &"%";		// TODO locstring
+
+	george_max_health = 250000 * level.players_playing;
+
+	while (is_true(level.num_director_zombies))
+	{
+		george_health.x = self.origin[0];
+		george_health.y = self.origin[1];
+		george_health.z = self.origin[2] + 40;
+		george_health setValue(0);
+	}
+
+	george_health hud_fade();
+	george_health destroy_hud();
 }
 
 instakill_timer_hud()

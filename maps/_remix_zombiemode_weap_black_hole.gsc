@@ -51,7 +51,7 @@ player_handle_black_hole_bomb()
 
 		info = spawnStruct();
 		info.sound_attractors = [];
-		grenade thread monitor_zombie_groans( info ); // WW: this might need to change
+		grenade thread maps\_zombiemode_weap_black_hole_bomb::monitor_zombie_groans( info ); // WW: this might need to change
 		velocitySq = 10000*10000;
 		oldPos = grenade.origin;
 
