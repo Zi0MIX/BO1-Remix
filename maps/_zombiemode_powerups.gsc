@@ -2309,7 +2309,7 @@ free_perk_powerup( item )
 	{
 		if ( !players[i] maps\_laststand::player_is_in_laststand() && !(players[i].sessionstate == "spectator") )
 		{
-			players[i] maps\_zombiemode_perks::give_random_perk();
+			players[i] maps\_remix_zombiemode_perks::give_random_perk();
 		}
 	}
 }

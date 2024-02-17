@@ -456,7 +456,7 @@ thief_take_loot()
 
 	self.victims.weapon[ self.victims.current_idx ] = weapon;
 
-	player thread player_do_knuckle_crack();
+	player thread maps\_zombiemode_ai_thief::player_do_knuckle_crack();
 }
 
 thief_return_loot()

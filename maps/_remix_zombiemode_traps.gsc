@@ -78,7 +78,7 @@ trap_use_think( trap )
 			}
 
 			trap._trap_in_use = 1;
-			trap trap_set_string( &"ZOMBIE_TRAP_ACTIVE" );
+			trap maps\_zombiemode_traps::trap_set_string( &"ZOMBIE_TRAP_ACTIVE" );
 
 			play_sound_at_pos( "purchase", who.origin );
 
@@ -102,7 +102,7 @@ trap_use_think( trap )
 			trap trigger_off();
 
 			trap._trap_cooling_down = 1;
-			trap trap_set_string( &"ZOMBIE_TRAP_COOLDOWN" );
+			trap maps\_zombiemode_traps::trap_set_string( &"ZOMBIE_TRAP_COOLDOWN" );
 /#
 			if ( GetDvarInt( #"zombie_cheat" ) >= 1 )
 			{
@@ -118,7 +118,7 @@ trap_use_think( trap )
 			trap notify("available");
 
 			trap._trap_in_use = 0;
-			trap trap_set_string( &"ZOMBIE_BUTTON_BUY_TRAP", trap.zombie_cost );
+			trap maps\_zombiemode_traps::trap_set_string( &"ZOMBIE_BUTTON_BUY_TRAP", trap.zombie_cost );
 		}
 	}
 }
@@ -134,7 +134,7 @@ trap_move_switches(activator)
 		return;
 	}
 
-	self trap_lights_red();
+	self maps\_zombiemode_traps::trap_lights_red();
 
 	/*for ( i=0; i<self._trap_switches.size; i++ )
 	{
@@ -161,7 +161,7 @@ trap_move_switches(activator)
 		// Rotate switch model "off"
 		self._trap_switches[i] rotatepitch( -180, .5 );
 	}*/
-	self trap_lights_green();
+	self maps\_zombiemode_traps::trap_lights_green();
 	closest rotatepitch( -180, .5 );
 	closest waittill( "rotatedone" );
 }
@@ -209,7 +209,7 @@ trap_activate_electric(activator)
 	for( i=0; i<fx_points.size; i++ )
 	{
 		wait_network_frame();
-		fx_points[i] thread trap_audio_fx(self);
+		fx_points[i] thread maps\_zombiemode_traps::trap_audio_fx(self);
 	}
 
 	// Do the damage
@@ -239,7 +239,7 @@ trap_activate_fire(activator)
 	for( i=0; i<fx_points.size; i++ )
 	{
 		wait_network_frame();
-		fx_points[i] thread trap_audio_fx(self);
+		fx_points[i] thread maps\_zombiemode_traps::trap_audio_fx(self);
 	}
 
 	// Do the damage
@@ -272,12 +272,12 @@ trap_activate_rotating(activator)
 // 	for( i=0; i<fx_points.size; i++ )
 // 	{
 // 		wait_network_frame();
-// 		fx_points[i] thread trap_audio_fx(self);
+// 		fx_points[i] thread maps\_zombiemode_traps::trap_audio_fx(self);
 // 	}
 
 	// Do the damage
 	self thread trap_damage(activator);
-	self thread trig_update( self._trap_movers[0] );
+	self thread maps\_zombiemode_traps::trig_update( self._trap_movers[0] );
 	old_angles = self._trap_movers[0].angles;
 
 	//Shawn J Sound - power up sound for centrifuge
@@ -475,7 +475,7 @@ zombie_trap_death( trap, param, activator )
 			if( (param > 90) && (level.burning_zombies.size < 6) )
 			{
 				level.burning_zombies[level.burning_zombies.size] = self;
-				self thread zombie_flame_watch();
+				self thread maps\_zombiemode_traps::zombie_flame_watch();
 				self playsound("ignite");
 				self thread animscripts\zombie_death::flame_death_fx();
 				wait( randomfloat(0.5) );
@@ -497,8 +497,8 @@ zombie_trap_death( trap, param, activator )
 				{
 					if(randomint(100) > 50 )
 					{
-						self thread electroctute_death_fx();
-						self thread play_elec_vocals();
+						self thread maps\_zombiemode_traps::electroctute_death_fx();
+						self thread maps\_zombiemode_traps::play_elec_vocals();
 					}
 				}
 

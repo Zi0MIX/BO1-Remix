@@ -608,7 +608,6 @@ wait_for_timeout( weapon, packa_timer )
 
 
 //	Weapon has been inserted, crack knuckles while waiting
-/*
 do_knuckle_crack()
 {
 	gun = self maps\_remix_zombiemode_perks::upgrade_knuckle_crack_begin();
@@ -618,7 +617,6 @@ do_knuckle_crack()
 	self upgrade_knuckle_crack_end( gun );
 
 }
-*/
 
 //	Switch to the knuckles
 //

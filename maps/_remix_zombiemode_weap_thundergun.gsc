@@ -81,7 +81,7 @@ thundergun_fired(currentweapon)
         //thundergun_network_choke();
         if(IsAI(level.thundergun_fling_enemies[i]))
         {
-            level.thundergun_fling_enemies[i] thread thundergun_fling_zombie( self, level.thundergun_fling_vecs[i], i );
+            level.thundergun_fling_enemies[i] thread maps\_zombiemode_weap_thundergun::thundergun_fling_zombie( self, level.thundergun_fling_vecs[i], i );
         }
         else if(IsPlayer(level.thundergun_fling_enemies[i]))
         {
@@ -155,7 +155,7 @@ thundergun_get_enemies_in_range()
         test_range_squared = DistanceSquared( view_pos, test_origin );
         if ( test_range_squared > knockdown_range_squared )
         {
-            zombies[i] thundergun_debug_print( "range", (1, 0, 0) );
+            zombies[i] maps\_zombiemode_weap_thundergun::thundergun_debug_print( "range", (1, 0, 0) );
             return; // everything else in the list will be out of range
         }
 
@@ -164,7 +164,7 @@ thundergun_get_enemies_in_range()
         if ( 0 > dot )
         {
             // guy's behind us
-            zombies[i] thundergun_debug_print( "dot", (1, 0, 0) );
+            zombies[i] maps\_zombiemode_weap_thundergun::thundergun_debug_print( "dot", (1, 0, 0) );
             continue;
         }
 
@@ -172,14 +172,14 @@ thundergun_get_enemies_in_range()
         if ( DistanceSquared( test_origin, radial_origin ) > cylinder_radius_squared )
         {
             // guy's outside the range of the cylinder of effect
-            zombies[i] thundergun_debug_print( "cylinder", (1, 0, 0) );
+            zombies[i] maps\_zombiemode_weap_thundergun::thundergun_debug_print( "cylinder", (1, 0, 0) );
             continue;
         }
 
         if ( !zombies[i] DamageConeTrace( view_pos, self ) && !BulletTracePassed( view_pos, test_origin, false, undefined ) && !SightTracePassed( view_pos, test_origin, false, undefined ) )
         {
             // guy can't actually be hit from where we are
-            zombies[i] thundergun_debug_print( "cone", (1, 0, 0) );
+            zombies[i] maps\_zombiemode_weap_thundergun::thundergun_debug_print( "cone", (1, 0, 0) );
             continue;
         }
 
@@ -208,14 +208,14 @@ thundergun_get_enemies_in_range()
             fling_vec = vector_scale( fling_vec, 100 + 100 * dist_mult );
             level.thundergun_fling_vecs[level.thundergun_fling_vecs.size] = fling_vec;
 
-            zombies[i] thread setup_thundergun_vox( self, true, false, false );
+            zombies[i] thread maps\_zombiemode_weap_thundergun::setup_thundergun_vox( self, true, false, false );
         }
         else
         {
             level.thundergun_knockdown_enemies[level.thundergun_knockdown_enemies.size] = zombies[i];
             level.thundergun_knockdown_gib[level.thundergun_knockdown_gib.size] = false;
 
-            zombies[i] thread setup_thundergun_vox( self, false, false, true );
+            zombies[i] thread maps\_zombiemode_weap_thundergun::setup_thundergun_vox( self, false, false, true );
         }
     }
 }
@@ -253,7 +253,7 @@ thundergun_knockdown_zombie( player, gib )
     }
 
 //  self playsound( "thundergun_impact" );
-    self.thundergun_handle_pain_notetracks = ::handle_thundergun_pain_notetracks;
+    self.thundergun_handle_pain_notetracks = maps\_zombiemode_weap_thundergun::handle_thundergun_pain_notetracks;
     //self DoDamage( level.zombie_vars["thundergun_knockdown_damage"], player.origin, player );
     self playsound( "fly_thundergun_forcehit" );
 

@@ -192,7 +192,7 @@ place_perk_machines()
 		machine_clip setmodel( "collision_geo_64x64x256" );
 		machine_clip Hide();
 
-		level thread turn_sleight_on();
+		level thread maps\_zombiemode_perks::turn_sleight_on();
 		level notify("sleight_on");
 	}
 }
@@ -401,7 +401,7 @@ vending_trigger_think()
 	perk_hum = spawn("script_origin", self.origin);
 	perk_hum playloopsound("zmb_perks_machine_loop");
 
-	self thread check_player_has_perk(perk);
+	self thread maps\_zombiemode_perks::check_player_has_perk(perk);
 
 	switch( perk )
 	{
@@ -611,7 +611,7 @@ give_perk_think(player, gun, perk, cost)
 	player waittill_any( "fake_death", "death", "player_downed", "weapon_change_complete" );
 
 	// restore player controls and movement
-	player perk_give_bottle_end( gun, perk );
+	player maps\_zombiemode_perks::perk_give_bottle_end( gun, perk );
 
 	// TODO: race condition?
 	if ( player maps\_laststand::player_is_in_laststand() || is_true( player.intermission ) )
@@ -626,7 +626,7 @@ give_perk_think(player, gun, perk, cost)
 
 	player.perk_purchased = undefined;
 
-	player give_perk( perk, true );
+	player maps\_zombiemode_perks::give_perk( perk, true );
 
 	//player iprintln( "Bought Perk: " + perk );
 	bbPrint( "zombie_uses: playername %s playerscore %d teamscore %d round %d cost %d name %s x %f y %f z %f type perk",
@@ -709,7 +709,7 @@ give_random_perk()
 	if ( !self HasPerk( "specialty_armorvest" ) )
 	{
 		jug = "specialty_armorvest";
-		self give_perk( jug );
+		self maps\_zombiemode_perks::give_perk( jug );
 		return;
 	}
 
@@ -734,6 +734,6 @@ give_random_perk()
 	if ( perks.size > 0 )
 	{
 		perks = array_randomize( perks );
-		self give_perk( perks[0] );
+		self maps\_zombiemode_perks::give_perk( perks[0] );
 	}
 }

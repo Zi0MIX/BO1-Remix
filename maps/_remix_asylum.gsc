@@ -328,7 +328,7 @@ zombie_elec_death(flame_chance)
 	if(flame_chance > 90 && level.burning_zombies.size < 6)
 	{
 		level.burning_zombies[level.burning_zombies.size] = self;
-		self thread zombie_flame_watch();
+		self thread maps\zombie_cod5_asylum::zombie_flame_watch();
 		self playsound("zmb_ignite");
 		self thread animscripts\zombie_death::flame_death_fx();
 		wait(randomfloat(0.5)); //1.25
@@ -347,8 +347,8 @@ zombie_elec_death(flame_chance)
 		playsoundatposition("zmb_zombie_arc", self.origin);
 		if(randomint(100) > 40 )
 		{
-			self thread electroctute_death_fx();
-			self thread play_elec_vocals();
+			self thread maps\zombie_cod5_asylum::electroctute_death_fx();
+			self thread maps\zombie_cod5_asylum::play_elec_vocals();
 		}
 		wait(randomfloat(0.5)); //1.25
 		self playsound("zmb_zombie_arc");

@@ -134,7 +134,7 @@ activate_doubletap()
 
 			// do the drink animation
 			perk = "specialty_rof";
-			gun = player maps\_zombiemode_perks::perk_give_bottle_begin( perk );
+			gun = player maps\_remix_zombiemode_perks::perk_give_bottle_begin( perk );
 			player waittill_any( "fake_death", "death", "player_downed", "weapon_change_complete" );
 			player maps\_zombiemode_perks::perk_give_bottle_end( gun, perk );
 

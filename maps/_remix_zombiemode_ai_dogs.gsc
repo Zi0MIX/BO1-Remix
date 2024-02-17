@@ -32,8 +32,8 @@ dog_round_tracker()
 			level.music_round_override = true;
 			old_spawn_func = level.round_spawn_func;
 			old_wait_func  = level.round_wait_func;
-			dog_round_start();
-			level.round_spawn_func = ::dog_round_spawning;
+			maps\_zombiemode_ai_dogs::dog_round_start();
+			level.round_spawn_func = maps\_zombiemode_ai_dogs::dog_round_spawning;
 
 			level.next_dog_round = level.round_number + 4;//randomintrange( 4 );
 			/#
@@ -42,7 +42,7 @@ dog_round_tracker()
 		}
 		else if ( flag( "dog_round" ) )
 		{
-			dog_round_stop();
+			maps\_zombiemode_ai_dogs::dog_round_stop();
 			level.round_spawn_func = old_spawn_func;
 			level.round_wait_func  = old_wait_func;
             level.music_round_override = false;
